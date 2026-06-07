@@ -1,16 +1,52 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
   <link href="../output.css" rel="stylesheet">
+  <script src="main.js" defer></script>
+  <title>Admin Registration</title>
+
 </head>
 <body>
-  <form action="registration.php" method="POST">
-    <label  >Name</label>
-    <input type="email" name="email" >
-    <label >Email</label>
-    <input type="text" name="fname">
+  <div class="flex justify-center-safe"> <h1 class="font-header font-bold text-4xl text-red-700">Admin Registration</h1></div>
+  <div class="flex justify-center-safe  ">
+   
+  
+  <form action="registration.php" method="POST" onsubmit="return checkpass(event)">
+  <div class="mt-2 border-2 border-red-800 rounded-2xl pl-10 font-text h-130 ">
+    <label class="font-bold ">Name :</label><br>
+    <input required type="text" class="c_in" name="a_fname" placeholder="Enter First name">
+    <input required type="text" class="c_in" name="a_lname" placeholder="Enter Surname"><br>
+    <label class="font-bold ">Email :</label><br>
+    <input required class="c_in" type="email" name="a_email" placeholder="Enter Email"><br>
+    <label class="font-bold">Mobile No. :</label><br>
+    <input required class="c_in" name="a_mobile" placeholder="Enter Mobile No."><br>
+    
+    <label  class="font-bold" for="newpass">Password :</label><br>
+    <input required class="c_in" type="password" placeholder="Enter password" id="newpass"><br>
+    
+    <label for="cnfpass" class="font-bold">Confirm Password :</label><br>
+    <input required id="cnfpass" class="c_in" type="password" name="a_pass" placeholder="Enter password"><br>
+    <p id="errormsg" class="hidden text-red-500"></p>
+    
+    <input class="checkbox" type="checkbox" name="a_po" id="role_po" value="Programme Officer">
+    <label  class="font-bold" for="role_po">Programme Officer</label><br>
+    <input  class="checkbox" type ="checkbox" name="a_cm" id="role_nt" value="NSS team">
+    <label class="font-bold" for="role_nt">NSS team</label><br><br>
+
+    <button class="c_btn" type="submit" name="a_submit">Register</button>
+
+
+
   </form>
+  </div>
+  </div>
+
+
 </body>
+
+
 </html>
+

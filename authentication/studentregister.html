@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+  <link href="../output.css" rel="stylesheet">
+  <script src="main.js" defer></script>
+  <title>Student Registration</title>
+
+</head>
+<body>
+    
+        <div class="flex justify-center-safe font-header font-bold text-4xl text-red-700">
+            <img src="../NSSLOGO.png" class="w-10 h-10">
+            <h1 >NSS Registration</h1>
+        </div>
+        <div class="content flex justify-center-safe ">
+            <form  action="registration.php" method="">
+               <div class="border-2 p-2 rounded-2xl border-red-700"> 
+                <label for="name" class="c_label">Enter Name : </label><br>
+                <input class="c_in font-bold" id="name" type="text" name="y_name" placeholder="Your name">
+                <input class="c_in font-bold mt-1" type="text" name="f_name" placeholder="Father name"><br> 
+                <input class="c_in font-bold mt-1" type="text" name="m_name" placeholder="Mother name">
+                <input class="c_in font-bold mt-1" type="text" name="s_name" placeholder="Surname"><br>
+                
+                <label for="email" class="c_label">Email :</label><br>
+                <input class="c_in mt-2" id="email" type="email" name="s_email" placeholder="example@gmail.com"><br>
+                
+                <label for="mobile" class="c_label ">Mobile No.:</label><br>
+                <input class="c_in mt-2 " id="mobile" type="text" name="s_mobile" placeholder="Enter Mobile No."><br>
+                
+                <label for="s_DOB" class="c_label">Date of Birth :</label><br>
+                <input class="c_in mt-2" type="date" id="s_DOB" name="s_DOB"><br>
+                
+                <label  for="bld_grp" class="c_label">Blood Grp :</label>
+                <select class="c_dropdown "  id="bld_grp" name="bld_grp">
+                    <option value="" selected disabled hidden>Not selected</option>
+                    <option value="A+" >A+</option>
+                    <option value="B+">B+</option>
+                    <option value="AB+">AB+</option>
+                    <option value="O+">O+</option>
+                    <option value="A-">A-</option>
+                    <option value="B-">B-</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O-">O-</option>
+                </select><br>
+                
+                <label for="caste" class="c_label">Caste :</label>
+                <select class="c_dropdown ml-9" id="caste" name="c_caste" >
+                    <option value="" selected disabled hidden>Not selected</option>
+                    <option value="GENERAL">GENERAL</option>
+                    <option value="OBC">OBC</option>
+                    <option value="SC">SC</option>
+                    <option value="ST">ST</option>
+                    <option value="MINOR">MINOR</option>
+                </select><br>
+                
+                <label for="nssyear" class="c_label">NSS Year :</label>
+                <select class="c_dropdown ml-2" id="nssyear" name="nssyear">
+                    <option value="" selected disabled hidden>Not selected</option>
+                    <option value="FY">First year</option>
+                    <option value="SY">Second year</option>
+                    <option value="TY">Third year</option>
+                </select><br>
+
+                <span class="flex justify-center-safe border-t-2 border-dashed border-red-700 mt-2"><h3 class="font-bold font-header underline text-red-700">ACADEMIC DETAILS</h3></span>
+                    <label for="s_class" class="c_label">Select Class :</label>
+                    <select class="c_dropdown ml-6" id="s_class" name="s_class">
+                         <option value="" selected disabled hidden>Not selected</option>
+                        <option value="FY">FY</option>
+                        <option value="SY">SY</option>
+                        <option value="TY">TY</option>
+                    </select><br>
+                    
+                    <label for="s_program" class="c_label">Select Program :</label> 
+                    <select class="c_dropdown" id="s_program" name="s_program" >
+                        <option value="" selected disabled hidden>Not Selected</option>
+                        <option value="BA">BA</option>
+                        <option value="BSC">BSC</option>
+                        <option value="BCOM">BCOM</option>
+                        <option value="BAF">BAF</option>
+                        <option value="BBI">BBI</option>
+                        <option value="BAMMAC">BAMMAC</option>
+                        <option value="BMS">BMS</option>
+                        <option value="BVOC">BVOC</option>
+                        <option value="BSCIT">BSC-IT</option>
+                        <option value="BSCBT">BSC-BT</option>
+                        <option value="BSCAIML">BSC-AIML</option>
+                        <option value="BSCDS">BSC-DS</option>
+                       
+                    </select><br>
+                    <label for="s_div" class="c_label">Enter Division :</label>
+                    <input class="c_in mt-2 " type="text" id="s_div" name="s_div" placeholder="eg., A"><br>
+                    
+                    <label for="s_roll" class="c_label ">Enter Roll No. :</label>
+                    <input class="c_in mt-2" type="text" pattern="\d{3}" id="s_roll" name="s_roll" placeholder="eg., 001"> <br><br>
+
+                    <label  class="c_label" for="newpass">Password :</label><br>
+                    <input required class="c_in" type="password" placeholder="Enter password" id="newpass"><br>
+    
+                    <label for="cnfpass" class="c_label">Confirm Password :</label><br>
+                    <input required id="cnfpass" class="c_in" type="password" name="s_pass" placeholder="Enter password"><br>
+                        <p id="errormsg" class="hidden text-red-500"></p><br>
+                    <div class="flex justify-center-safe">
+                    <button type="submit" name="s_submit " class="c_btn mr-25" >SUBMIT</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    
+
+</body>
+</html>

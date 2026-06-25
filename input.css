@@ -1,12 +1,19 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Copse&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Playwrite+GB+J:ital,wght@0,100..400;1,100..400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nova+Round&display=swap');
 @import "tailwindcss";
 
 @theme{
     --font-header: "Copse", serif;
     --font-text : "Playfair Display", serif;
+    --font-nova : "Nova Round", system-ui;
+
+    /* color */
+      --color-navy:#000057
 }
+
+
 
 .c_in{
     @apply p-5 border-2 border-blue-600 rounded-2xl w-60 h-10 hover:border-red-800;
@@ -23,3 +30,4 @@
 .c_dropdown{
     @apply border-2 rounded-2xl w-35 pl-3 border-blue-900 hover:border-red-700 mt-1
 }
+

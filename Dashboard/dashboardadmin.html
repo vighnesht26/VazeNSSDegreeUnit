@@ -10,9 +10,58 @@
 
 </head>
 <body>
-    <aside class="sidebar border-2 w-20 h-100">
+  <!-- NSS Heading -->
+   
+    <div class="sidebar border-2 w-35 md:w-50  flex-col bg-navy text-white">
+      <div class="header border-b-2 h-30 md:pl-6">
+          <div class="nss-head flex pt-2  h-12">
+            <div class="nss-logo w-15 h-15"><img src="../NSS-Logo.png" ></div>
+            <div class="NSS-name text-4xl pt-1 font-header">NSS</div>
+          </div>
+        <div class="NSS-unit  pl-4 font-header">DEGREE UNIT</div>
+        <div class="NSS-motto text-xs pl-6 font-text">Not Me But You</div>
+<!-- Togglebutton for sidebar in mobile view -->
+        <button id="open_sidebar" onclick="toggleSidebar(this)" class=" md:hidden fixed text-sm ml-29 p-1 bg-blue-600 text-white rounded focus:outline-2 focus:outline-amber-500">
+    ☰ 
+  </button>
+  
+  </div>
+  </div>
+  <!-- Sidebar -->
+      
+      <aside id ="sidebar" class="side-nav fixed h-full flex-col w-35  bg-navy text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:w-50  md:translate-x-0 md:static overflow-hidden">
+        
+      
+        <div class="nav-label pl-10 text-xs font-text underline md:pl-18">
+        <button id="close_sidebar" onclick="toggleSidebar(this)" class="  md:hidden  text-sm ml-11 p-1 bg-blue-600 text-white rounded focus:outline-2 focus:outline-offset-2">◀ Hide</button>
+          <span>MENU</span>
+      </div>
+        
+        <nav class="nav-bar">
+        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+          <span class="nav-icon pl-3">🏠</span>Dashboard
+        </div>
+        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+          <span class="nav-icon pl-3">✅</span>Completed Events
+        </div>
+        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+          <span class="nav-icon pl-3">📆</span>Upcoming Events
+        </div>
+        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+          <span class="nav-icon pl-3">📋</span>Reports
+        </div>
 
+        <!-- admin -->
+         <div class="admins border-b-2 mt-10"></div>
+         <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+          <span class="nav-icon pl-3">👥</span>Volunteers
+        </div>
+        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+          <span class="nav-icon pl-3">👤</span>Leaders
+        </div>
+      </nav>
     </aside>
-</body>
 
+</body>
+<script src="dashboard.js"></script>
 </html>

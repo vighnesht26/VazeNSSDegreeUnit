@@ -10,7 +10,9 @@
     --font-nova : "Nova Round", system-ui;
 
     /* color */
-      --color-navy:#000057
+      --color-navy:#000057;
+      --color-org:#EF2917;
+      --color-dorg:#B51102;
 }
 
 
@@ -31,3 +33,6 @@
     @apply border-2 rounded-2xl w-35 pl-3 border-blue-900 hover:border-red-700 mt-1
 }
 
+.nav-title{
+    @apply font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600
+}

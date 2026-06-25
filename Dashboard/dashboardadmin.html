@@ -9,10 +9,10 @@
   <title>Admin Dashboard</title>
 
 </head>
-<body>
+<body >
   <!-- NSS Heading -->
-   
-    <div class="sidebar border-2 w-35 md:w-50  flex-col bg-navy text-white">
+   <div class="top-bar flex w-screen">
+    <div class="NSS-heading border-2 w-35 md:w-60  flex-col bg-navy text-white">
       <div class="header border-b-2 h-30 md:pl-6">
           <div class="nss-head flex pt-2  h-12">
             <div class="nss-logo w-15 h-15"><img src="../NSS-Logo.png" ></div>
@@ -27,6 +27,17 @@
   
   </div>
   </div>
+     
+    <div class="top-nav flex border-b rounded-4xl w-screen h-30 ">
+      <div class="Text flex-col mt-18 ml-5 md:mt-15 md:ml-10">
+        <div class="user-name text-sm md:text-2xl text-shadow-2xs" >Vighnesh Tawade</div>
+        <div class="role-name text-[10px] md:ml-8 ">Programme Officer</div>
+        
+      </div>
+     <button class=" border p-1 h-10 mt-18 ml-13 rounded-2xl bg-org hover:bg-dorg focus:outline-2 focus:outline-org focus:outline-offset-2 md:ml-180 md:p-3">Logout</button>
+    </div>
+       
+    </div>
   <!-- Sidebar -->
       
       <aside id ="sidebar" class="side-nav fixed h-full flex-col w-35  bg-navy text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:w-50  md:translate-x-0 md:static overflow-hidden">
@@ -38,30 +49,33 @@
       </div>
         
         <nav class="nav-bar">
-        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+        <div class="nav-title ">
           <span class="nav-icon pl-3">🏠</span>Dashboard
         </div>
-        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+        <div class="nav-title ">
           <span class="nav-icon pl-3">✅</span>Completed Events
         </div>
-        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+        <div class="nav-title ">
           <span class="nav-icon pl-3">📆</span>Upcoming Events
         </div>
-        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+        <div class="nav-title ">
           <span class="nav-icon pl-3">📋</span>Reports
         </div>
 
         <!-- admin -->
          <div class="admins border-b-2 mt-10"></div>
-         <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+         <div class="nav-title ">
           <span class="nav-icon pl-3">👥</span>Volunteers
         </div>
-        <div class="nav-title font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600">
+        <div class="nav-title ">
           <span class="nav-icon pl-3">👤</span>Leaders
         </div>
       </nav>
     </aside>
+   
 
+  <!-- Dashboard -->
+   <div class="Content flex border-2 h-30 md:w-250 md:ml-60 "></div>
 </body>
 <script src="dashboard.js"></script>
 </html>

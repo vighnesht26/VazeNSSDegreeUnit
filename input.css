@@ -36,3 +36,7 @@
 .nav-title{
     @apply font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600
 }
+
+.dash-card{
+    @apply w-50 h-45 border-2 rounded-3xl md:w-80 shadow-2xl
+}

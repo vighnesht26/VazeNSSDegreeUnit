@@ -12,8 +12,8 @@
 <body >
   <!-- NSS Heading -->
    <div class="top-bar flex w-screen">
-    <div class="NSS-heading border-2 w-35 md:w-60  flex-col bg-navy text-white">
-      <div class="header border-b-2 h-30 md:pl-6">
+    <div class="NSS-heading border-2 w-35 rounded-r-3xl md:w-60  flex-col bg-navy text-white">
+      <div class="header border-b-2 h-30  md:pl-6">
           <div class="nss-head flex pt-2  h-12">
             <div class="nss-logo w-15 h-15"><img src="../NSS-Logo.png" ></div>
             <div class="NSS-name text-4xl pt-1 font-header">NSS</div>
@@ -38,9 +38,11 @@
     </div>
        
     </div>
+
+     
   <!-- Sidebar -->
-      
-      <aside id ="sidebar" class="side-nav fixed h-full flex-col w-35  bg-navy text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:w-50  md:translate-x-0 md:static overflow-hidden">
+    <div class="main-body flex">
+      <aside id ="sidebar" class="side-nav fixed  h-full flex-col w-35   bg-navy text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:w-50  md:translate-x-0  md:sticky overflow-hidden">
         
       
         <div class="nav-label pl-10 text-xs font-text underline md:pl-18">
@@ -75,7 +77,28 @@
    
 
   <!-- Dashboard -->
-   <div class="Content flex border-2 h-30 md:w-250 md:ml-60 "></div>
+    <div class="Content flex-col border-2  w-screen  h-screen">
+
+      <div class="card-1-2 flex justify-around mt-5">
+      <!-- card-1 -->
+
+        <div class="dash-card ">
+          <h3 class="border-b-4 border-double pl-3 ">Recent Event</h3>
+          <div class="detail">
+            <p>Event name <span></span></p>
+            <p>Total Participant <span></span></p>
+            <p>Type<span></span></p>
+            <p>hrs alloted<span></span></p>
+          </div>
+        </div>
+        <!-- card-2 -->
+         <div class="dash-card ">
+
+         </div>
+
+         </div>
+    </div>
+  </div>
 </body>
 <script src="dashboard.js"></script>
 </html>

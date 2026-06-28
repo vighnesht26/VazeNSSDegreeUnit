@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link href="../output.css" rel="stylesheet">
+ 
+    <title>Leaders Dashboard</title>
+</head>
+<body>
+     <!-- NSS Heading -->
+   <header class="top-bar flex w-screen sticky top-0">
+    <div class="NSS-heading border-2 w-35 rounded-r-3xl md:w-60  flex-col bg-navy text-white">
+      <div class="header border-b-2 h-30  md:pl-6">
+          <div class="nss-head flex pt-2  h-12">
+            <div class="nss-logo w-15 h-15"><img src="../NSS-Logo.png" ></div>
+            <div class="NSS-name text-4xl pt-1 font-header">NSS</div>
+          </div>
+        <div class="NSS-unit  pl-4 font-header">DEGREE UNIT</div>
+        <div class="NSS-motto text-xs pl-6 font-text">Not Me But You</div>
+<!-- Togglebutton for sidebar in mobile view -->
+        <button id="open_sidebar" onclick="toggleSidebar(this)" class=" md:hidden fixed text-sm ml-29 p-1 bg-blue-600 text-white rounded focus:outline-2 focus:outline-amber-500">
+    ☰ 
+  </button>
+  
+  </div>
+  </div>
+     
+    <div class="top-nav flex border-b rounded-4xl w-screen h-30 ">
+      <div class="Text flex-col mt-18 ml-5 md:mt-15 md:ml-10">
+        <div class="user-name text-sm md:text-2xl text-shadow-2xs" >Name</div>
+        <div class="role-name text-[10px] md:ml-8 ">Volunteer</div>
+        
+      </div>
+     <button class=" border p-1 fixed h-10 mt-18 ml-13 rounded-2xl bg-org hover:bg-dorg focus:outline-2 focus:outline-org focus:outline-offset-2 md:ml-180 md:p-3">Logout</button>
+    </div>
+       
+</header>
+
+
+    <!-- sidebar -->
+
+    <div class="main-body flex">
+      <aside id ="sidebar" class="side-nav fixed  h-full flex-col w-35   bg-navy text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:w-58  md:translate-x-0  md:sticky overflow-hidden">
+        
+      
+        <div class="nav-label pl-10 text-xs font-text underline md:pl-18">
+        <button id="close_sidebar" onclick="toggleSidebar(this)" class="  md:hidden  text-sm ml-11 p-1 bg-blue-600 text-white rounded focus:outline-2 focus:outline-offset-2">◀ Hide</button>
+          <span>MENU</span>
+      </div>
+        
+        <nav class="nav-bar">
+        <div class="nav-title active_side" onclick="switchpage('dashboard'); activate(this)" >
+          <span class="nav-icon pl-3">🏠</span>Dashboard
+        </div>
+        <div class="nav-title" onclick="switchpage('c_event'); activate(this)">
+          <span class="nav-icon pl-3">✅</span>Completed Events
+        </div>
+        <div class="nav-title " onclick="switchpage('u_event'); activate(this)">
+          <span class="nav-icon pl-3">📆</span>Upcoming Events
+        </div>
+        <div class="nav-title " onclick="switchpage('report'); activate(this)">
+          <span class="nav-icon pl-3">📋</span>Reports
+        </div>
+
+        <!-- admin -->
+         <div class="admins border-b-2 mt-10"></div>
+         <div class="nav-title "  onclick="switchpage('volunteers'); activate(this)">
+          <span class="nav-icon pl-3" >👥</span>Volunteers
+        </div>
+        <div class="nav-title "  onclick="switchpage('leaders'); activate(this)">
+          <span class="nav-icon pl-3">👤</span>Leaders
+        </div>
+      </nav>
+    </aside>
+   
+</body>
+<script src="./dashboard_leader.js"></script>
+</html>

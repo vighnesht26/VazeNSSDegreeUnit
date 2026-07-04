@@ -11,7 +11,7 @@
 </head>
 <body >
   <!-- NSS Heading -->
-   <header class="top-bar flex w-screen  md:sticky md:top-0">
+   <header class="top-bar flex w-screen  sticky top-0 md:top-0">
     <div class="NSS-heading border-2 w-35  rounded-b-3xl md:w-60  flex-col bg-navy text-white ">
       <div class="header border-b-2 h-30  md:pl-6 ">
           <div class="nss-head flex pt-2  h-12">
@@ -28,15 +28,19 @@
   </div>
   </div>
      
-    <div class="top-nav flex  border-b rounded-b-4xl w-screen h-30 bg-navy text-white md:h-20">
-      <div class="Text flex-col mt-18 ml-5 md:mt-8 md:ml-10">
-        <div class="user-name text-sm md:text-2xl text-shadow-2xs" >Name</div>
-        <div class="role-name text-[10px] md:ml-8 ">Role</div>
+    <div class="top-nav flex  border-b rounded-b-4xl w-screen h-30 bg-navy text-white md:h-22">
+      <div class="Text flex-col mt-18 ml-5 w-28 md:mt-8 md:ml-10 md:w-220">
+        <div class="user-name text-sm md:text-2xl text-shadow-2xs font-header" >Name</div>
+        <div class="role-name text-[10px] md:ml-8 font-text">Role</div>
         
       </div>
-     <button class=" border p-1 h-10 mt-18 ml-13 rounded-2xl bg-org hover:bg-dorg focus:outline-2 focus:outline-org focus:outline-offset-2 md:ml-180 md:p-3 md:mt-8">Logout</button>
-    </div>
+     <div class="profile flex   w-30 justify-evenly" > 
+     <button class=" border  h-5 mt-20 font-text text-xs rounded-2xl bg-org hover:bg-dorg focus:outline-2 focus:outline-org focus:outline-offset-2 md:h-8 md:p-2   md:mt-10 md:text-sm md:mr-1">logout</button>
        
+        <button class="border rounded-2xl  h-25 font-text text-sm bg-indigo mt-3 md:mt-0 md:text-xs  md:h-20 hover:bg-indigodark focus:outline-1 focus:outline-org focus:outline-offset-2"><img src="../icons/profile.png" class="w-5 ml-5">view profile</button>
+       </div>
+    </div>
+      
   </header>
 
      
@@ -77,9 +81,9 @@
    
 
   <!-- Dashboard -->
-    <div id ="dashboard" class="content flex-col border-2  w-screen  h-screen page active">
-
-      <div class="card-1-2 flex justify-around mt-5">
+    <div id ="dashboard" class="content flex-col   w-screen  h-screen page active">
+        <!-- section-1 -->
+      <div class="section-1 flex justify-around mt-5">
       <!-- card-1 -->
 
         <div class="dash-card ">
@@ -104,11 +108,39 @@
          </div>
 
          </div>
+         <!-- section-2 -->
+          <div class="section-2 flex justify-evenly mt-5">
+            <!-- card-1-event-count -->
+            <div class="event-count border w-25 ">
+              <p>Total Events :</p>
+              <p>UL :</p>
+              <p>CL :</p>
+              <p>ABP-1 :</p>
+              <p>ABP-2 :</p>
+              <p>DL :</p>
+            </div>
+
+            <!-- card-2-volunteer-count -->
+            <div class="volunteer-count border w-35">
+              <p>Volunteer count :</p>
+              <p>Male count :</p>
+              <p>Female count :</p> 
+            </div> 
+            <!-- card-3-leader-count -->
+             <div class="volunteer-count border w-35">
+              <p>Leader count :</p>
+              <p>Male count :</p>
+              <p>Female count :</p> 
+             </div>
+          </div>
     </div>
 
     <!-- Completed events -->
      <div id ="c_event" class="Content flex-col border-2  w-screen  h-screen page">
-        <div><h2 class="font-header">Completed events</h2></div>
+        <div class="border-b-2 "><h2 class="font-header text-2xl ml-5">Total completed events : 80</h2></div>
+
+        
+
      </div>
 
      <!-- Upcoming Event -->

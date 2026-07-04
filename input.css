@@ -5,6 +5,7 @@
 @import "tailwindcss";
 
 @theme{
+    /* font */
     --font-header: "Copse", serif;
     --font-text : "Playfair Display", serif;
     --font-nova : "Nova Round", system-ui;
@@ -14,6 +15,8 @@
       --color-org:#EF2917;
       --color-dorg:#B51102;
       --color-lightperi :#C6C6E4;
+      --color-indigo :#4800AE;
+      --color-indigodark: #280160;
 }
 
 

@@ -84,36 +84,35 @@
   <!-- Dashboard -->
     <div id ="dashboard" class="content flex-col   w-screen  h-screen page active">
         <!-- section-1 -->
-      <div class="section-1 flex justify-around mt-5">
+      <div class="section-1 flex justify-evenly mt-5">
       <!-- card-1 -->
 
         <div class="dash-card ">
-          <h3 class="border-b-4 border-double pl-3 ">Recent Event</h3>
-          <div class="detail">
-            <p>Event name <span></span></p>
-            <p>Total Participant <span></span></p>
-            <p>Type<span></span></p>
-            <p>hrs alloted<span></span></p>
+          <h3 class="card-header">Recent Event</h3>
+          <div class="detail font-text">
+            <p class="card-content ">Event name <span></span></p>
+            <p class="card-content">Total Participant <span></span></p>
+            <p class="card-content">Type<span></span></p>
+            <p class="card-content">hrs alloted<span></span></p>
           </div>
         </div>
         <!-- card-2 -->
          <div class="dash-card ">
-             <h3 class="border-b-4 border-double pl-3 ">Upcoming event</h3>
-          <div class="detail">
-            <p>Event name <span></span></p>
-            <p>Total Participant <span></span></p>
-            <p>Type<span></span></p>
-            <p>Venue<span></span></p>
-            <p>Time<span></span></p>
+             <h3 class="card-header">Upcoming Event</h3>
+          <div class="detail font-text">
+            <p class="card-content">Event name <span></span></p>
+            <p class="card-content">Type<span></span></p>
+            <p class="card-content">Venue<span></span></p>
+            <p class="card-content">Time<span></span></p>
           </div>
          </div>
 
          </div>
          <!-- section-2 -->
-          <div class="section-2 flex justify-evenly mt-5">
+          <div class="section-2 flex justify-evenly mt-10">
             <!-- card-1-event-count -->
-            <div class="event-count border w-25 ">
-              <p>Total Events :</p>
+            <div class="event-count  sec2-card">
+              <p >Total Events :</p>
               <p>UL :</p>
               <p>CL :</p>
               <p>ABP-1 :</p>
@@ -122,16 +121,16 @@
             </div>
 
             <!-- card-2-volunteer-count -->
-            <div class="volunteer-count border w-35">
-              <p>Volunteer count :</p>
-              <p>Male count :</p>
-              <p>Female count :</p> 
+            <div class="volunteer-count sec2-card">
+              <p class="pt-2">Volunteer count :</p>
+              <p class="pt-2">Male count :</p>
+              <p class="pt-2">Female count :</p> 
             </div> 
             <!-- card-3-leader-count -->
-             <div class="volunteer-count border w-35">
-              <p>Leader count :</p>
-              <p>Male count :</p>
-              <p>Female count :</p> 
+             <div class="volunteer-count sec2-card">
+              <p class="pt-2">Leader count :</p>
+              <p class="pt-2">Male count :</p>
+              <p class="pt-2">Female count :</p> 
              </div>
           </div>
     </div>
@@ -139,6 +138,14 @@
     <!-- Completed events -->
      <div id ="c_event" class="Content flex-col border-2  w-screen  h-screen page">
         <div class="border-b-2 "><h2 class="font-header text-2xl ml-5">Total completed events : 80</h2></div>
+        <div class="event-list border-2 h-40">
+          <div class="event-info  ">
+            <p>Event Name :-</p>
+            <p>Event Type:-</p>
+            <p>Attendance : </p>
+          </div>
+          <div></div>
+        </div>
 
         
 

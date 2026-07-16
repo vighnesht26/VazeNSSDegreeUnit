@@ -17,6 +17,7 @@
       --color-lightperi :#C6C6E4;
       --color-indigo :#4800AE;
       --color-indigodark: #280160;
+      --color-lobster:#E44F5E;
 }
 
 
@@ -42,9 +43,20 @@
 }
 
 .dash-card{
-    @apply w-50 h-45 border-2 rounded-3xl md:w-80 shadow-2xl
+    @apply w-100 h-60 border-2 rounded-3xl md:w-80 shadow-2xl hover:shadow-zinc-700
 }
 
+.card-header{
+    @apply border-b-4 border-double pl-3 font-bold text-2xl font-header rounded-3xl 
+}
+
+.card-content{
+    @apply pl-2 pt-4
+}
+
+.sec2-card{
+    @apply border-2 w-70 rounded-2xl p-3 font-text  hover:shadow-2xl hover:shadow-zinc-500  
+}
 .page{
     @apply hidden
 }

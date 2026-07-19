@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+  <link href="../output.css" rel="stylesheet">
+ 
+  <title>Admin Dashboard</title>
+
+</head>
+<body >
+  <!-- NSS Heading -->
+  
+   <header class="sticky top-0 z-50 flex items-center justify-between w-full h-24 px-6 text-white bg-navy ">
+  
+  <!-- Main Heading-->
+  <div class="flex items-center ">
+    <!-- Logo -->
+    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20">
+    
+    <!-- NSS Header-->
+    <div class="flex flex-col justify-center">
+      <div class="flex items-baseline md:gap-2">
+        <span class="text-4xl font-bold font-header  md:text-3xl">NSS</span>
+        <span class="text-sm font-semibold font-header  text-lightperi md:text-base">DEGREE UNIT</span>
+      </div>
+      <span class="text-[10px] md:text-xs italic font-text text-gray-300 -mt-1">Not Me But You</span>
+    </div>
+    <!-- Togglebutton for sidebar in mobile view -->
+        <button id="open_sidebar" onclick="toggleSidebar(this)" class=" md:hidden fixed text-xs mt-20 ml-3 p-1 w-15 font-bold h-6 bg-blue-600 text-white rounded focus:outline-2 focus:outline-amber-500">
+         Sidebar</button>
+  </div>
+
+ 
+  <div class="flex items-center gap-6">
+    <!-- User Context -->
+    <div class="text-right hidden sm:flex flex-col justify-center">
+      <div class="text-base font-bold font-header md:text-lg">Name</div>
+      <div class="text-xs font-text text-lightperi">Role</div>
+    </div>
+    
+    
+    <div class="flex items-center gap-3">
+      <!-- Profile  -->
+      <button class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border rounded-xl border-lightperi/20 bg-navy hover:bg-indigodark transition-all">
+        <img src="../icons/profile.png" alt="Profile" class="w-4 h-4 invert">
+        <span class="hidden md:inline">View Profile</span>
+      </button>
+
+      <!-- Logout-->
+      <button class="px-4 py-1.5 text-xs font-bold rounded-xl bg-org hover:bg-dorg text-white transition-all shadow-sm">
+        Logout
+      </button>
+    </div>
+  </div>
+
+</header>

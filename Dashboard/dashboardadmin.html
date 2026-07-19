@@ -5,52 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
  
   <link href="../output.css" rel="stylesheet">
- 
+ <!-- Include this in the <head> section of your HTML -->
+  <script src="dashboard_admin.js" defer></script>
   <title>Admin Dashboard</title>
 
 </head>
-<body >
+<body class="bg-gray-200  flex flex-col h-screen ">
   <!-- NSS Heading -->
-   <header class="top-bar flex w-screen  sticky top-0 md:top-0">
-    <div class="NSS-heading border-2 w-35  rounded-b-3xl md:w-60  flex-col bg-navy text-white ">
-      <div class="header border-b-2 h-30  md:pl-6 ">
-          <div class="nss-head flex pt-2  h-12">
-            <div class="nss-logo w-15 h-15"><img src="../NSS-Logo.png" ></div>
-            <div class="NSS-name text-4xl pt-1 font-header">NSS</div>
-          </div>
-        <div class="NSS-unit  pl-4 font-header">DEGREE UNIT</div>
-        <div class="NSS-motto text-xs pl-6 font-text">Not Me But You</div>
-<!-- Togglebutton for sidebar in mobile view -->
-        <button id="open_sidebar" onclick="toggleSidebar(this)" class=" md:hidden fixed text-sm ml-29 p-1 bg-blue-600 text-white rounded focus:outline-2 focus:outline-amber-500">
-    ☰ 
-  </button>
+   <header class="sticky top-0 z-50 flex items-center justify-between w-full h-24 px-6 text-white bg-navy ">
   
-  </div>
-  </div>
-     
-    <div class="top-nav flex  border-b rounded-b-4xl w-screen h-30 bg-navy text-white md:h-22">
-      <div class="Text flex-col mt-18 ml-5 w-28 md:mt-8 md:ml-10 md:w-220">
-        <div class="user-name text-sm md:text-2xl text-shadow-2xs font-header" >Name</div>
-        <div class="role-name text-[10px] md:ml-8 font-text">Role</div>
-        
+  <!-- Main Heading-->
+  <div class="flex items-center ">
+    <!-- Logo -->
+    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20">
+    
+    <!-- NSS Header-->
+    <div class="flex flex-col justify-center">
+      <div class="flex items-baseline md:gap-2">
+        <span class="text-4xl font-bold font-header  md:text-3xl">NSS</span>
+        <span class="text-sm font-semibold font-header  text-lightperi md:text-base">DEGREE UNIT</span>
       </div>
-     <div class="profile flex   w-30 justify-evenly" > 
-     <button class=" border  h-5 mt-20 font-text text-xs rounded-2xl bg-org hover:bg-dorg focus:outline-2 focus:outline-org focus:outline-offset-2 md:h-8 md:p-2   md:mt-10 md:text-sm md:mr-1">logout</button>
-       
-        <button class="border rounded-2xl  h-25 font-text text-sm bg-indigo mt-3 md:mt-0 md:text-xs  md:h-20 hover:bg-indigodark focus:outline-1 focus:outline-org focus:outline-offset-2"><img src="../icons/profile.png" class="w-5 ml-5">view profile</button>
-       </div>
+      <span class="text-[10px] md:text-xs italic font-text text-gray-300 -mt-1">Not Me But You</span>
     </div>
-      
-  </header>
+    <!-- Togglebutton for sidebar in mobile view -->
+        <button id="open_sidebar" onclick="toggleSidebar(this)" class=" md:hidden fixed text-xs mt-20 ml-3 p-1 w-15 font-bold h-6 bg-blue-600 text-white rounded focus:outline-2 focus:outline-amber-500">
+         Sidebar</button>
+  </div>
+
+ 
+  <div class="flex items-center gap-6">
+    <!-- User Context -->
+    <div class="text-right hidden sm:flex flex-col justify-center">
+      <div id="name_display" class="text-base font-bold font-header md:text-lg">Name</div>
+      <div id="role_display" class="text-xs font-text text-lightperi">Role</div>
+    </div>
+    
+    
+    <div class="flex items-center gap-3">
+      <!-- Profile  -->
+      <button class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border rounded-xl border-lightperi/20 bg-navy hover:bg-indigodark transition-all">
+        <img src="../icons/profile.png" alt="Profile" class="w-4 h-4 invert">
+        <span class="hidden md:inline">View Profile</span>
+      </button>
+
+      <!-- Logout-->
+      <button class="px-4 py-1.5 text-xs font-bold rounded-xl bg-org hover:bg-dorg text-white transition-all shadow-sm">
+        Logout
+      </button>
+    </div>
+  </div>
+
+</header>
 
      
   <!-- Sidebar -->
-    <div class="main-body flex ">
-      <aside id ="sidebar" class="side-nav fixed  h-full flex-col w-35   bg-navy text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:w-58  md:translate-x-0  md:sticky md:top-31 overflow-hidden">
+   
+    <div class="main-body flex flex-1  overflow-hidden">
+      <aside id ="sidebar" class="side-nav  fixed  h-full left-0 flex-col w-35   bg-navy text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:w-58  md:translate-x-0  md:sticky  overflow-hidden">
         
       
-        <div class="nav-label pl-10 text-xs font-text underline md:pl-18">
-        <button id="close_sidebar" onclick="toggleSidebar(this)" class="  md:hidden  text-sm ml-11 p-1 bg-blue-600 text-white rounded focus:outline-2 focus:outline-offset-2">◀ Hide</button>
+        <div class="nav-label pl-10 text-xs font-bold underline md:pl-18">
+        <button id="close_sidebar" onclick="toggleSidebar(this)" class="  md:hidden  text-xs w-15 h-8 font-bold ml-11 p-1 bg-blue-600 text-white rounded focus:outline-2 focus:outline-offset-2">◀ Hide</button>
           <span>MENU</span>
       </div>
         
@@ -82,7 +97,8 @@
    
 
   <!-- Dashboard -->
-    <div id ="dashboard" class="content flex-col   w-screen  h-screen page active">
+   
+    <div id ="dashboard" class="content flex w-screen   h-full overflow-y-auto page active">
         <!-- section-1 -->
       <div class="section-1 flex justify-evenly mt-5">
       <!-- card-1 -->
@@ -132,7 +148,9 @@
               <p class="pt-2">Male count :</p>
               <p class="pt-2">Female count :</p> 
              </div>
+             
           </div>
+           
     </div>
 
     <!-- Completed events -->
@@ -174,6 +192,7 @@
 
 
   </div>
+
 </body>
 <script src="./dashboard_admin.js"></script>
 </html>

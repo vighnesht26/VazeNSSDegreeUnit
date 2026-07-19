@@ -43,11 +43,11 @@
 }
 
 .dash-card{
-    @apply w-100 h-60 border-2 rounded-3xl md:w-80 shadow-2xl hover:shadow-zinc-700
+    @apply w-100 h-60 border-2 rounded-3xl  md:w-80 hover:shadow-2xl hover:shadow-lightperi 
 }
 
 .card-header{
-    @apply border-b-4 border-double pl-3 font-bold text-2xl font-header rounded-3xl 
+    @apply border-b  pl-3  text-2xl font-text font-bold rounded-t-3xl bg-lightperi p-2
 }
 
 .card-content{
@@ -55,7 +55,7 @@
 }
 
 .sec2-card{
-    @apply border-2 w-70 rounded-2xl p-3 font-text  hover:shadow-2xl hover:shadow-zinc-500  
+    @apply border-2 w-70 rounded-3xl p-3 font-text  hover:shadow-2xl hover:shadow-zinc-200  
 }
 .page{
     @apply hidden

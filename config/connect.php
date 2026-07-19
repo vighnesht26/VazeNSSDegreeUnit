@@ -2,7 +2,7 @@
 $server= "Localhost";
 $username = "root";
 $password = "";
-$dbname = "nssdegreeunit";
+$dbname = "vazenssdegreeunit";
 
 $conn = new mysqli($server, $username, $password, $dbname);
 

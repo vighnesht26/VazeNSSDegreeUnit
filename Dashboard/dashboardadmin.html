@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
  
   <link href="../output.css" rel="stylesheet">
- <!-- Include this in the <head> section of your HTML -->
+
   <script src="dashboard_admin.js" defer></script>
   <title>Admin Dashboard</title>
 
@@ -31,13 +31,14 @@
         <button id="open_sidebar" onclick="toggleSidebar(this)" class=" md:hidden fixed text-xs mt-20 ml-3 p-1 w-15 font-bold h-6 bg-blue-600 text-white rounded focus:outline-2 focus:outline-amber-500">
          Sidebar</button>
   </div>
-
+  <button type="button" id="addEventBtn" class="border hidden md:block rounded-2xl  font-bold  bg-blue-700 text-xs p-2 hover:bg-blue-900 mt-15  text-gray-200">Add Event</button>
  
   <div class="flex items-center gap-6">
     <!-- User Context -->
     <div class="text-right hidden sm:flex flex-col justify-center">
       <div id="name_display" class="text-base font-bold font-header md:text-lg">Name</div>
-      <div id="role_display" class="text-xs font-text text-lightperi">Role</div>
+      <div id="role_display" class="text-sm font-text text-lightperi">Role</div>
+      <div id="username_display" class="text-xs font-text text-lightperi">username</div>
     </div>
     
     

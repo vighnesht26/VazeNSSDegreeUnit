@@ -2,7 +2,33 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchAdminProfile();
+
+    //AddEvent
+const addEventButton = document.getElementById('addEventBtn');
+
+if (addEventButton) {
+    addEventButton.addEventListener('click', async () => {
+      
+        try {
+            const response = await fetch('../config/api.php');
+            const sessionData = await response.json();
+
+            
+            if (sessionData.success && (sessionData.role === 'programme officer' ||sessionData.role === "NSS commitee" || sessionData.role === 'leader')) {
+                console.log("Access Granted. Proceeding to add event...");
+                window.location.href = '../Event/registerevent.html';
+              
+            } else {
+                alert("Unauthorized: Only Admins and Leaders can add events.");
+                //window.location.href = '../Authentication/login.html';
+            }
+        } catch (error) {
+            console.error("Session verification failed:", error);
+        }
+    });
+}
 });
+
 //toggel sidebar in mobile view
 function toggleSidebar(element){
     const sidebar = document.getElementById('sidebar');
@@ -35,42 +61,46 @@ function activate(ele){
     ele.classList.add('active_side');
 }
 
-
+//Navbar Profile
 async function fetchAdminProfile() {
-    console.log("c1 RUNNED");
+  
     try {
-        console.log("c2 RUNNED");
+       
         const response = await fetch('../config/api.php');
         const data = await response.json();
-        console.log("c3 RUNNED");
+       
         
         if (data.success) {
-            console.log("c4 RUNNED");
+           
             
-            // 1. Define the elements first
+            
             const nameElement = document.getElementById('name_display');
             const roleElement = document.getElementById('role_display');
+            const usernameElement = document.getElementById('username_display');
 
-            // 2. Safely check and update the name container
+           
             if (nameElement) {
+                console.log("name RUNNED");
                 nameElement.textContent = data.name;
-            } else {
-                console.warn("Warning: HTML element with id 'name-display' was not found on this page.");
-            }
+            } 
 
-            // 3. Safely check and update the role container
             if (roleElement) {
+                console.log("role RUNNED");
                 roleElement.textContent = data.role;
-            } else {
-                console.warn("Warning: HTML element with id 'role-display' was not found on this page.");
             }
 
+            if(usernameElement){
+                console.log("username RUNNED");
+                usernameElement.textContent = data.ausername;
+            }   
         } else {
-            console.log("c5 RUNNED");
+            
             window.location.href = '../Authentication/login.html';
         }
     } catch (error) { 
-        console.log("c6 RUNNED");
+        
         console.error("Failed to parse session profile data:", error);
     }
 }
+
+

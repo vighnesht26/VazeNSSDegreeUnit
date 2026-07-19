@@ -45,7 +45,7 @@ if(isset($_POST['c_submit'])){
 }
 //TO assign
   if($loginfor == 'Admin'){
-    $sql =$conn->prepare( "SELECT admin_id,first_name,role ,password FROM admin WHERE username = ?");
+    $sql =$conn->prepare( "SELECT admin_id,username,first_name,last_name, role ,password FROM admin WHERE username = ?");
      $sql->bind_param("s",$name);
      $sql->execute();
 
@@ -59,6 +59,7 @@ if(isset($_POST['c_submit'])){
             $_SESSION['name'] = $row['first_name'];
             $_SESSION['lname']= $row['last_name'];
             $_SESSION['role'] = $row['role'];
+            $_SESSION['a_username'] = $row['username'];
              header("Location: ../Dashboard/dashboardadmin.html");
              exit();
          } else {

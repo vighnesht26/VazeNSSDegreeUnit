@@ -9,8 +9,9 @@ header('Content-Type: application/json');
 if (isset($_SESSION['admin_id'])) {
     echo json_encode([
         'success' => true,
-        'name'    => $_SESSION['name']. ' ' .  $_SESSION['lname'],
-        'role'    => $_SESSION['role'] 
+        'name'    => "{$_SESSION['name']} {$_SESSION['lname']}",
+        'role'    => $_SESSION['role'],
+        'ausername' => $_SESSION['a_username']
     ]);
 } else {
     echo json_encode([
@@ -20,6 +21,7 @@ if (isset($_SESSION['admin_id'])) {
     ]);
 }
 exit();
-?>
+
 
 ?>
+

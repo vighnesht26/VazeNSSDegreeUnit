@@ -3,7 +3,8 @@ session_start();
 include '../config/connect.php';
 
 if (!isset($_SESSION['clg_id'])) {
-    die("Unauthorized access. Please log in first.");
+    die("Unauthorized access. Please login first.");
+    
 }
 
 if(isset($_POST['a_submit'])){
@@ -24,18 +25,20 @@ if(isset($_POST['a_submit'])){
     elseif($cm){
         $role = $cm;
     }
-
+    $msg = [];
     $hashpass = password_hash($pass , PASSWORD_DEFAULT);
 
     $stmt = "INSERT INTO Admin(username, first_name, last_name, email, mobile, password, role, clg_id ) VALUES('$username', '$fname','$lname','$email','$mobile','$hashpass','$role' ,'$clg')";
     if($conn->query($stmt)){
-        header('Location: ./login.html');
+        $msg['success'] = true;
+        
         
     }
     else{
-        echo "Not rehistered";
+        $msg['success'] = false;
     }
-    $stmt->close();
+    echo json_encode($msg);
+    exit();
 }
 $conn->close();
 ?>

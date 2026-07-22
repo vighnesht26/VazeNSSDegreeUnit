@@ -10,14 +10,34 @@
 
 </head>
 <body>
+     <!-- Header Section -->
+  <header class="sticky top-0 z-50 flex items-center justify-between w-full h-24 px-6 text-white bg-navy ">
+  
+  <!-- Main Heading-->
+  <div class="flex items-center ">
+    <!-- Logo -->
+    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20">
     
-        <div class="flex justify-center-safe font-header font-bold text-4xl text-red-700">
-            <img src="../NSSLOGO.png" class="w-10 h-10">
-            <h1 >NSS Registration</h1>
-        </div>
+    <!-- NSS Header-->
+    <div class="flex flex-col justify-center">
+      <div class="flex items-baseline gap-2">
+        <span class="text-4xl font-bold font-header  md:text-3xl">NSS</span>
+        <span class="text-sm font-semibold font-header  text-lightperi md:text-base">DEGREE UNIT</span>
+      </div>
+      <span class="text-[10px] md:text-xs italic font-text text-gray-300 -mt-1">Not Me But You</span>
+    </div>
+    <div class="text-5xl ml-65 font-bold font-header  md:text-3xl">Registration</div>
+  </div>
+
+ 
+  
+  
+
+</header>
+        
         <div class="content flex justify-center-safe ">
-            <form  action="registration.php" method="">
-               <div class="border-2 p-2 rounded-2xl border-red-700"> 
+            <form  action="registration.php" method="POST">
+               <div id="form1" class="page active border-2 p-2 rounded-2xl border-red-700"> 
                 <label for="name" class="c_label">Enter Name : </label><br>
                 <input class="c_in font-bold" id="name" type="text" name="y_name" placeholder="Your name">
                 <input class="c_in font-bold mt-1" type="text" name="f_name" placeholder="Father name"><br> 
@@ -38,7 +58,7 @@
                     <option disabled selected hidden>Not Selected</option>
                     <option value="Male" >Male</option>
                     <option value="Female">Female</option>
-                </select><br>
+                </select>
                 
                 <label  for="bld_grp" class="c_label">Blood Grp :</label>
                 <select class="c_dropdown "  id="bld_grp" name="bld_grp">
@@ -61,7 +81,7 @@
                     <option value="SC">SC</option>
                     <option value="ST">ST</option>
                     <option value="MINOR">MINOR</option>
-                </select><br>
+                </select>
                 
                 <label for="nssyear" class="c_label">NSS Year :</label>
                 <select class="c_dropdown ml-2" id="nssyear" name="nssyear">
@@ -70,8 +90,12 @@
                     <option value="SY">Second year</option>
                     <option value="TY">Third year</option>
                 </select><br>
-
-                <span class="flex justify-center-safe border-t-2 border-dashed border-red-700 mt-2"><h3 class="font-bold font-header underline text-red-700">ACADEMIC DETAILS</h3></span>
+                <div class=" flex justify-center"><button type="button" onclick="nextpage('form2')" class="c_btn mt-3 ">Next</button></div>
+                
+                </div>
+<!-- Academic details -->
+                <div  id="form2" class=" page border-2 p-2 rounded-2xl border-red-700">
+                
                     <label for="s_class" class="c_label">Select Class :</label>
                     <select class="c_dropdown ml-6" id="s_class" name="s_class">
                          <option value="" selected disabled hidden>Not selected</option>
@@ -110,6 +134,7 @@
                     <input required id="cnfpass" class="c_in" type="password" name="s_pass" placeholder="Enter password"><br>
                         <p id="errormsg" class="hidden text-red-500"></p><br>
                     <div class="flex justify-center-safe">
+                    <button type="button" class="c_btn" onclick="nextpage('form1')">Back</button>
                     <button type="submit" name="s_submit " class="c_btn mr-25" >SUBMIT</button>
                     </div>
                 </div>

@@ -14,18 +14,18 @@
   <div class="flex justify-center-safe  ">
    
   
-  <form action="register.php" method="POST" onsubmit="return checkpass(event)">
+  <form id="form" action="register.php" method="POST" onsubmit="return checkpass(event)">
   <div class="mt-2 border-2 border-red-800 rounded-2xl pl-10 font-text h-130 ">
-    <label class="font-bold ">Name :</label><br>
-    <input required type="text" class="c_in" name="a_fname" placeholder="Enter First name">
+    <label for="a_fname" class="font-bold ">Name :</label><br>
+    <input required id="a_fname" type="text" class="c_in" name="a_fname" placeholder="Enter First name">
     <input required type="text" class="c_in" name="a_lname" placeholder="Enter Surname"><br>
-    <label class="font-bold ">Email :</label><br>
-    <input required class="c_in" type="email" name="a_email" placeholder="Enter Email"><br>
-    <label class="font-bold">Mobile No. :</label><br>
-    <input required class="c_in" name="a_mobile" placeholder="Enter Mobile No."><br>
-
+    <label for="a_email" class="font-bold ">Email :</label><br>
+    <input required id="a_email" autocomplete="email" class="c_in" type="email" name="a_email" placeholder="Enter Email"><br>
+    <label class="font-bold" for="a_mobile">Mobile No. :</label><br>
+    <input required id="a_mobile" autocomplete="mobile" class="c_in" name="a_mobile" onclick="return validatemobile()" placeholder="Enter Mobile No.">
+    <label id="error" class="text-red "></label><br>
     <label  class="font-bold" for="newpass">Password :</label><br>
-    <input required class="c_in" type="password" placeholder="Enter password" id="newpass"><br>
+    <input required autocomplete="new-password" class="c_in" type="password" placeholder="Enter password" id="newpass"><br>
     
     <label for="cnfpass" class="font-bold">Confirm Password :</label><br>
     <input required id="cnfpass" class="c_in" type="password" name="a_pass" placeholder="Enter password"><br>

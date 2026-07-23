@@ -3,7 +3,7 @@ function updateStatusColor(selectElement) {
  
   selectElement.classList.remove('text-dorg','text-yellow-700','text-green-700',  'text-gray-600', 'text-red-800');
   
-  // Map value to the corresponding Tailwind color class
+ 
   const colorMap = {
     'Tentative':'text-dorg',
     'Scheduled': 'text-yellow-700',
@@ -12,7 +12,7 @@ function updateStatusColor(selectElement) {
     'Cancelled': 'text-red-800'
   };
   
-  // Apply the selected color class
+  
   const selectedColor = colorMap[selectElement.value];
   if (selectedColor) {
     selectElement.classList.add(selectedColor);

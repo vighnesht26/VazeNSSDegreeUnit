@@ -2,6 +2,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchAdminProfile();
+    displayeventcard();
 
     //AddEvent
 const addEventButton = document.getElementById('addEventBtn');
@@ -10,7 +11,7 @@ if (addEventButton) {
     addEventButton.addEventListener('click', async () => {
       
         try {
-            const response = await fetch('../config/api.php');
+            const response = await fetch('../config/get_user.php');
             const sessionData = await response.json();
 
             
@@ -66,7 +67,7 @@ async function fetchAdminProfile() {
   
     try {
        
-        const response = await fetch('../config/api.php');
+        const response = await fetch('../config/get_user.php');
         const data = await response.json();
        
         
@@ -103,4 +104,54 @@ async function fetchAdminProfile() {
     }
 }
 
+//Display Event in dashboard1
+async function displayeventcard() {
+    try{
+        const response = await fetch('../config/dash_event.php');
+        console.log("step1");
+        if(!response.ok){
+            throw new Error('Error status: ${response.status}');
 
+        }
+        console.log("step2");
+        const data = await response.json();
+         console.log("excecuted");
+        if(!data.success){console.log("step3");
+            console.log(data.error);
+        }
+        if(data.recent){console.log("step4");
+            document.getElementById('ename').textContent= data.recent.name;
+            document.getElementById('edate').textContent= data.recent.date;
+            document.getElementById('etype').textContent= data.recent.event_type;
+            // document.getElementById('evenue').textContent= data.recent.venue;
+            //  document.getElementById('estatus').textContent= data.recent.status;
+
+        }else{
+             document.getElementById('ename').textContent= 'None';
+            document.getElementById('edate').textContent= 'None';
+            document.getElementById('etype').textContent= 'None';
+            // document.getElementById('evenue').textContent= 'None';
+            //  document.getElementById('estatus').textContent= 'None';
+
+        }
+
+        if(data.upcoming){console.log("step5");
+            document.getElementById('uname').textContent= data.upcoming.name;
+            document.getElementById('udate').textContent= data.upcoming.date;
+            document.getElementById('utype').textContent= data.upcoming.event_type;
+            document.getElementById('uvenue').textContent= data.upcoming.venue;
+             document.getElementById('ustatus').textContent= data.upcoming.status;
+
+        }else{
+             document.getElementById('uname').textContent= 'None';
+            document.getElementById('udate').textContent= 'None';
+            document.getElementById('utype').textContent= 'None';
+            document.getElementById('uvenue').textContent= 'None';
+             document.getElementById('ustatus').textContent= 'None';
+
+        }
+
+    }catch(error){
+        console.log(error);
+    }
+}

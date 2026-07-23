@@ -21,6 +21,7 @@ if (isset($_SESSION['admin_id'])) {
         'name'    => 'Guest',
         'role'    => 'Unauthorized'
     ]);
+    
 }
 exit();
 

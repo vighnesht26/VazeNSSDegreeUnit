@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../output.css" rel="stylesheet">
+  <script src="main.js" defer></script>
   <title>Login</title>
 </head>
 <body>
@@ -13,12 +14,12 @@
     <h1 class="font-header size-1 text-4xl text-red-700 font-bold">Login</h1>
     
    <div class="mt-15 border-2 border-amber-600 w-100 flex justify-center pt-7 rounded-2xl"> 
-  <form action="login.php" method="POST">
+  <form action="login.php" method="POST" onsubmit="return checklogin(event, this);">
    
     <label class="font-text font-bold text-2xl">Name :</label><br>
-    <input type="text" name="c_name" placeholder="Enter name" class="c_in "><br><br>
+    <input required type="text" name="c_name" placeholder="Enter name" class="c_in "><br><br>
     <label class="font-text font-bold text-2xl">Password :</label><br>
-    <input class="c_in " type="password" name="c_pass" placeholder="Enter password"><br><br>
+    <input required class="c_in " type="password" name="c_pass" placeholder="Enter password"><br><br>
 
     <label for="loginfor" class="font-text font-bold">Select Login : </label>
     <select id="loginfor" name="loginfor" class="border-2 rounded-2xl w-25 pl-3 border-blue-900 hover:border-red-700">
@@ -34,7 +35,7 @@
   
 
 
-    <button class="c_btn font-text" type="submit" name="c_submit" class="">SUBMIT</button> 
+    <button class="c_btn font-text" type="submit"  name="c_submit" class="">SUBMIT</button> 
   </form>
   </div>
 </div>

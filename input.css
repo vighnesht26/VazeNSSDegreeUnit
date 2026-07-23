@@ -51,7 +51,7 @@
 }
 
 .card-content{
-    @apply pl-2 pt-4
+    @apply pl-2 pt-2
 }
 
 .sec2-card{

@@ -3,11 +3,12 @@ session_start();
 include '../config/connect.php';
 
 //college login
-if(isset($_POST['c_submit'])){
+if($_SERVER['REQUEST_METHOD']==='POST'){
     $name = $_POST['c_name'];
     $pass = $_POST['c_pass'];
     $loginfor = $_POST['loginfor'];
 
+    $Jresponse = ['success'=>false,'error'=>''];
     //$hashpass = password_hash($pass, PASSWORD_DEFAULT);
 
     // $sql = "INSERT INTO college (name , password) VALUES('$name', '$hashpass')";
@@ -17,7 +18,7 @@ if(isset($_POST['c_submit'])){
     // else{
     //     echo "not recorded";
     // }
-    if($loginfor == 'College'){
+    if($loginfor === 'College'){
     $sql =$conn->prepare( "SELECT clg_id, password FROM college where name = ?");
     $sql->bind_param("s",$name);
     $sql->execute();
@@ -28,22 +29,25 @@ if(isset($_POST['c_submit'])){
          
 
          if ($pass === $row['password']) {
+            $Jresponse['success'] = true; 
             $_SESSION['clg_id'] = $row['clg_id'];
-            header("Location: ./adminregister.html");
-            exit();
+             $Jresponse['success'] = true;
+             $Jrespone['location'] = 'adminregister.html';
+            
         } else {
-            echo "Invalid password.";
+             
+            $Jresponse['error'] = 'Password is wrong';
         }
 
     
     }
     else{
-        echo "Username not found";
+        $Jresponse['error']= "Username not found";
     }
   $sql->close();  
 
 }
-//TO assign
+//TO admin
   if($loginfor == 'Admin'){
     $sql =$conn->prepare( "SELECT admin_id,username,first_name,last_name, role ,password FROM admin WHERE username = ?");
      $sql->bind_param("s",$name);
@@ -60,20 +64,30 @@ if(isset($_POST['c_submit'])){
             $_SESSION['lname']= $row['last_name'];
             $_SESSION['role'] = $row['role'];
             $_SESSION['a_username'] = $row['username'];
-             header("Location: ../Dashboard/dashboardadmin.html");
-             exit();
+            $Jresponse['success'] = true; 
+            $Jresponse['Location'] = '../Dashboard/dashboardadmin.html';
+          
          } else {
-            echo "Invalid password.";
+           
+            
+            $Jresponse['success'] = false;
+            $Jresponse['error'] = 'Password is wrong';
+           
          }
 
     
      }
      else{
-         echo "Username not found";
+         
+        
+        $Jresponse['error']= "Username not found";
+            
      }
+
    $sql->close();  
 
  }
-
+    echo json_encode($Jresponse);
+    $conn->close();
+    exit();
 }
-$conn->close();

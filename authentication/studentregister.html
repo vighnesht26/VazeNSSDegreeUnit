@@ -45,23 +45,23 @@
                 <input class="c_in font-bold mt-1" type="text" name="s_name" placeholder="Surname"><br>
                 
                 <label for="email" class="c_label">Email :</label><br>
-                <input class="c_in mt-2" id="email" type="email" name="s_email" placeholder="example@gmail.com"><br>
+                <input required class="c_in mt-2" id="email" type="email" name="s_email" placeholder="example@gmail.com"><br>
                 
                 <label for="mobile" class="c_label ">Mobile No.:</label><br>
-                <input class="c_in mt-2 " id="mobile" type="text" name="s_mobile" placeholder="Enter Mobile No."><br>
+                <input required class="c_in mt-2 " id="s_mobile" type="text" name="s_mobile" placeholder="Enter Mobile No."><br>
                 
                 <label for="s_DOB" class="c_label">Date of Birth :</label><br>
-                <input class="c_in mt-2" type="date" id="s_DOB" name="s_DOB"><br>
+                <input required class="c_in mt-2" type="date" id="s_DOB" name="s_DOB"><br>
 
                 <label for="s_gender" class="c_label">Gender :</label>
-                <select id="s_gender" class="c_dropdown ml-5 " name="s_gender">
+                <select required id="s_gender" class="c_dropdown ml-5 " name="s_gender">
                     <option disabled selected hidden>Not Selected</option>
                     <option value="Male" >Male</option>
                     <option value="Female">Female</option>
                 </select>
                 
                 <label  for="bld_grp" class="c_label">Blood Grp :</label>
-                <select class="c_dropdown "  id="bld_grp" name="bld_grp">
+                <select required class="c_dropdown "  id="bld_grp" name="bld_grp">
                     <option value="" selected disabled hidden>Not selected</option>
                     <option value="A+" >A+</option>
                     <option value="B+">B+</option>
@@ -74,7 +74,7 @@
                 </select><br>
                 
                 <label for="caste" class="c_label">Caste :</label>
-                <select class="c_dropdown ml-9" id="caste" name="c_caste" >
+                <select required class="c_dropdown ml-9" id="caste" name="c_caste" >
                     <option value="" selected disabled hidden>Not selected</option>
                     <option value="GENERAL">GENERAL</option>
                     <option value="OBC">OBC</option>
@@ -84,13 +84,13 @@
                 </select>
                 
                 <label for="nssyear" class="c_label">NSS Year :</label>
-                <select class="c_dropdown ml-2" id="nssyear" name="nssyear">
+                <select required class="c_dropdown ml-2" id="nssyear" name="nssyear">
                     <option value="" selected disabled hidden>Not selected</option>
                     <option value="FY">First year</option>
                     <option value="SY">Second year</option>
                     <option value="TY">Third year</option>
                 </select><br>
-                <div class=" flex justify-center"><button type="button" onclick="nextpage('form2')" class="c_btn mt-3 ">Next</button></div>
+                <div class=" flex justify-center"><button type="button" onclick="nextpage('form2'); return validatemobile()" class="c_btn mt-3 ">Next</button></div>
                 
                 </div>
 <!-- Academic details -->

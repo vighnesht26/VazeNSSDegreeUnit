@@ -9,6 +9,7 @@ if(isset($_SESSION['admin_id']) ){
         'success' => false,
         'recent' => null,
         'upcoming' => null,
+        'total_event'=> 0,
         'error'=>''
     ];
     try {
@@ -25,9 +26,19 @@ if(isset($_SESSION['admin_id']) ){
         $u_event = $upcoming_event->fetch_assoc();
         $sql1->close();
 
+        $totalcount_sql = "SELECT COUNT(*) AS totalevent FROM event";
+        $sql3 = $conn->prepare($totalcount_sql);
+        //$status = 'completed';
+       // $sql3 = bind_param("s",$status);
+        $sql3->execute();
+        $total_event = $sql3->get_result()->fetch_assoc();
+        
+        $sql3->close();
+
+
         $response['success']=true;
         $response['upcoming'] = $u_event;
-
+        $response['total_event'] = (int)$total_event['totalevent'];
 
 
 

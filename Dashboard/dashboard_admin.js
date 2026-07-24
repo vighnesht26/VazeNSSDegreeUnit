@@ -150,8 +150,14 @@ async function displayeventcard() {
              document.getElementById('ustatus').textContent= 'None';
 
         }
+        if(data.total_event){
+            document.getElementById('e_total').textContent = data.total_event;
+        }else{
+             document.getElementById('e_total').textContent = none;
+        }
 
     }catch(error){
         console.log(error);
     }
 }
+

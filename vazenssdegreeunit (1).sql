@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 23, 2026 at 07:08 AM
+-- Generation Time: Jul 23, 2026 at 07:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -63,7 +63,14 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`admin_id`, `username`, `email`, `first_name`, `last_name`, `mobile`, `password`, `role`, `clg_id`, `created_at`, `updated_at`) VALUES
-(2, 'vighneshvtawade', 'vighneshvtawade1605@gmail.com', 'Vighnesh', 'Tawade', '8928676618', '$2y$10$RYKNYTO6MrzB3OOc5Rc47.Aw8IkY/XWzb7SPg8.vHUtcCjCmxKBGm', 'programme officer', 1, '2026-07-18 23:17:22', '2026-07-18 23:17:22');
+(2, 'vighneshvtawade', 'vighneshvtawade1605@gmail.com', 'Vighnesh', 'Tawade', '8928676618', '$2y$10$RYKNYTO6MrzB3OOc5Rc47.Aw8IkY/XWzb7SPg8.vHUtcCjCmxKBGm', 'programme officer', 1, '2026-07-18 23:17:22', '2026-07-18 23:17:22'),
+(46, 'Vighnesh@123', 'vighneshvtawade1605@gmail.com', 'Vighnesh', 'Tawade', '8956231245', '$2y$10$wKX1Z4go9jcotCHEvRzY2uPoJ6orl8xxpjrwCJwQI8T9mtYWZ0AbS', 'programme officer', 1, '2026-07-23 07:01:12', '2026-07-23 07:01:12'),
+(48, 'ggg@123', 'vighneshvtawade1605@gmail.com', 'ggg', 'Tawade', '8928614562', '$2y$10$iRwOnUGQAh7sXEwvaDkCkeCN0QNFuFIXSbKCnR00TRZBsIgrlAe1q', 'programme officer', 1, '2026-07-23 07:07:17', '2026-07-23 07:07:17'),
+(51, 'ttt@123', 'vighneshvtawade1605@gmail.com', 'ttt', 'Tawade', '8928614565', '$2y$10$r7JLiB7bBDR8ZYTSHfGTC.jJWLYyudPI0RqBnlE0wIL.FVAfVEGeS', 'programme officer', 1, '2026-07-23 07:15:30', '2026-07-23 07:15:30'),
+(55, 'Vigh@123', 'vighneshvtawade1605@gmail.com', 'Vigh', 'Tawade', '8946132546', '$2y$10$e.w/aHI8tm9.S4yXSB9LhOhVGReV.sUTAdr.4p7eAfvs8vBvVfXEG', 'programme officer', 1, '2026-07-23 13:22:29', '2026-07-23 13:22:29'),
+(58, 'Vi@123', 'vighneshvtawade1605@gmail.com', 'Vi', 'Tawade', '8946132532', '$2y$10$sGoMxtkmLc7RN4WTtQ/TQe8zYAR4epCArMyIBIsGpsEQnfL4f.ZJi', 'programme officer', 1, '2026-07-23 13:26:02', '2026-07-23 13:26:02'),
+(62, 'vigh3@123', 'asd@gafds.com', 'vigh3', 'gjh', '7613792558', '$2y$10$f2DdBc.XrgkMHruIQNPA..YrCzOUFausnE2f5JG.rQDGWoLml4VNK', 'programme officer', 1, '2026-07-23 13:37:17', '2026-07-23 13:37:17'),
+(63, 'vigh5@123', 'asd@fg.com', 'vigh5', 'df', '8613254689', '$2y$10$KjsbcDTmF6nbzAHIZkKLpeHLxPVDqYMgVGPcXH2QLxJKDd5VFIrBy', 'nss team', 1, '2026-07-23 13:37:56', '2026-07-23 13:37:56');
 
 -- --------------------------------------------------------
 
@@ -127,6 +134,13 @@ CREATE TABLE `event` (
   `created_by_admin` int(11) DEFAULT NULL,
   `created_by_leader` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `event`
+--
+
+INSERT INTO `event` (`event_id`, `name`, `date`, `time`, `venue`, `organised_by`, `collaboration`, `event_type`, `approx_hrs`, `max_participation`, `status`, `reporting_time`, `reporting_venue`, `description`, `created_at`, `updated_at`, `created_by_admin`, `created_by_leader`) VALUES
+(2, 'Tree Plantation', '2026-08-12', '07:30:00', 'college', 'clg', 'no', 'ABP-1', 2.0, 2, 'Tentative', '07:00:00', 'unit', 'ewrwefdawrefwaef', '2026-07-23 15:32:01', '2026-07-23 15:32:01', 2, NULL);
 
 -- --------------------------------------------------------
 
@@ -229,8 +243,8 @@ ALTER TABLE `admin`
   ADD UNIQUE KEY `mobile` (`mobile`),
   ADD UNIQUE KEY `password` (`password`),
   ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `clg_id` (`clg_id`);
+  ADD KEY `clg_id` (`clg_id`),
+  ADD KEY `email` (`email`) USING BTREE;
 
 --
 -- Indexes for table `attendance`
@@ -303,7 +317,7 @@ ALTER TABLE `student`
 -- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `college`
@@ -315,7 +329,7 @@ ALTER TABLE `college`
 -- AUTO_INCREMENT for table `event`
 --
 ALTER TABLE `event`
-  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `report`

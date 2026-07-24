@@ -9,27 +9,22 @@
 </head>
 <body class="bg-gray-200 font-sans min-h-screen">
 
-  <!-- Header Section -->
-  <header class="sticky top-0 z-50 flex items-center justify-between w-full h-24 px-6 text-white bg-navy ">
+  <!-- NSS Heading -->
+   <header class="top-header sticky top-0 z-50 flex items-center justify-between w-full h-24 px-6 text-white">
   
   <!-- Main Heading-->
-  <div class="flex items-center ">
+  <div class="flex items-center gap-3">
     <!-- Logo -->
-    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20">
+    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20 transition-transform hover:scale-105 duration-200">
     
     <!-- NSS Header-->
     <div class="flex flex-col justify-center">
-      <div class="flex items-baseline gap-2">
-        <span class="text-4xl font-bold font-header  md:text-3xl">NSS</span>
-        <span class="text-sm font-semibold font-header  text-lightperi md:text-base">DEGREE UNIT</span>
+      <div class="flex items-baseline md:gap-2">
+        <span class="text-4xl font-bold md:text-3xl" style="font-family: 'Copse', serif;">NSS</span>
+        <span class="text-sm font-semibold text-red-400 md:text-base tracking-wider" style="font-family: 'Copse', serif;">DEGREE UNIT</span>
       </div>
-      <span class="text-[10px] md:text-xs italic font-text text-gray-300 -mt-1">Not Me But You</span>
+      <span class="text-[10px] md:text-xs italic text-amber-300 -mt-1 font-medium">Not Me But You</span>
     </div>
-    <div class="text-5xl ml-65 font-bold font-header  md:text-3xl">Event Registration</div>
-  </div>
-
- 
-  
   
 
 </header>
@@ -41,17 +36,17 @@
             <div class="border-2 flex gap-3  w-200 flex-wrap rounded-3xl border-navy">
                 <div class="flex-col  pl-4">
                     <label for="Name" class="c_label ">Event Name* :</label>
-                    <input required id="Name" name="e_name" type="text" class="c_in mt-2"><br>
+                    <input required id="Name" name="e_name" type="text" class="c_in "><br>
                     <label for="Date" class="c_label ">Date* :</label>
-                    <input required id="Date" name="e_date" type="date" class="c_in mt-2 ml-14"><br>
+                    <input required id="Date" name="e_date" type="date" class="c_in "><br>
                     <label for="Time" class="c_label ">Time* :</label>
-                    <input required id="Time" name="e_time" type="time" class="c_in mt-2 ml-14"><br>
+                    <input required id="Time" name="e_time" type="time" class="c_in "><br>
                     <label for="Venue" class="c_label ">Venue* : </label>
-                    <input required id="Venue" name="e_venue" type="text" class="c_in mt-2 ml-11"><br>
+                    <input required id="Venue" name="e_venue" type="text" class="c_in "><br>
                     <label for="Org" class="c_label ">Organiser* : </label>
-                    <input required id="Org" name="e_org" type="text" class="c_in mt-2 ml-6"><br>
+                    <input required id="Org" name="e_org" type="text" class="c_in "><br>
                     <label for="Coll" class="c_label ">Collaboration :</label>
-                    <input id="Coll" name="e_collab" type="text" class="c_in mt-2 "><br>
+                    <input id="Coll" name="e_collab" type="text" class="c_in  "><br>
                     
                 </div>
                 
@@ -66,13 +61,13 @@
                             <option value="DL">District Level</option>
                     </select><br>
                     <label for="Ah" class="c_label ">Approx Hour* :</label>
-                    <input required name="e_AH" id="Ah" type="number" min="1"  class="c_in mt-2 ml-6"><br>
+                    <input required name="e_AH" id="Ah" type="number" min="1"  class="c_in "><br>
                     <label  for="MP" class="c_label ">Max Participation :</label>
-                    <input  id="MP" name="e_MP" type="number" min="1" class="c_in mt-2 "><br>
+                    <input  id="MP" name="e_MP" type="number" min="1" class="c_in "><br>
                     <label required  for="Status" class="c_label ">Status* :</label>
                     <select id="Status" name="e_status" type="text" onchange="updateStatusColor(this)" class="mt-2 ml-20 p-2 border-2 border-blue-600 rounded-2xl">
                         <option selected disabled hidden>Not Selected</option>
-                        <option value="Tentative" class="font-semibold text-org">Tentative</option>
+                        <option value="Tentative" class="font-semibold text-orange-200">Tentative</option>
                         <option value="Scheduled" class="font-semibold text-yellow-700">Scheduled</option>
                         <option value="Active" class="font-semibold text-green-700">Active</option>
                         <option value="Completed" class="font-semibold text-gray-600">Completed</option>
@@ -87,7 +82,7 @@
                 <div class=" flex w-150 flex-wrap justify-center ">
                      
                     <textarea id="Desc" name="e_desc" placeholder="Description" rows="4" name="e_desc" type="text" class="p-2 border-2 border-blue-600 rounded-2xl  mt-2 ml-2 h-20 w-150  resize-none"></textarea><br>
-                    <button type="submit" name="e_submit"  class="c_btn ml-150 mt-2 ">Submit</button>
+                    <button type="submit" name="e_submit"  class="c_btn pl-12 pr-12 mt-2 ">Submit</button>
                 </div>
                    
             </div>

@@ -14,29 +14,32 @@
   <div class="flex justify-center-safe  ">
    
   
-  <form id="form" action="register.php" method="POST" onsubmit=" if(validatepass(event) && checkpass(event)) { submitform(event, this); }">
-  <div class="mt-2 border-2 border-red-800 rounded-2xl pl-10  h-130 ">
+  <form id="form" action="register.php" method="POST" onsubmit=" submitform(event,this);">
+  <div class="mt-2 border-2 border-red-500 rounded-2xl pl-10  h-130 ">
     <label for="a_fname" class="font-bold ">Name :</label><br>
-    <input required id="a_fname" type="text" class="c_in" name="a_fname" placeholder="Enter First name">
-    <input required type="text" class="c_in" name="a_lname" placeholder="Enter Surname"><br>
+    <input required id="a_fname" oninput="validatename(this);" type="text" class="c_in" name="a_fname" placeholder="Enter First name">
+    <input required  type="text" oninput="validatename(this);" class="c_in" name="a_lname" placeholder="Enter Surname"><br>
+    <p id="errorname" class="text-red-700 text-xs mt-1 hidden"></p>
     <label for="a_email" class="font-bold ">Email :</label><br>
-    <input required id="a_email" autocomplete="email" class="c_in" type="email" name="a_email" placeholder="Enter Email"><br>
+    <input required id="a_email" oninput="validateEmail(this)" autocomplete="email" class="c_in" type="email" name="a_email" placeholder="Enter Email"><br>
+    <p id="erroremail" class="text-red-700 text-xs mt-1  hidden"></p>
     <label class="font-bold" for="a_mobile">Mobile No. :</label><br>
-    <input required id="a_mobile"  autocomplete="mobile" class="c_in" name="a_mobile" placeholder="Enter Mobile No.">
-    <p id="error" class="text-red-700 hidden"></p><br>
+    <input required id="a_mobile" oninput="validatemobile(this); "  autocomplete="tel" class="c_in" name="a_mobile" placeholder="Enter Mobile No.">
+    <p id="errormobile" class="text-red-700 text-xs mt-1 hidden"></p>
     <label  class="font-bold" for="newpass">Password :</label><br>
-    <input required autocomplete="new-password"  class="c_in" type="password" placeholder="Enter password" id="newpass"><br>
-    <p id="a_setpass" class="hidden text-red-700"  ></p>
+    <input required  oninput="validatepass(this)"  class="c_in" type="password" placeholder="Enter password" id="newpass">
+    <button id="passbtn"  class="text-xs py-2 px-1  bg-back  rounded-xl md:text-xs font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95   " type="button" onclick="toggleshow(this)">SHOW</button><br>
+    <p id="a_setpass" class=" text-red-700 text-xs mt-1 hidden"  ></p>
     <label for="cnfpass" class="font-bold">Confirm Password :</label><br>
-    <input required id="cnfpass" class="c_in" type="password" name="a_pass" placeholder="Enter password"><br>
-    <p id="errormsg" class="hidden text-red-500"></p>
+    <input required id="cnfpass" class="c_in" oninput="checkpass()" type="password" name="a_pass" placeholder="Enter password"><br>
+    <p id="errormsg" class="hidden text-red-500 text-xs mt-1"></p>
     
     <input class="checkbox" type="checkbox" name="a_po" id="role_po" value="Programme Officer">
     <label  class="font-bold" for="role_po">Programme Officer</label><br>
     <input  class="checkbox" type ="checkbox" name="a_cm" id="role_nt" value="NSS team">
     <label class="font-bold" for="role_nt">NSS team</label><br><br>
 
-    <button class="c_btn" type="submit" name="a_submit" onclick="return validatemobile(); " >Register</button>
+    <button class="c_btn" type="submit" name="a_submit"  >Register</button>
 
 
 

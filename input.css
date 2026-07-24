@@ -1,69 +1,208 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Copse&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Playwrite+GB+J:ital,wght@0,100..400;1,100..400&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nova+Round&display=swap');
 @import "tailwindcss";
 
 @theme{
-    /* font */
     --font-header: "Copse", serif;
-    --font-text : "Playfair Display", serif;
-    --font-nova : "Nova Round", system-ui;
+    --font-text: "Playfair Display", serif;
+    --font-nova: "Nova Round", system-ui;
 
-    /* color */
-      --color-navy:#000057;
-      --color-org:#EF2917;
-      --color-dorg:#B51102;
-      --color-lightperi :#C6C6E4;
-      --color-indigo :#4800AE;
-      --color-indigodark: #280160;
-      --color-lobster:#E44F5E;
+    --color-back: #dc2626;
+}
+/* 1. BASE STYLES                                                             */
+
+body {
+  background-color: #f4f6fa;
+  color: #121f3d;
+  
+  @apply antialiased selection:bg-red-500 selection:text-white;
 }
 
 
+/* 2. HEADER & NAVIGATION                                                     */
 
-.c_in{
-    @apply p-5 border-2 border-blue-600 rounded-2xl w-60 h-10 hover:border-red-800;
-}
-
-.c_btn{
-    @apply border rounded-2xl font-text font-bold p-2 bg-blue-400 hover:bg-blue-700 ml-15 w-30
-}
-
-.c_label{
-    @apply font-bold
+.top-header {
+  background-color: #0c1833;
+  color: #ffffff;
+  border-bottom: 2px solid #1a2e5c;
+  box-shadow: 0 4px 12px rgba(12, 24, 51, 0.15);
 }
 
-.c_dropdown{
-    @apply border-2 rounded-2xl w-35 pl-3 border-blue-900 hover:border-red-700 mt-1
+.side-nav {
+  background-color: #0c1833;
+  border-right: 1px solid #1a2e5c;
+  z-index: 40;
 }
 
-.nav-title{
-    @apply font-nova mt-5 p-2 border hover:border-l-3 hover:border-amber-600 
+.nav-title {
+  @apply my-1.5 px-4 py-3 rounded-xl flex items-center gap-3 transition-all duration-200 cursor-pointer font-medium text-sm md:text-base;
+  font-family: "Nova Round", system-ui;
+  color: #c5d2eb;
 }
 
-.dash-card{
-    @apply w-100 h-60 border-2 rounded-3xl  md:w-80 hover:shadow-2xl hover:shadow-lightperi 
+.nav-title:hover {
+  background-color: #1a2e5c;
+  color: #ffffff;
+  transform: translateX(4px);
 }
 
-.card-header{
-    @apply border-b  pl-3  text-2xl font-text font-bold rounded-t-3xl bg-lightperi p-2
+.active_side {
+  background-color: #1a2e5c;
+  color: #ffffff;
+  font-weight: 700;
+  border-left: 4px solid #dc2626;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.card-content{
-    @apply pl-2 pt-2
+
+/* 3. BUTTONS & FORM INPUTS                                                   */
+
+.c_btn {
+  @apply px-4 py-2 rounded-xl text-xs md:text-sm font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2;
+  background-color: #dc2626;
+  color: #ffffff;
 }
 
-.sec2-card{
-    @apply border-2 w-70 rounded-3xl p-3 font-text  hover:shadow-2xl hover:shadow-zinc-200  
-}
-.page{
-    @apply hidden
-}
-.active{
-    @apply block
+.c_btn:hover {
+  background-color: #b91c1c;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  transform: translateY(-1px);
 }
 
-.active_side{
-    @apply border-3 border-b-dorg 
+.c_btn_outline {
+  @apply px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer border active:scale-95;
+  border-color: #27427d;
+  background-color: #122144;
+  color: #ffffff;
 }
+
+.c_btn_outline:hover {
+  background-color: #27427d;
+  border-color: #3b82f6;
+}
+
+.c_btn_light {
+  @apply px-3 md:px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer active:scale-95 shadow-sm;
+  background-color: #ffffff;
+  color: #0c1833;
+}
+
+.c_btn_light:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.c_in {
+  @apply p-2.5 border rounded-xl w-full max-w-xs text-sm transition-all duration-200;
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #121f3d;
+}
+
+.c_in:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.c_label {
+  @apply text-sm font-bold tracking-wide;
+  color: #121f3d;
+}
+
+.c_dropdown {
+  @apply p-2 border rounded-xl text-sm transition-all duration-200 w-full max-w-xs;
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #121f3d;
+}
+
+
+/* 4. DASHBOARD LAYOUT & CARDS                                */
+
+.section-1, .section-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.dash-card {
+  @apply w-full border rounded-2xl shadow-sm transition-all duration-300 overflow-hidden bg-white;
+  border-color: #e2e8f0;
+}
+
+.dash-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(12, 24, 51, 0.12);
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+}
+
+.card-header {
+  @apply px-4 md:px-5 py-3 md:py-3.5 text-base md:text-lg font-bold flex justify-between items-center tracking-wide;
+  background-color: #0c1833;
+  color: #ffffff;
+  font-family: "Copse", serif;
+  border-bottom: 2px solid #dc2626;
+}
+
+.card-content {
+  @apply px-4 md:px-5 py-2.5 md:py-3 flex justify-between items-center text-xs md:text-sm border-b transition-colors duration-150;
+  border-color: #f1f5f9;
+  color: #121f3d;
+}
+
+.card-content:hover {
+  background-color: #f8fafc;
+}
+
+.sec2-card {
+  @apply border w-full rounded-2xl p-4 md:p-5 shadow-sm transition-all duration-300 bg-white;
+  border-color: #e2e8f0;
+  color: #121f3d;
+}
+
+.sec2-card:hover {
+  box-shadow: 0 10px 20px -5px rgba(12, 24, 51, 0.08);
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+}
+
+/* 5. PAGE VISIBILITY                                            */
+
+.page {
+  display: none;
+}
+
+.active {
+  display: flex;
+  flex-direction: column;
+}
+
+
+@media (min-width: 768px) {
+  .section-1 {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .dash-card {
+    max-width: 48%;
+  }
+
+  .section-2 {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .sec2-card {
+    width: 31%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dash-card {
+    max-width: 49%;
+  }
+}   

@@ -1,14 +1,17 @@
 <?php
-session_start();
-include '../config/connect.php';
 
-//college login
+session_start();
+
+include '../config/connect.php';
+header('Content-Type: application/json');
+// login
 if($_SERVER['REQUEST_METHOD']==='POST'){
     $name = $_POST['c_name'];
     $pass = $_POST['c_pass'];
-    $loginfor = $_POST['loginfor'];
+   
 
-    $Jresponse = ['success'=>false,'error'=>''];
+    $Jresponse = ['success'=>false,'error'=>'', 'location'=>''];
+    
     //$hashpass = password_hash($pass, PASSWORD_DEFAULT);
 
     // $sql = "INSERT INTO college (name , password) VALUES('$name', '$hashpass')";
@@ -18,76 +21,105 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     // else{
     //     echo "not recorded";
     // }
-    if($loginfor === 'College'){
-    $sql =$conn->prepare( "SELECT clg_id, password FROM college where name = ?");
-    $sql->bind_param("s",$name);
-    $sql->execute();
+  try{
+      $sql1 =$conn->prepare( "SELECT clg_id, password FROM college where name = ?");
+      $sql1->bind_param("s",$name);
+      $sql1->execute();
 
-    $result = $sql->get_result();
+      $result1 = $sql1->get_result();
 
-    if($row = $result->fetch_assoc()){
-         
+      if($row = $result1->fetch_assoc()){
+              
 
-         if ($pass === $row['password']) {
-            $Jresponse['success'] = true; 
-            $_SESSION['clg_id'] = $row['clg_id'];
-             $Jresponse['success'] = true;
-             $Jrespone['location'] = 'adminregister.html';
-            
-        } else {
-             
-            $Jresponse['error'] = 'Password is wrong';
-        }
-
-    
-    }
-    else{
-        $Jresponse['error']= "Username not found";
-    }
-  $sql->close();  
-
-}
-//TO admin
-  if($loginfor == 'Admin'){
-    $sql =$conn->prepare( "SELECT admin_id,username,first_name,last_name, role ,password FROM admin WHERE username = ?");
-     $sql->bind_param("s",$name);
-     $sql->execute();
-
-     $result = $sql->get_result();
-
-     if($row = $result->fetch_assoc()){
-          $dbpass = $row['password'];
-
-          if (password_verify($pass, $dbpass)) {
-            $_SESSION['admin_id'] = $row['admin_id'];
-            $_SESSION['name'] = $row['first_name'];
-            $_SESSION['lname']= $row['last_name'];
-            $_SESSION['role'] = $row['role'];
-            $_SESSION['a_username'] = $row['username'];
-            $Jresponse['success'] = true; 
-            $Jresponse['Location'] = '../Dashboard/dashboardadmin.html';
+          if($pass === $row['password']) {
+              $Jresponse['success'] = true; 
+              $_SESSION['clg_id'] = $row['clg_id'];
+              $Jresponse['location'] = 'adminregister.html';
+                  
+          } 
+          else{
+              $Jresponse['error'] = 'Password is wrong';
+          }
+            $sql1->close();
           
-         } else {
-           
-            
-            $Jresponse['success'] = false;
-            $Jresponse['error'] = 'Password is wrong';
-           
-         }
+      }
+      else{
+          $sql1->close();
 
-    
-     }
-     else{
-         
-        
-        $Jresponse['error']= "Username not found";
-            
-     }
+            //check admin
+          $sql2 =$conn->prepare( "SELECT admin_id,username,first_name,last_name, role ,password FROM admin WHERE username = ?");
+          $sql2->bind_param("s",$name);
+          $sql2->execute();
 
-   $sql->close();  
+          $result2 = $sql2->get_result();
 
- }
-    echo json_encode($Jresponse);
+          //admin
+          if($row = $result2->fetch_assoc()){
+                $dbpass = $row['password'];
+
+                if (password_verify($pass, $dbpass)) {
+                  $_SESSION['admin_id'] = $row['admin_id'];
+                  $_SESSION['name'] = $row['first_name'];
+                  $_SESSION['lname']= $row['last_name'];
+                  $_SESSION['role'] = $row['role'];
+                  $_SESSION['a_username'] = $row['username'];
+
+                  $Jresponse['success'] = true; 
+                  $Jresponse['location'] = '../Dashboard/dashboardadmin.html';
+                
+              } else {
+                  $Jresponse['error'] = 'Password is wrong';
+                
+              }
+              $sql2->close();
+          }
+          else{ 
+              $sql2->close();
+
+              //check student
+              $sql3 =$conn->prepare( "SELECT std_id,username,first_name,surname, role ,password FROM student WHERE username = ?");
+              $sql3->bind_param("s",$name);
+              $sql3->execute();
+              $result3 = $sql3->get_result();
+
+              if($row = $result3->fetch_assoc()){
+                $dbpass = $row['password'];
+
+                if (password_verify($pass, $dbpass)) {
+                  $_SESSION['std_id'] = $row['std_id'];
+                  $_SESSION['name'] = $row['first_name'];
+                  $_SESSION['lname']= $row['surname'];
+                  $_SESSION['role'] = $row['role'];
+                  $_SESSION['s_username'] = $row['username'];
+                  $Jresponse['success'] = true; 
+
+                  if($_SESSION['role'] === 'Volunteer'){
+                  $Jresponse['location'] = '../Dashboard/dashboardstudent.html';
+                  }else if($_SESSION['role'] === 'Leader'){
+                    $Jresponse['location'] = '../Dashboard/dashboardleader.html';
+                  }
+                
+                } 
+                else{ 
+                  $Jresponse['error'] = 'Password is wrong';
+                
+                }
+                $sql3->close();
+              }
+              else{
+                  $sql3->close();
+                  $Jresponse['error'] = 'Username does not exist';
+              }
+            }
+        }
+  
+  }
+  catch(Exception $e){
+    $Jresponse['error']= 'Error'. $e->getMessage();
+  }
+echo json_encode($Jresponse);
     $conn->close();
     exit();
-}
+} 
+    
+

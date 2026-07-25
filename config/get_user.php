@@ -16,6 +16,7 @@ if (isset($_SESSION['admin_id'])) {
         'ausername' => $_SESSION['a_username']
     ]);
 } else {
+    http_response_code(401);
     echo json_encode([
         'success' => false,
         'name'    => 'Guest',

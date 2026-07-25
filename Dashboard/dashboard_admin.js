@@ -15,7 +15,7 @@ if (addEventButton) {
             const sessionData = await response.json();
 
             
-            if (sessionData.success && (sessionData.role === 'programme officer' ||sessionData.role === "NSS commitee" || sessionData.role === 'leader')) {
+            if (sessionData.success && (sessionData.role === 'programme officer' ||sessionData.role === "nss team" || sessionData.role === 'leader')) {
                 console.log("Access Granted. Proceeding to add event...");
                 window.location.href = '../Event/registerevent.html';
               

@@ -14,11 +14,11 @@
   <div class="flex justify-center-safe  ">
    
   
-  <form id="form" action="register.php" method="POST" onsubmit=" submitform(event,this);">
+  <form id="admin_form" action="register.php" method="POST" onsubmit=" submitform(event,this);">
   <div class="mt-2 border-2 border-red-500 rounded-2xl pl-10  h-130 ">
     <label for="a_fname" class="font-bold ">Name :</label><br>
     <input required id="a_fname" oninput="validatename(this);" type="text" class="c_in" name="a_fname" placeholder="Enter First name">
-    <input required  type="text" oninput="validatename(this);" class="c_in" name="a_lname" placeholder="Enter Surname"><br>
+    <input required id="a_lname"  type="text" oninput="validatename(this);" class="c_in" name="a_lname" placeholder="Enter Surname"><br>
     <p id="errorname" class="text-red-700 text-xs mt-1 hidden"></p>
     <label for="a_email" class="font-bold ">Email :</label><br>
     <input required id="a_email" oninput="validateEmail(this)" autocomplete="email" class="c_in" type="email" name="a_email" placeholder="Enter Email"><br>
@@ -31,12 +31,12 @@
     <button id="passbtn"  class="text-xs py-2 px-1  bg-back  rounded-xl md:text-xs font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95   " type="button" onclick="toggleshow(this)">SHOW</button><br>
     <p id="a_setpass" class=" text-red-700 text-xs mt-1 hidden"  ></p>
     <label for="cnfpass" class="font-bold">Confirm Password :</label><br>
-    <input required id="cnfpass" class="c_in" oninput="checkpass()" type="password" name="a_pass" placeholder="Enter password"><br>
+    <input required id="cnfpass" class="c_in" oninput="checkpass(this)" type="password" name="a_pass" placeholder="Enter password"><br>
     <p id="errormsg" class="hidden text-red-500 text-xs mt-1"></p>
     
-    <input class="checkbox" type="checkbox" name="a_po" id="role_po" value="Programme Officer">
+    <input  type="radio" name="role" id="role_po" value="Programme Officer " required>
     <label  class="font-bold" for="role_po">Programme Officer</label><br>
-    <input  class="checkbox" type ="checkbox" name="a_cm" id="role_nt" value="NSS team">
+    <input   type ="radio" name="role" id="role_nt" value="NSS team" required>
     <label class="font-bold" for="role_nt">NSS team</label><br><br>
 
     <button class="c_btn" type="submit" name="a_submit"  >Register</button>

@@ -31,14 +31,14 @@
  
     <main class="max-w-4xl mx-auto ">
         
-        <form method="POST" action="./registerevent.php">
+        <form method="POST" action="./registerevent.php" onsubmit="submitEventData(event , this)">
            
             <div class="border-2 flex gap-3  w-200 flex-wrap rounded-3xl border-navy">
                 <div class="flex-col  pl-4">
                     <label for="Name" class="c_label ">Event Name* :</label>
                     <input required id="Name" name="e_name" type="text" class="c_in "><br>
                     <label for="Date" class="c_label ">Date* :</label>
-                    <input required id="Date" name="e_date" type="date" class="c_in "><br>
+                    <input required id="Date"  name="e_date" type="date" class="c_in "><br>
                     <label for="Time" class="c_label ">Time* :</label>
                     <input required id="Time" name="e_time" type="time" class="c_in "><br>
                     <label for="Venue" class="c_label ">Venue* : </label>
@@ -46,7 +46,7 @@
                     <label for="Org" class="c_label ">Organiser* : </label>
                     <input required id="Org" name="e_org" type="text" class="c_in "><br>
                     <label for="Coll" class="c_label ">Collaboration :</label>
-                    <input id="Coll" name="e_collab" type="text" class="c_in  "><br>
+                    <input required id="Coll" name="e_collab" type="text" class="c_in  "><br>
                     
                 </div>
                 
@@ -63,9 +63,9 @@
                     <label for="Ah" class="c_label ">Approx Hour* :</label>
                     <input required name="e_AH" id="Ah" type="number" min="1"  class="c_in "><br>
                     <label  for="MP" class="c_label ">Max Participation :</label>
-                    <input  id="MP" name="e_MP" type="number" min="1" class="c_in "><br>
-                    <label required  for="Status" class="c_label ">Status* :</label>
-                    <select id="Status" name="e_status" type="text" onchange="updateStatusColor(this)" class="mt-2 ml-20 p-2 border-2 border-blue-600 rounded-2xl">
+                    <input required id="MP" name="e_MP" type="number" min="1" class="c_in "><br>
+                    <label  for="Status" class="c_label ">Status* :</label>
+                    <select required id="Status" name="e_status" type="text" onchange="updateStatusColor(this)" class="mt-2 ml-20 p-2 border-2 border-blue-600 rounded-2xl">
                         <option selected disabled hidden>Not Selected</option>
                         <option value="Tentative" class="font-semibold text-orange-200">Tentative</option>
                         <option value="Scheduled" class="font-semibold text-yellow-700">Scheduled</option>
@@ -75,14 +75,14 @@
                     </select><br>
 
                     <label for="RT" class="c_label ">Reporting Time:</label>
-                    <input id="RT" name="e_rtime" type="time" class="c_in mt-2"><br>
+                    <input required id="RT" name="e_rtime" type="time" class="c_in mt-2"><br>
                     <label for="RV"  class="c_label ">Reporting Venue:</label>
-                    <input id="RV" name="e_rvenue" type="text" class="c_in mt-2">
+                    <input required id="RV" name="e_rvenue" type="text" class="c_in mt-2">
                 </div>
                 <div class=" flex w-150 flex-wrap justify-center ">
                      
                     <textarea id="Desc" name="e_desc" placeholder="Description" rows="4" name="e_desc" type="text" class="p-2 border-2 border-blue-600 rounded-2xl  mt-2 ml-2 h-20 w-150  resize-none"></textarea><br>
-                    <button type="submit" name="e_submit"  class="c_btn pl-12 pr-12 mt-2 ">Submit</button>
+                    <button type="submit" name="e_submit"   class="c_btn pl-12 pr-12 mt-2 ">Submit</button>
                 </div>
                    
             </div>

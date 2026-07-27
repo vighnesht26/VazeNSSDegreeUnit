@@ -19,16 +19,30 @@ function updateStatusColor(selectElement) {
   }
 }
 
-async function submitEventData(form){
-  try{
-    const response = await fetch('./registerevent.php',{method : 'POST', body :form});
+const today = new Date();
+
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const dd = String(today.getDate()).padStart(2, '0');
+const fdate = `${yyyy}-${mm}-${dd}`;
+document.getElementById('Date').min = fdate;
+
+
+//Submit
+async function submitEventData(event , form){
+  
+  try{event.preventDefault();
+    const formdata = new FormData(form);
+    const response = await fetch('registerevent.php',{method : 'POST', body :formdata});
     const result = await response.json();
 
-    if(result.success === true){
-      alert("✔️ Event Regisaterd Successfully");
+    if(result.success){
+      alert("✔️ Event Registered Successfully");
+      window.location.href = result.location;
     }
-    else if(result.success === false){
-      alert("❌ Error");
+    else{
+      alert("❌ Error" + result.error);
+
     }
   }
   catch(error){

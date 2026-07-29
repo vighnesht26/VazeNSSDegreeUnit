@@ -155,7 +155,7 @@
 
                     <div>
                     <label for="s_roll" class="c_label ">Enter Roll No. :</label>
-                    <input required class="c_in mt-2" oninput="checkRoll(this)" type="text" pattern="\d{3}" id="s_roll" name="s_roll" placeholder="eg., 001"> <br><br>
+                    <input required class="c_in mt-2" onblur="checkRoll(this)" type="text" pattern="\d{3}" id="s_roll" name="s_roll" placeholder="eg., 001"> <br><br>
                     <p id="s_errorRoll" class="text-red-700 text-xs mt-1  hidden"></p>
                     </div>
 

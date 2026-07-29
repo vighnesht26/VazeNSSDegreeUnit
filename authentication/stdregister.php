@@ -53,7 +53,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 try{
     $stmt = $conn->prepare("INSERT INTO student(username, first_name, father_name, mother_name, surname, email, gender, mobile,blood_grp, caste, dob, password, role ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    $stmt->bind_param("ssssssssssss", $username, $name,$fname,$mname,$sname, $email,$gender, $mobile,$bloodgrp,$caste,$dob, $hashpass, $role);
+    $stmt->bind_param("sssssssssssss", $username, $name,$fname,$mname,$sname, $email,$gender, $mobile,$bloodgrp,$caste,$DOB, $hashedpass, $role);
     if($stmt->execute()){
         $std_id = $conn->insert_id;
         $stmt2 = $conn->prepare("INSERT INTO   academic_details(std_id, academic_year,nss_year,class,program,division,roll_no) VALUES(?,?,?,?,?,?,?)");
@@ -85,10 +85,13 @@ catch(Exception $e){
         http_response_code(500);
         $msg['error'] = "A server error occurred. Please try again later.";
     }
+
     
 }
      
-
+echo json_encode($msg);
+conn->close();
+exit();
 
 }
 

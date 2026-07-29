@@ -1,12 +1,5 @@
 
-document.addEventListener("DOMContentLoaded", ()=>{
-   
 
-
-
-
-
-});
 
 function validatepass(inputpass){
     if(inputpass.id === 'newpass'){
@@ -150,6 +143,7 @@ function validnext(pageid){
          const issname = validatename(sname);
         const isEmailValid  = validateEmail(email);
         const isDOB = validateDate(dob);
+         const isValidmob = validatemobile(mobile);
 
         const isGender = validatedropdown(gender);
         const isbld = validatedropdown(bldgrp);
@@ -158,7 +152,7 @@ function validnext(pageid){
 
         const isStep1Valid = isname && isfname && ismname && 
                          issname && isEmailValid && isDOB && 
-                         isGender  && isbld && isCaste && isnssyr;
+                         isGender  && isbld && isCaste && isnssyr && isValidmob;
         
         if(isStep1Valid){
             nextpage('form2');
@@ -174,7 +168,7 @@ function checkRoll(inputRoll){
      const errRoll = document.getElementById('s_errorRoll');
 
      const rollValue = typeof inputRoll === 'string' ? inputRoll.trim() : inputRoll.value.trim();
-    rollreg = /^[0-9]{3}$/
+    rollreg = /^[0-9]{3}$/;
     if(!rollreg.test(rollValue)){
         inputRoll.value = "";
         errRoll.classList.remove('hidden');
@@ -194,7 +188,7 @@ async function submitstudentform(event, form){
     try{
     
     const roll = document.getElementById('s_roll');
-    const division = document.getElementById('s_division'); 
+    const division = document.getElementById('s_div'); 
     const sclass = document.getElementById('s_class');
     const program = document.getElementById('s_program');
     const snewpasswd = document.getElementById('s_newpass');
@@ -202,6 +196,7 @@ async function submitstudentform(event, form){
 
     const isValidroll = checkRoll(roll);
     const isValiddiv = validatedropdown(division);
+    
     const isValidClass = validatedropdown(sclass);
     const isValidprogram = validatedropdown(program);
     const isValidpass = validatepass(snewpasswd);
@@ -233,8 +228,8 @@ async function submitstudentform(event, form){
         return false;
     }
 }catch(error){
-    alert('Error while Registration'+error);
-        window.location.href= 'studentregister.html'
+    alert('Error while Registration '+ error);
+        //window.location.href= 'studentregister.html'
 }
 }
 
@@ -434,7 +429,10 @@ function validateDate(inputDate){
     const errormsg = document.getElementById('s_errordate');
     const selectedDate = new Date(inputDate.value);
     const minDate = new Date('2000-01-01');
+    
 
+    const dateofbirth =  document.getElementById('s_DOB');
+    dateofbirth.min = '2000-01-01';
     
     if (!inputDate.value) {
             errormsg.classList.add('hidden');

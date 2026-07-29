@@ -10,15 +10,35 @@ if (!isset($_SESSION['clg_id'])) {
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    $fname = $_POST['a_fname'];
-    $lname = $_POST['a_lname'];
-    $email = $_POST['a_email'];
-    $mobile = $_POST['a_mobile'];
-    $pass= $_POST['a_pass'];
+    $fname = trim($_POST['a_fname'] ?? '');
+    $lname = trim($_POST['a_lname'] ?? '');
+    $email = trim($_POST['a_email'] ?? '');
+    $mobile = trim($_POST['a_mobile'] ?? '');
+    $pass= trim($_POST['a_pass'] ?? '');
     
     $clg = $_SESSION['clg_id'];
     $role= $_POST['role'];
     $username = generateUsername($fname);
+
+    $msg = ['success'=>false, 'message'=>'', 'error'=>' ' ];
+//Validations
+     if (empty($fname)) {
+        $msg['error'] = "Name is required.";
+    } elseif (!preg_match("/^[A-Za-z]+$/", $fname)) {
+         $msg['error'] = "Name should not contain any digit or special character";
+    }
+
+     if (empty($lname)) {
+         $msg['error'] = "Last name is required.";
+    } elseif (!preg_match("/^[A-Za-z]+$/", $inputs['username'])) {
+         $msg['error'] = "Last Name should not contain any digit or special character";
+    }
+
+    if (empty($email)) {
+        $msg['error'] = "Email address is required.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $msg['error'] = "Please enter a valid email format.";
+    }
 
 
     $sql = $conn->prepare("SELECT 1 FROM admin WHERE username = ?");
@@ -40,7 +60,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             
         
         
-    $msg = ['success'=>false, 'message'=>'', 'error'=>' ' ];
+    
     
    
     $hashpass = password_hash($pass , PASSWORD_DEFAULT);

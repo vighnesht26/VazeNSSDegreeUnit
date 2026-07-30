@@ -1,6 +1,5 @@
 
 
-
 function validatepass(inputpass){
     if(inputpass.id === 'newpass'){
     var show_set = document.getElementById("a_setpass");
@@ -164,22 +163,41 @@ function validnext(pageid){
 
 
 }
-function checkRoll(inputRoll){
+function checkRoll(){
+     const rollno = document.getElementById("s_roll");
      const errRoll = document.getElementById('s_errorRoll');
 
-     const rollValue = typeof inputRoll === 'string' ? inputRoll.trim() : inputRoll.value.trim();
-    rollreg = /^[0-9]{3}$/;
-    if(!rollreg.test(rollValue)){
-        inputRoll.value = "";
-        errRoll.classList.remove('hidden');
-        errRoll.textContent = "Please Enter 3 digits, e.g. 001"
-        return false;
+   const range = /^[0-2]\d{2}$/;
 
-    }
-    else{
+    rollno.value = rollno.value.replace(/\D/g, '');
+
+    const val = rollno.value;
+
+    if(val.length === 0){
         errRoll.classList.add('hidden');
-        errRoll.textContent = ""
+        errRoll.textContent="";
         return true;
+    }
+    if(!/^[0-2]/.test(val)){
+        errRoll.classList.remove('hidden');
+        errRoll.textContent="Please Enter valid roll number";
+        return false;
+    }
+    if (val.length < 3) {
+        errRoll.classList.remove('hidden');
+        errRoll.textContent = "Please enter roll number in 3 digits";
+        return false;
+    }
+    if(range.test(val)){
+        errRoll.classList.add('hidden');
+      errRoll.textContent="";
+        
+        return true;
+
+    }else{ 
+        errRoll.classList.remove('hidden');
+        errRoll.textContent="Please Enter 3 digit roll number!";
+        return false;
     }
     
 }
@@ -194,7 +212,7 @@ async function submitstudentform(event, form){
     const snewpasswd = document.getElementById('s_newpass');
     const cnfpasswd = document.getElementById('s_cnfpass');
 
-    const isValidroll = checkRoll(roll);
+    const isValidroll = checkRoll();
     const isValiddiv = validatedropdown(division);
     
     const isValidClass = validatedropdown(sclass);
@@ -217,7 +235,7 @@ async function submitstudentform(event, form){
                     alert(message.message);
                     window.location.href = './login.html';
                 }
-                else if(message.success === false){
+                else if(!message.success){
                     alert('❌Error'+ message.error);
                 }
 
@@ -429,10 +447,11 @@ function validateDate(inputDate){
     const errormsg = document.getElementById('s_errordate');
     const selectedDate = new Date(inputDate.value);
     const minDate = new Date('2000-01-01');
-    
+    const maxDate = new Date('2020-01-01');
 
     const dateofbirth =  document.getElementById('s_DOB');
     dateofbirth.min = '2000-01-01';
+    dateofbirth.max = '2020-01-01';
     
     if (!inputDate.value) {
             errormsg.classList.add('hidden');
@@ -445,6 +464,13 @@ function validateDate(inputDate){
     if (selectedDate < minDate) {
        
             errormsg.textContent = 'Date cannot be earlier than January 1, 2000.';
+            errormsg.classList.remove('hidden');
+            inputDate.value = '';
+            return false;
+    }
+     if (selectedDate > maxDate) {
+       
+            errormsg.textContent = 'Date cannot be greater than January 1, 2020.';
             errormsg.classList.remove('hidden');
             inputDate.value = '';
             return false;
@@ -485,7 +511,7 @@ async function checklogin(event, form) {
     }
 }
 
-    
+
     
        
     

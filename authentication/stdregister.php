@@ -24,48 +24,51 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $roll = $_POST['s_roll'];
     $passwd = $_POST['s_pass'];
 
-    $username = generateUsername($name);
+    
 
     
+    
+            
+        
+        
+    $msg = ['success'=> false, 'message'=>'', 'error'=>' ' ];
+    
+   
+    $hashedpass = password_hash($passwd , PASSWORD_DEFAULT);
+
+try{$username = generateUsername($name);
     $sql = $conn->prepare("SELECT 1 FROM student WHERE username = ?");
-
-
     while (true) {
         $sql->bind_param("s", $username);
         $sql->execute();
         $res = $sql->get_result();
 
-        
-        if ($res->num_rows === 0) {
+         if ($res->num_rows === 0) {
             break; 
         }
 
         
-        $username = generateUsername($fname); 
+        $username = generateUsername($name); 
     }
-            
-        
-        
-    $msg = ['success'=>false, 'message'=>'', 'error'=>' ' ];
-    
-   
-    $hashedpass = password_hash($passwd , PASSWORD_DEFAULT);
+    $sql->close();
 
-try{
     $stmt = $conn->prepare("INSERT INTO student(username, first_name, father_name, mother_name, surname, email, gender, mobile,blood_grp, caste, dob, password, role ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
     $stmt->bind_param("sssssssssssss", $username, $name,$fname,$mname,$sname, $email,$gender, $mobile,$bloodgrp,$caste,$DOB, $hashedpass, $role);
-    if($stmt->execute()){
+    $stmt->execute();
+
         $std_id = $conn->insert_id;
-        $stmt2 = $conn->prepare("INSERT INTO   academic_details(std_id, academic_year,nss_year,class,program,division,roll_no) VALUES(?,?,?,?,?,?,?)");
+        $stmt2 = $conn->prepare("INSERT INTO   academic_details(student_id, academic_year,nss_year,class,program,division,roll_no) VALUES(?,?,?,?,?,?,?)");
         $stmt2->bind_param("issssss", $std_id, $academic_yr, $NSSyr, $class, $program, $division,$roll);
         if($stmt2->execute()){
         http_response_code(200);
         $msg['success'] = true;   
         $msg['message'] = "Registered Successfully Your Username is {$username}";
         }
+        $stmt->close();
+        $stmt2->close();
     }
-   $stmt->close();
-}
+   
+
 catch(Exception $e){
     if($e->getCode() === 1062){
         http_response_code(409);
@@ -74,8 +77,8 @@ catch(Exception $e){
         if(str_contains($error,'mobile')){
             $msg['error']= "Mobile Number already exists!";
         }
-        if(str_contains($error,'email')){
-            $msg['error']= "Mobile Number already exists!";
+        else if(str_contains($error,'email')){
+            $msg['error']= "email already exists!";
         }
         else{
             $msg['error'] = "Different Error". $e->getMessage();
@@ -90,7 +93,7 @@ catch(Exception $e){
 }
      
 echo json_encode($msg);
-conn->close();
+$conn->close();
 exit();
 
 }
@@ -125,7 +128,7 @@ function getAcademicYear(): string {
     if ($currentMonth < 6) {
         $startYear = $currentYear - 1;
         $endYear   = substr((string)$currentYear, -2); 
-      
+    }else{
         $startYear = $currentYear;
         $endYear   = substr((string)($currentYear + 1), -2); 
     }

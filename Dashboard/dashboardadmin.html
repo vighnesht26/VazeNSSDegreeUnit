@@ -12,7 +12,7 @@
 </head>
 <body class="flex flex-col h-screen">
   <!-- NSS Heading -->
-   <header class="top-header sticky top-0 z-50 flex items-center justify-between w-full h-24 px-6 text-white">
+   <header class="top-header sticky top-0  flex items-center justify-between w-full h-24 px-6 text-white">
   
   <!-- Main Heading-->
   <div class="flex items-center gap-3">
@@ -52,7 +52,7 @@
       </button>
 
       <!-- Logout-->
-      <button class="c_btn_light">
+      <button id="logoutBtn" onclick="logout()"  type="button" class="c_btn_light">
         Logout
       </button>
     </div>
@@ -174,7 +174,7 @@
 
      <!-- Upcoming Event -->
        <div id="u_event" class="Content flex-col border-2 w-screen h-screen page p-6">
-        <h2 class="font-header text-2xl font-bold text-slate-800">Upcoming events</h2>
+        
      </div>
 
      <!-- Report -->

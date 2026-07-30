@@ -20,8 +20,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $collab = $_POST['e_collab'];
 
     $type = $_POST['e_type'];
-    $appHrs = $_POST['e_AH'];
-    $maxPart = $_POST['e_MP'];
+    $appHrs = (int)$_POST['e_AH'];
+    $maxPart = (int)$_POST['e_MP'];
     $status = $_POST['e_status'];
     $rtime = $_POST['e_rtime'];
     $rvenue = $_POST['e_rvenue'];
@@ -29,17 +29,26 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
       $response=['success'=>false, 'error'=>'', 'msg'=>'', 'location'=>''];
 
     try{
-        if($_SESSION['admin_id']){
+        $sql =$conn-> prepare("SELECT event_id FROM event where name = ? AND date = ? ");
+        $sql->bind_param("ss", $name, $date);
+        $sql->execute();
+        $res = $sql->get_result();
+        if($res->num_rows > 0){
+            $response['error'] = "EVENT Already Exists";
+        }
+        else{
+
+        if(isset($_SESSION['admin_id'])){
             $admin_id = $_SESSION['admin_id'];
             $sql =$conn->prepare( "INSERT INTO event(name, date, time, venue, organised_by, collaboration, event_type,approx_hrs, max_participation, status, reporting_time, reporting_venue, description, created_by_admin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $sql->bind_param("sssssssiissssi",$name,$date, $time, $venue, $organiser,$collab, $type , $appHrs, $maxPart,$status, $rtime, $rvenue, $desc, $admin_id);
             $response['location'] = './Dashboard/dashboardadmin.html';
         }
-        elseif($_SESSION['std_id']){
+        elseif(isset($_SESSION['std_id'])){
             $leader_id = $_SESSION['std_id'];
             $sql =$conn->prepare( "INSERT INTO event(name, date, time, venue, organised_by, collaboration, event_type,approx_hrs, max_participation, status, reporting_time, reporting_venue, description, created_by_leader) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $sql->bind_param("sssssssiissssi",$name,$date, $time, $venue, $organiser,$collab, $type , $appHrs, $maxPart,$status, $rtime, $rvenue, $desc,$leader_id);
-            $response['location'] = './Dashboard/dashboardleader.html';
+            $response['location'] = '../Dashboard/dashboardleader.html';
         }
 
         if($sql->execute()){
@@ -48,6 +57,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $response['msg'] = 'Event Registered Successfully';
         }
         $sql->close();
+        }
     }catch(Exception $e){
         http_response_code(500);
         $response['error'] = "Internal Error". $e->getMessage();

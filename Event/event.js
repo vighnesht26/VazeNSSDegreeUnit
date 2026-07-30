@@ -27,6 +27,28 @@ const dd = String(today.getDate()).padStart(2, '0');
 const fdate = `${yyyy}-${mm}-${dd}`;
 document.getElementById('Date').min = fdate;
 
+function timevalidate(){
+  const etime = document.getElementById("e_time");
+  const err = document.getElementById("errortime");
+  
+  
+  const val = etime.value;
+  
+  if (!val) {
+    err.classList.add("hidden");
+    err.textContent = "";
+    return;
+  }
+  
+  if (val < "05:00" || val > "19:00") {
+    err.classList.remove("hidden");
+    err.textContent = "Please select a time between 05:00 AM and 07:00 PM.";
+    etime.value = "07:00"
+  } else {
+    err.classList.add("hidden");
+    err.textContent = ""; 
+  }
+}
 
 //Submit
 async function submitEventData(event , form){
@@ -46,7 +68,7 @@ async function submitEventData(event , form){
     }
   }
   catch(error){
-    console.log('Network Error');
+    console.log('Network Error',error);
   }
 
   

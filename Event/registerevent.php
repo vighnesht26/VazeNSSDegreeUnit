@@ -42,7 +42,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $admin_id = $_SESSION['admin_id'];
             $sql =$conn->prepare( "INSERT INTO event(name, date, time, venue, organised_by, collaboration, event_type,approx_hrs, max_participation, status, reporting_time, reporting_venue, description, created_by_admin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             $sql->bind_param("sssssssiissssi",$name,$date, $time, $venue, $organiser,$collab, $type , $appHrs, $maxPart,$status, $rtime, $rvenue, $desc, $admin_id);
-            $response['location'] = './Dashboard/dashboardadmin.html';
+            $response['location'] = '../Dashboard/dashboardadmin.html';
         }
         elseif(isset($_SESSION['std_id'])){
             $leader_id = $_SESSION['std_id'];

@@ -2,6 +2,7 @@
 header('Content-Type: application/json'); 
 session_start();
 include '../config/connect.php';
+require_once '../config/function.php';
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $name = $_POST['y_name'];
@@ -120,19 +121,5 @@ function generateUsername(string $name): string{
     return $username;
 }
 
-function getAcademicYear(): string {
-    $currentMonth = (int)date('m'); 
-    $currentYear  = (int)date('Y'); 
 
-   
-    if ($currentMonth < 6) {
-        $startYear = $currentYear - 1;
-        $endYear   = substr((string)$currentYear, -2); 
-    }else{
-        $startYear = $currentYear;
-        $endYear   = substr((string)($currentYear + 1), -2); 
-    }
-
-    return "{$startYear}-{$endYear}";
-}
 ?>

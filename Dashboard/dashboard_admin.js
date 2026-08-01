@@ -57,6 +57,9 @@ function switchpage(pageid){
         if(pageid == 'u_event'){
             loadUpcomingEvents();
         }
+        if(pageid == 'volunteers'){
+            loadVolunteers();
+        }
 
         
 }
@@ -193,7 +196,7 @@ async function loadUpcomingEvents() {
             Upcoming & Active Events :- <span class="text-red-600">${events.length}</span>
           </h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto  p-1">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-y-auto  p-1">
       `;
 
       events.forEach(ev => {
@@ -205,7 +208,12 @@ async function loadUpcomingEvents() {
             <p class="text-sm font-semibold text-slate-700">Venue: <span class="font-bold text-blue-950">${ev.venue}</span></p>
             <p class="text-sm font-semibold text-slate-700">Status:<span class="font-bold text-amber-700 uppercase text-xs px-2.5 py-1 bg-amber-100 rounded-full">${ev.status}</span>
             </p>
-            <button class="c_btn">Update</button>
+            <button onclick="openEditModal(this)" data-id="${ev.event_id}"
+              data-name="${ev.name}"
+              data-date="${ev.date}"
+              data-type="${ev.event_type}"
+              data-venue="${ev.venue}"
+              data-status="${ev.status}" class="c_btn">Update</button>
           </div>`;
       });
 
@@ -220,7 +228,78 @@ async function loadUpcomingEvents() {
   }
 }
 
+//Volunteers list
+async function loadVolunteers() {
+  const container = document.getElementById("volunteers"); 
 
+  try {
+    const response = await fetch("../config/get_volunteer.php");
+    const result = await response.json();
+
+    if (result.success) {
+      const volunteers = result.data || [];
+
+      if (volunteers.length === 0) {
+        container.innerHTML = `
+          <div class="border-b-2 border-slate-200 pb-3 mb-4">
+            <h2 class="font-header text-2xl font-bold text-slate-800">
+              Volunteers List
+            </h2>
+          </div>
+        `;
+        return;
+      }
+
+      let cardsHTML = `
+        <div class="border-b-2 border-slate-200 pb-3 mb-4 flex justify-between items-center">
+          <h2 class="font-header text-2xl font-bold text-slate-800">
+            Volunteers List :- <span class="text-red-600">${volunteers.length}</span>
+          </h2>
+          <button onclick="promoteSelectedLeaders()" class="bg-blue-950 hover:bg-blue-900 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
+            Promote Selected as Leader
+          </button>
+        </div>
+        <div class="space-y-3 overflow-y-auto p-1">
+      `;
+
+      volunteers.forEach(item => {
+        cardsHTML += `
+          <div class="volunteer-card border border-slate-200 rounded-2xl p-4 bg-white shadow-sm space-y-3">
+            
+            
+            <div class="flex items-center gap-6 border-b border-slate-100 pb-2">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  value="${item.std_id}" 
+                  class="volunteer-checkbox w-4 h-4 text-blue-950 rounded border-slate-300 focus:ring-blue-500 cursor-pointer" 
+                />
+                <span class="text-sm font-semibold text-slate-700">Name: <span class="font-bold text-blue-950">${item.first_name || ''}</span></span>
+              </label>
+              <p class="text-sm font-semibold text-slate-700">Mobile: <span class="font-bold text-blue-950">${item.mobile || ''}</span></p>
+            </div>
+
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-semibold text-slate-700">
+              <p>Class: <span class="font-bold text-blue-950">${item.class || ''}</span></p>
+              <p>Program: <span class="font-bold text-blue-950">${item.program || ''}</span></p>
+              <p>Roll no.: <span class="font-bold text-blue-950">${item.division}${item.roll_no || ''}</span></p>
+              <p>Total hrs: <span class="font-bold text-blue-950">${item.total_hrs || 0}</span></p>
+            </div>
+
+          </div>`;
+      });
+
+      cardsHTML += `</div>`;
+      container.innerHTML = cardsHTML;
+
+    } else {
+      console.error("Error loading volunteers:", result.error);
+    }
+  } catch (error) {
+    console.error("Network error fetching volunteers:", error);
+  }
+}
 
 async function logout(){
     try {
@@ -235,4 +314,66 @@ async function logout(){
   }
 
 }
-    
+
+//datevalidate
+const today = new Date();
+
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0');
+const dd = String(today.getDate()).padStart(2, '0');
+const fdate = `${yyyy}-${mm}-${dd}`;
+document.getElementById('edit_date').min = fdate;
+ 
+//Modal opens
+function openEditModal(button) {
+  const data = button.dataset;
+
+  document.getElementById("edit_id").value = data.id;
+  document.getElementById("edit_name").value = data.name;
+  document.getElementById("edit_date").value = data.date;
+  document.getElementById("edit_type").value = data.type;
+  document.getElementById("edit_venue").value = data.venue;
+  document.getElementById("edit_status").value = data.status;
+
+  const modal = document.getElementById("edit_modal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function closeEditModal() {
+  const modal = document.getElementById("edit_modal");
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+
+async function handleUpdateEvent(e) {
+  e.preventDefault();
+
+  const updatedData = {
+    id: document.getElementById("edit_id").value,
+    date: document.getElementById("edit_date").value,
+    event_type: document.getElementById("edit_type").value,
+    venue: document.getElementById("edit_venue").value,
+    status: document.getElementById("edit_status").value
+  };
+
+  try {
+    const response = await fetch("../config/update_event.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      closeEditModal();
+      loadUpcomingEvents(); 
+    } else {
+      alert("Error updating event: " + (result.error || "Unknown error"));
+    }
+  } catch (error) {
+    console.error("Error submitting update:", error);
+  }
+}

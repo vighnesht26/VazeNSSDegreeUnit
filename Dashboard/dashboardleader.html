@@ -6,50 +6,51 @@
  
   <link href="../output.css" rel="stylesheet">
  
-  <title>Admin Dashboard</title>
+  <title>Leader Dashboard</title>
 
 </head>
-<body >
-  <!-- NSS Heading -->
-  
-   <header class="sticky top-0 z-50 flex items-center justify-between w-full h-24 px-6 text-white bg-navy ">
+<body class="flex flex-col h-screen" >
+  <header class="top-header sticky top-0  flex items-center justify-between w-full h-24 px-6 text-white">
   
   <!-- Main Heading-->
-  <div class="flex items-center ">
+  <div class="flex items-center gap-3">
     <!-- Logo -->
-    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20">
+    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20 transition-transform hover:scale-105 duration-200">
     
     <!-- NSS Header-->
     <div class="flex flex-col justify-center">
       <div class="flex items-baseline md:gap-2">
-        <span class="text-4xl font-bold font-header  md:text-3xl">NSS</span>
-        <span class="text-sm font-semibold font-header  text-lightperi md:text-base">DEGREE UNIT</span>
+        <span class="text-4xl font-bold md:text-3xl" style="font-family: 'Copse', serif;">NSS</span>
+        <span class="text-sm font-semibold text-red-400 md:text-base tracking-wider" style="font-family: 'Copse', serif;">DEGREE UNIT</span>
       </div>
-      <span class="text-[10px] md:text-xs italic font-text text-gray-300 -mt-1">Not Me But You</span>
+      <span class="text-[10px] md:text-xs italic text-amber-300 -mt-1 font-medium">Not Me But You</span>
     </div>
     <!-- Togglebutton for sidebar in mobile view -->
-        <button id="open_sidebar" onclick="toggleSidebar(this)" class=" md:hidden fixed text-xs mt-20 ml-3 p-1 w-15 font-bold h-6 bg-blue-600 text-white rounded focus:outline-2 focus:outline-amber-500">
+        <button id="open_sidebar" onclick="toggleSidebar(this)" class="md:hidden fixed text-xs mt-20 ml-3 p-1 w-15 font-bold h-6 c_btn_outline">
          Sidebar</button>
   </div>
-
+  <button type="button" id="addEventBtn" class="c_btn hidden md:flex items-center gap-1.5 mt-15 text-xs">
+    <span>+</span> Add Event
+  </button>
  
   <div class="flex items-center gap-6">
     <!-- User Context -->
     <div class="text-right hidden sm:flex flex-col justify-center">
-      <div class="text-base font-bold font-header md:text-lg">Name</div>
-      <div class="text-xs font-text text-lightperi">Role</div>
+      <div id="name_display" class="text-base font-bold text-white md:text-lg">Name</div>
+      <div id="role_display" class="text-sm text-red-300 font-medium">Role</div>
+      <div id="username_display" class="text-xs text-gray-300">username</div>
     </div>
     
     
     <div class="flex items-center gap-3">
       <!-- Profile  -->
-      <button class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border rounded-xl border-lightperi/20 bg-navy hover:bg-indigodark transition-all">
+      <button class="c_btn_outline flex items-center gap-2">
         <img src="../icons/profile.png" alt="Profile" class="w-4 h-4 invert">
         <span class="hidden md:inline">View Profile</span>
       </button>
 
       <!-- Logout-->
-      <button class="px-4 py-1.5 text-xs font-bold rounded-xl bg-org hover:bg-dorg text-white transition-all shadow-sm">
+      <button id="logoutBtn" onclick="logout()"  type="button" class="c_btn_light">
         Logout
       </button>
     </div>
@@ -58,93 +59,82 @@
 </header>
 
      
-  <!-- Sidebar -->
-    <div class="main-body flex ">
-      <aside id ="sidebar" class="side-nav fixed  h-screen flex-col w-35   bg-navy text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:w-58  md:translate-x-0  md:sticky md:top-30 overflow-hidden">
+    <div class="main-body flex flex-1 overflow-hidden">
+      <aside id="sidebar" class="side-nav fixed h-full left-0 flex flex-col w-35 transform -translate-x-full transition-transform duration-300 ease-in-out md:w-58 md:translate-x-0 md:sticky overflow-hidden">
         
       
-        <div class="nav-label pl-10 text-xs font-bold underline md:pl-18">
-        <button id="close_sidebar" onclick="toggleSidebar(this)" class="  md:hidden  text-sm ml-11 p-1 bg-blue-600 text-white rounded focus:outline-2 focus:outline-offset-2">◀ Hide</button>
-          <span>MENU</span>
+        <div class="nav-label pl-10 text-xs font-bold text-amber-400 md:pl-18 pt-4 pb-2">
+        <button id="close_sidebar" onclick="toggleSidebar(this)" class="md:hidden text-xs w-15 h-8 font-bold ml-11 p-1 c_btn_outline">◀ Hide</button>
+          <span class="tracking-widest uppercase text-[11px] text-gray-400">MENU</span>
       </div>
         
-        <nav class="nav-bar h-100">
+        <nav class="nav-bar px-2">
         <div class="nav-title active_side" onclick="switchpage('dashboard'); activate(this)" >
-          <span class="nav-icon pl-3">🏠</span>Dashboard
+          <span class="nav-icon pl-2">🏠</span>Dashboard
         </div>
         <div class="nav-title" onclick="switchpage('c_event'); activate(this)">
-          <span class="nav-icon pl-3">✅</span>Completed Events
+          <span class="nav-icon pl-2">✅</span>Completed Events
         </div>
-        <div class="nav-title " onclick="switchpage('u_event'); activate(this)">
-          <span class="nav-icon pl-3">📆</span>Upcoming Events
+        <div class="nav-title" onclick="switchpage('u_event'); activate(this)">
+          <span class="nav-icon pl-2">📆</span>Upcoming Events
         </div>
-        <div class="nav-title " onclick="switchpage('report'); activate(this)">
-          <span class="nav-icon pl-3">📋</span>Reports
+        <div class="nav-title" onclick="switchpage('report'); activate(this)">
+          <span class="nav-icon pl-2">📋</span>Reports
         </div>
 
         <!-- admin -->
-         <div class="admins border-b-2 mt-10"></div>
-         <div class="nav-title "  onclick="switchpage('volunteers'); activate(this)">
-          <span class="nav-icon pl-3" >👥</span>Volunteers
+         <div class="admins border-b border-blue-900/60 my-4 mx-3"></div>
+         <div class="nav-title" onclick="switchpage('volunteers'); activate(this)">
+          <span class="nav-icon pl-2">👥</span>Volunteers
         </div>
+       
         
       </nav>
     </aside>
    
 
   <!-- Dashboard -->
-    <div id ="dashboard" class="content flex-col   w-screen  h-screen page active">
+    <div id="dashboard" class="content flex w-screen h-full overflow-y-auto page active p-6">
         <!-- section-1 -->
-      <div class="section-1 flex justify-around mt-5">
+      <div class="section-1 flex justify-evenly gap-6 mt-2">
       <!-- card-1 -->
 
-        <div class="dash-card ">
-          <h3 class="border-b-4 border-double pl-3 ">Recent Event</h3>
-          <div class="detail">
-            <p>Event name <span></span></p>
-            <p>Total Participant <span></span></p>
-            <p>Type<span></span></p>
-            <p>hrs alloted<span></span></p>
+        <div class="dash-card">
+          <h3 class="card-header">Recent Event </h3>
+          <div class="detail font-text">
+            <p class="card-content">Event name <span id="ename" class="ml-5 font-bold text-blue-950">ee</span></p>
+            <p class="card-content">Date <span id="edate" class="ml-15 font-bold text-blue-950">d</span></p>
+            <p class="card-content">Type<span id="etype" class="ml-15 font-bold text-blue-950">ee</span></p>
           </div>
         </div>
         <!-- card-2 -->
-         <div class="dash-card ">
-             <h3 class="border-b-4 border-double pl-3 ">Upcoming event</h3>
-          <div class="detail">
-            <p>Event name <span></span></p>
-            <p>Total Participant <span></span></p>
-            <p>Type<span></span></p>
-            <p>Venue<span></span></p>
-            <p>Time<span></span></p>
+         <div class="dash-card">
+             <h3 class="card-header">Upcoming Event</h3>
+          <div class="detail font-text">
+            <p class="card-content">Event name <span id="uname" class="ml-5 font-bold text-blue-950">name</span></p>
+             <p class="card-content">Date <span id="udate" class="ml-15 font-bold text-blue-950">d</span></p>
+            <p class="card-content">Type <span id="utype" class="ml-15 font-bold text-blue-950">t</span></p>
+            <p class="card-content">Venue <span id="uvenue" class="ml-15 font-bold text-blue-950">v</span></p>
+            <p class="card-content">Time <span id="ustatus" class="ml-15 font-bold text-blue-950">t</span></p>
           </div>
          </div>
 
          </div>
          <!-- section-2 -->
-          <div class="section-2 flex justify-evenly mt-5">
+          <div class="section-2 flex justify-evenly gap-6 mt-8">
             <!-- card-1-event-count -->
-            <div class="event-count border w-25 ">
-              <p>Total Events :</p>
-              <p>UL :</p>
-              <p>CL :</p>
-              <p>ABP-1 :</p>
-              <p>ABP-2 :</p>
-              <p>DL :</p>
+            <div class="event-count sec2-card space-y-2">
+              <p class="font-bold border-b border-slate-100 pb-2 text-slate-900">Total Events Overview</p>
+              <p class="flex justify-between text-sm"><span>Total Events :</span> <span class="font-bold">0</span></p>
+              <p class="flex justify-between text-sm"><span>UL :</span> <span class="font-bold">-</span></p>
+              <p class="flex justify-between text-sm"><span>CL :</span> <span class="font-bold">-</span></p>
+              <p class="flex justify-between text-sm"><span>ABP-1 :</span> <span class="font-bold">-</span></p>
+              <p class="flex justify-between text-sm"><span>ABP-2 :</span> <span class="font-bold">-</span></p>
+              <p class="flex justify-between text-sm"><span>DL :</span> <span class="font-bold">-</span></p>
             </div>
 
-            <!-- card-2-volunteer-count -->
-            <div class="volunteer-count border w-35">
-              <p>Volunteer count :</p>
-              <p>Male count :</p>
-              <p>Female count :</p> 
-            </div> 
-            <!-- card-3-leader-count -->
-             <div class="volunteer-count border w-35">
-              <p>Leader count :</p>
-              <p>Male count :</p>
-              <p>Female count :</p> 
-             </div>
-          </div>
+           
+           
     </div>
 
     <!-- Completed events -->

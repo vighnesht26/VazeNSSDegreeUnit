@@ -9,50 +9,55 @@
   <title>Admin Dashboard</title>
 
 </head>
-<body >
-  <!-- NSS Heading -->
-  
-   <header class="sticky top-0 z-50 flex items-center justify-between w-full h-24 px-6 text-white bg-navy ">
+<body class="flex flex-col h-screen" >
+  <header class="top-header sticky top-0  flex items-center justify-between w-full h-24 px-6 text-white">
   
   <!-- Main Heading-->
-  <div class="flex items-center ">
+  <div class="flex items-center gap-3">
     <!-- Logo -->
-    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20">
+    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20 transition-transform hover:scale-105 duration-200">
     
     <!-- NSS Header-->
     <div class="flex flex-col justify-center">
       <div class="flex items-baseline md:gap-2">
-        <span class="text-4xl font-bold font-header  md:text-3xl">NSS</span>
-        <span class="text-sm font-semibold font-header  text-lightperi md:text-base">DEGREE UNIT</span>
+        <span class="text-4xl font-bold md:text-3xl" style="font-family: 'Copse', serif;">NSS</span>
+        <span class="text-sm font-semibold text-red-400 md:text-base tracking-wider" style="font-family: 'Copse', serif;">DEGREE UNIT</span>
       </div>
-      <span class="text-[10px] md:text-xs italic font-text text-gray-300 -mt-1">Not Me But You</span>
+      <span class="text-[10px] md:text-xs italic text-amber-300 -mt-1 font-medium">Not Me But You</span>
     </div>
     <!-- Togglebutton for sidebar in mobile view -->
-        <button id="open_sidebar" onclick="toggleSidebar(this)" class=" md:hidden fixed text-xs mt-20 ml-3 p-1 w-15 font-bold h-6 bg-blue-600 text-white rounded focus:outline-2 focus:outline-amber-500">
+        <button id="open_sidebar" onclick="toggleSidebar(this)" class="md:hidden fixed text-xs mt-20 ml-3 p-1 w-15 font-bold h-6 c_btn_outline">
          Sidebar</button>
   </div>
-
- 
+  
   <div class="flex items-center gap-6">
     <!-- User Context -->
     <div class="text-right hidden sm:flex flex-col justify-center">
-      <div class="text-base font-bold font-header md:text-lg">Name</div>
-      <div class="text-xs font-text text-lightperi">Role</div>
+      <div id="name_display" class="text-base font-bold text-white md:text-lg">Name</div>
+      <div id="role_display" class="text-sm text-red-300 font-medium">Role</div>
+      <div id="username_display" class="text-xs text-gray-300">username</div>
     </div>
     
     
     <div class="flex items-center gap-3">
       <!-- Profile  -->
-      <button class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium border rounded-xl border-lightperi/20 bg-navy hover:bg-indigodark transition-all">
+      <button class="c_btn_outline flex items-center gap-2">
         <img src="../icons/profile.png" alt="Profile" class="w-4 h-4 invert">
         <span class="hidden md:inline">View Profile</span>
       </button>
 
       <!-- Logout-->
-      <button class="px-4 py-1.5 text-xs font-bold rounded-xl bg-org hover:bg-dorg text-white transition-all shadow-sm">
+      <button id="logoutBtn" onclick="logout()"  type="button" class="c_btn_light">
         Logout
       </button>
     </div>
   </div>
 
 </header>
+<main>
+  <div id="Totalevents" class=""></div>
+  <div id="actevent"></div>
+  <div id = "upcoming"></div>
+
+
+</main>

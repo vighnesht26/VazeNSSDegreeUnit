@@ -46,7 +46,7 @@
     
     <div class="flex items-center gap-3">
       <!-- Profile  -->
-      <button class="c_btn_outline flex items-center gap-2">
+      <button onclick="openProfile()" class="c_btn_outline flex items-center gap-2">
         <img src="../icons/profile.png" alt="Profile" class="w-4 h-4 invert">
         <span class="hidden md:inline">View Profile</span>
       </button>
@@ -189,7 +189,7 @@
 
      <!-- Leaders -->
        <div id="leaders" class="Content flex-col border-2 w-screen h-screen page p-6">
-           <h2 class="font-header text-2xl font-bold text-slate-800">Leaders</h2>
+           
      </div>
 
   </div>
@@ -254,6 +254,49 @@
 
   </div>
 </div>
+
+<!-- For Profile -->
+
+<div id="profile_modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  <div class="w-full max-w-lg bg-gray-200 rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+    
+    
+    <div class="px-3 py-4 bg-slate-900 text-white flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="w-8 h-4 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">
+          👤
+        </div>
+        <div>
+          <h3 class="text-base text-slate-600 font-bold leading-tight">PROFILE</h3>   
+        </div>
+      </div>
+      <button type="button" onclick="closeProfileModal()" class="text-slate-400 hover:text-white text-xl font-bold transition">
+        &times;
+      </button>
+    </div>
+
+    
+    <div class="p-3">
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+        Account Details
+      </h4>
+
+      
+      <div id="profile_fields">
+       
+      </div>
+    </div>
+
+    
+    <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+      <button type="button" onclick="closeProfileModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-semibold transition">
+        Close
+      </button>
+    </div>
+
+  </div>
+</div>
+
 
 </body>
 

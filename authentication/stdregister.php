@@ -37,7 +37,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
    
     $hashedpass = password_hash($passwd , PASSWORD_DEFAULT);
 
-try{$username = generateUsername($name);
+try{$username = generateUsername($name, $mobile);
     $sql = $conn->prepare("SELECT 1 FROM student WHERE username = ?");
     while (true) {
         $sql->bind_param("s", $username);
@@ -49,7 +49,7 @@ try{$username = generateUsername($name);
         }
 
         
-        $username = generateUsername($name); 
+        $username = generateUsername($name,$mobile); 
     }
     $sql->close();
 
@@ -99,23 +99,14 @@ exit();
 
 }
 
-function generateUsername(string $name): string{
-    $maxlen = 15;
-    $minlen = 8;
+function generateUsername(string $name, string $mobile): string{
+   $mob = substr($mobile , 6);
     $uname = $name;
     if(strlen($name) <4){
         $uname = $uname. 'user';
     }
-    $remainlen = $maxlen - strlen($uname);
-     if($remainlen < 3){
-        $uname = substr($uname, 0 , $maxlen - 4);
-        $remainlen = 4;
-     }
-    $minRange = pow(10, max(2, $remainlen - 2)); 
-    $maxRange = pow(10,  max(2,$remainlen - 1))-1;
-
-    $usernum = rand( $minRange, $maxRange);
-    $username = $uname. $usernum;
+    
+    $username = $uname. $mob;
     
 
     return $username;

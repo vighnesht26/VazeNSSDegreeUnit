@@ -19,13 +19,52 @@ function updateStatusColor(selectElement) {
   }
 }
 
+function datevalidate(){
 const today = new Date();
+const err = document.getElementById('errordate');
 
 const yyyy = today.getFullYear();
 const mm = String(today.getMonth() + 1).padStart(2, '0');
 const dd = String(today.getDate()).padStart(2, '0');
 const fdate = `${yyyy}-${mm}-${dd}`;
-document.getElementById('Date').min = fdate;
+const eventDate = document.getElementById('Date');
+eventDate.min = fdate;
+
+//max date will be no event can register after april of next year
+let maxyear = yyyy;
+const month = today.getMonth();
+if(month > 3){
+  maxyear = yyyy +1;
+
+}
+else{
+  maxyear =yyyy;
+}
+
+let maxDate = `${maxyear}-04-30`;
+eventDate.max = maxDate;
+
+eventDate.addEventListener('blur', function(){
+  const userDate = eventDate.value;
+
+  if(userDate < fdate && userDate !== ''){
+    err.classList.remove('hidden');
+    err.textContent = "Past dates are not allowed";
+    eventDate.value = '';
+  }
+  else if(userDate > maxDate){
+    err.classList.remove('hidden');
+    err.textContent = "Date must be between June to April of this academic year";
+    eventDate.value = '';
+  }
+  else{
+    err.classList.add('hidden');
+    err.textContent = '';
+
+  }
+});
+}
+
 
 function timevalidate(){
   const etime = document.getElementById("e_time");
@@ -40,9 +79,9 @@ function timevalidate(){
     return;
   }
   
-  if (val < "05:00" || val > "19:00") {
+  if (val < "05:00" || val > "17:00") {
     err.classList.remove("hidden");
-    err.textContent = "Please select a time between 05:00 AM and 07:00 PM.";
+    err.textContent = "Please select a time between 05:00 AM and 05:00 PM.";
     etime.value = "07:00"
   } else {
     err.classList.add("hidden");
@@ -73,3 +112,7 @@ async function submitEventData(event , form){
 
   
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    datevalidate();
+});

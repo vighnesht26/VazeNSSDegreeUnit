@@ -9,12 +9,30 @@ header('Content-Type: application/json');
 
 
 if (isset($_SESSION['admin_id'])) {
-    echo json_encode([
-        'success' => true,
-        'name'    => "{$_SESSION['name']} {$_SESSION['lname']}",
-        'role'    => $_SESSION['role'],
-        'ausername' => $_SESSION['a_username']
-    ]);
+    $admin_id = $_SESSION['admin_id'];
+    $stmt = $conn->prepare("SELECT username, first_name, last_name, role, email, mobile FROM admin WHERE admin_id = ?");
+    $stmt->bind_param("i", $admin_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+         http_response_code(200);
+        echo json_encode([
+            'success'   => true,
+            'name'      => $row['first_name'] . ' ' . $row['last_name'],
+            'role'      => $row['role'],
+            'ausername' => $row['username'],
+            'email'     => $row['email'],
+            'mobile'    => $row['mobile']
+        ]);
+    } else {
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'error'   => 'Admin record not found'
+        ]);
+    }
+    $stmt->close();
 } else {
     http_response_code(401);
     echo json_encode([

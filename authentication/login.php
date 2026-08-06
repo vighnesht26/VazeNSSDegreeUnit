@@ -59,10 +59,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 
                 if (password_verify($pass, $dbpass)) {
                   $_SESSION['admin_id'] = $row['admin_id'];
-                  $_SESSION['name'] = $row['first_name'];
-                  $_SESSION['lname']= $row['last_name'];
-                  $_SESSION['role'] = $row['role'];
-                  $_SESSION['a_username'] = $row['username'];
+                  // $_SESSION['name'] = $row['first_name'];
+                  // $_SESSION['lname']= $row['last_name'];
+                  // $_SESSION['role'] = $row['role'];
+                  // $_SESSION['a_username'] = $row['username'];
 
                   $Jresponse['success'] = true; 
                   $Jresponse['location'] = '../Dashboard/dashboardadmin.html';

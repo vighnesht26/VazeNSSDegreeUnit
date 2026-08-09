@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
-include 'connect.php';
+include '../config/connect.php';
 
 $response = [
     'success ' => false,

@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 
-require_once "connect.php"; 
+require_once "../config/connect.php"; 
 
 
 $input = file_get_contents("php://input");

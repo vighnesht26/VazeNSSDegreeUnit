@@ -77,7 +77,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
               $sql2->close();
 
               //check student
-              $sql3 =$conn->prepare( "SELECT std_id,username,first_name,surname, role ,password FROM student WHERE username = ?");
+              $sql3 =$conn->prepare( "SELECT std_id,password,role FROM student WHERE username = ?");
               $sql3->bind_param("s",$name);
               $sql3->execute();
               $result3 = $sql3->get_result();
@@ -87,10 +87,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 
                 if (password_verify($pass, $dbpass)) {
                   $_SESSION['std_id'] = $row['std_id'];
-                  $_SESSION['name'] = $row['first_name'];
-                  $_SESSION['lname']= $row['surname'];
                   $_SESSION['role'] = $row['role'];
-                  $_SESSION['s_username'] = $row['username'];
+                  
                   $Jresponse['success'] = true; 
 
                   if($_SESSION['role'] === 'Volunteer'){

@@ -21,7 +21,7 @@ if (addEventButton) {
               
             } else {
                 alert("Unauthorized: Only Admins and Leaders can add events.");
-                //window.location.href = '../Authentication/login.html';
+                window.location.href = '../Authentication/login.html';
             }
         } catch (error) {
             console.error("Session verification failed:", error);
@@ -127,7 +127,7 @@ async function fetchAdminProfile() {
 //Display Event in dashboard1
 async function displayeventcard() {
     try{
-        const response = await fetch('../config/dash_event.php');
+        const response = await fetch('../api/dash_event.php');
         console.log("step1");
         if(!response.ok){
             throw new Error('Error status: ${response.status}');
@@ -185,7 +185,7 @@ async function loadUpcomingEvents() {
   const container = document.getElementById("u_event");
   
   try {
-    const response = await fetch("../config/upcoming_event.php");
+    const response = await fetch("../api/upcoming_event.php");
     const result = await response.json();
 
     if (result.success) {
@@ -194,7 +194,7 @@ async function loadUpcomingEvents() {
       
       if (events.length === 0) {
         container.innerHTML = `
-          <h2 class="font-header text-2xl font-bold text-slate-800 border-b-2 border-slate-200 pb-3 mb-4">
+          <h2 class="font-header  font-bold text-slate-800 border-b-2 border-slate-200 pb-3 mb-2">
             Upcoming & Active Events
           </h2>
           <p class="text-slate-500 italic">No pending or upcoming events found.</p>
@@ -204,12 +204,12 @@ async function loadUpcomingEvents() {
 
       
       let cardsHTML = `
-        <div class="border-b-2 border-slate-200 pb-3 mb-4">
+        <div class="border-b-2 border-slate-200 pb-2 mb-2">
           <h2 class="font-header text-2xl font-bold text-slate-800">
             Upcoming & Active Events :- <span class="text-red-600">${events.length}</span>
           </h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-y-auto  p-1">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto  p-2">
       `;
 
       events.forEach(ev => {
@@ -246,11 +246,11 @@ async function loadVolunteers() {
   const container = document.getElementById("volunteers"); 
 
   try {
-    const response = await fetch("../config/get_volunteer.php");
+    const response = await fetch("../api/get_vol-leader-list.php?role=Volunteer");
     const result = await response.json();
 
     if (result.success) {
-      const volunteers = result.data || [];
+      const volunteers = result.data.volunteer || [];
 
       if (volunteers.length === 0) {
         container.innerHTML = `
@@ -373,7 +373,7 @@ async function handleUpdateEvent(e) {
   };
 
   try {
-    const response = await fetch("../config/update_event.php", {
+    const response = await fetch("../api/update_event.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedData)
@@ -452,7 +452,7 @@ async function promoteSelectedLeaders(){
     return;
   }
   try{
-    const response = await fetch('../config/promote_leader.php',{
+    const response = await fetch('../api/promote-depromote_leader.php',{
       method : 'POST',
       headers:{'Content-type':'application/json'},
         body :JSON.stringify({student_id: selectedID,
@@ -482,11 +482,11 @@ async function loadLeaders() {
   const container = document.getElementById("leaders"); 
 
   try {
-    const response = await fetch("../config/get_leader.php");
+    const response = await fetch("../api/get_vol-leader-list.php?role=Leader");
     const result = await response.json();
 
     if (result.success) {
-      const leaders = result.data || [];
+      const leaders = result.data.leader || [];
 
       if (leaders.length === 0) {
         container.innerHTML = `
@@ -565,7 +565,7 @@ async function demoteSelectedLeader(){
   }
 
   try{
-    const response = await fetch('../config/promote_leader.php',{ 
+    const response = await fetch('../api/promote-depromote_leader.php',{ 
       method : 'POST',
       headers :{'Content-type' : 'application/json'},
       body:JSON.stringify({

@@ -213,20 +213,24 @@ async function loadUpcomingEvents() {
       `;
 
       events.forEach(ev => {
+        const statusClass = getStatusColor(ev.status);
         cardsHTML += `
           <div class="event-card  border border-slate-200 rounded-2xl p-5 bg-white shadow-sm space-y-2">
             <p class="text-sm font-semibold text-slate-700">Event Name: <span class="font-bold text-blue-950">${ev.name}</span></p>
             <p class="text-sm font-semibold text-slate-700">Date: <span class="font-bold text-blue-950">${ev.date}</span></p>
             <p class="text-sm font-semibold text-slate-700">Type: <span class="font-bold text-blue-950">${ev.event_type}</span></p>
             <p class="text-sm font-semibold text-slate-700">Venue: <span class="font-bold text-blue-950">${ev.venue}</span></p>
-            <p class="text-sm font-semibold text-slate-700">Status:<span class="font-bold text-amber-700 uppercase text-xs px-2.5 py-1 bg-amber-100 rounded-full">${ev.status}</span>
+            <p class="text-sm font-semibold text-slate-700">Status:<span class="font-bold uppercase text-xs px-2.5 py-1 ${statusClass}  rounded-full">${ev.status}</span>
             </p>
+            <div class="flex justify-between">
             <button onclick="openEditModal(this)" data-id="${ev.event_id}"
               data-name="${ev.name}"
               data-date="${ev.date}"
               data-type="${ev.event_type}"
               data-venue="${ev.venue}"
               data-status="${ev.status}" class="c_btn">Update</button>
+            <button type=" button" class="c_btn_blue  "  data-id="${ev.event_id}" onclick="viewEvent(this)"> view </button>
+            </div>
           </div>`;
       });
 
@@ -238,6 +242,24 @@ async function loadUpcomingEvents() {
     }
   } catch (error) {
     console.error("Network error fetching upcoming events:", error);
+  }
+}
+
+function getStatusColor(statusStr) {
+  const status = statusStr ? statusStr.trim().toLowerCase() : '';
+
+  switch (status) {
+    case 'active':
+      return 'bg-emerald-100 text-emerald-800 border border-emerald-300';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800 border border-red-300';
+    case 'scheduled':
+    case 'upcoming':
+      return 'bg-blue-100 text-blue-800 border border-blue-300';
+    case 'completed':
+      return 'bg-purple-100 text-purple-800 border border-purple-300';
+    default:
+      return 'bg-amber-100 text-amber-800 border border-amber-300';
   }
 }
 
@@ -439,7 +461,7 @@ function closeProfileModal() {
     }
 }
 
-//assign Leader
+// LEADER SECTIONS FUNCTIONS
 async function promoteSelectedLeaders(){
   const selectedchb = document.querySelectorAll('.volunteer-checkbox:checked');
 
@@ -593,3 +615,133 @@ async function demoteSelectedLeader(){
 
 }
   
+// EVENT SECTION VIEW/START/STOP
+async function viewEvent(button){
+    const container = document.getElementById('event_modal');
+    const eventId = button.dataset.id;
+    try{
+    const response = await fetch("../api/viewevent_attendance.php?",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: eventId })
+        });
+    const result = await response.json();
+
+    if(result.success){
+      const event = result.data;
+
+      console.log("Fetched status:", `"${event.status}"`);
+
+      const isActive = event.status && event.status.toLowerCase() === 'scheduled' || 'active';
+      const disabledAttr = isActive ? '' : 'disabled';
+      const disabledClasses = isActive ? '' : 'opacity-50 cursor-not-allowed pointer-events-none !bg-gray-400 !text-gray-700';
+
+      let eventHTML = `
+      <div class="w-full bg-gray-300 border-2 h-full rounded-2xl">
+    <div class="border-b-2 border-black h-15 flex justify-center pt-5 font-header text-3xl font-bold">
+      <div  class="bg-gray-400 w-150 flex justify-center rounded-2xl"><span>${event.name} </span></div>
+      
+    </div>
+    <div class="flex justify-evenly font-bold font-header">
+      <div><label>Date :-</label><span class="bg-gray-400">${event.date}</span></div>
+      <div><label>Time :-</label><span class="bg-gray-400">${event.time}</span></div>
+      <div><label>Venue :-</label><span class="bg-gray-400">${event.venue}</span></div>
+    </div>
+    <div class="flex justify-center">
+      <textarea disabled rows="4" class="resize-none font-header rows-4 bg-gray-400 rounded-2xl  mt-5 h-35 w-250 p-3">${event.description}</textarea>
+    </div>
+    <div class="flex justify-evenly font-header mt-10">
+      <div><label>⏰Reporting Time :-</label><span class="bg-gray-400">${event.reporting_time}</span></div>
+      <div><label>📍Reporting Location :-</label><span class="bg-gray-400">${event.reporting_venue}</span></div>
+    </div>
+    <div class="flex justify-evenly font-header mt-10">
+      <div><label>Type :-</label><span class="bg-gray-400">${event.event_type}</span></div>
+      <div><label>Approx hours :-</label><span class="bg-gray-400">${event.approx_hrs}</span></div>
+      <div><label>Max Participation :-</label><span class="bg-gray-400">${event.max_participation}</span></div>
+      
+      
+    </div>
+    <div class="flex justify-evenly font-header mt-10">
+      <div><label>Status :-</label><span class="bg-gray-400">${event.status}</span></div>
+      <div><label>Count :-</label><span class="bg-gray-400">Not Available</span></div>
+    </div>
+    <div class="flex justify-evenly mt-5 border-t rounded-2xl border-t-gray-700 pt-2">
+      <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}" data-status="${event.status}" onclick="startEventReg(this)">Start Registration</button>
+      <button  ${disabledAttr} class="c_btn_blue ${disabledClasses}" data-id="${event.event_id}">Stop Registration</button>
+      <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}">Attendance</button>
+      <div class=" rounded-2xl bg-slate-50 border-t border-slate-100 flex justify-end">
+      <button type="button" onclick="closeEventModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-semibold transition">
+        Close
+      </button>
+    </div>
+    </div>
+    
+
+
+  </div>
+      `
+      container.innerHTML = eventHTML;
+      container.classList.remove("hidden");
+      container.classList.add("flex");
+
+    }else{
+      alert("Error occured" , result.error);
+    }
+    }catch(error){
+      console.log("Error occured", error);
+    } 
+}
+
+function closeEventModal(){
+  const container = document.getElementById('event_modal');
+    container.classList.add("hidden");
+      container.classList.remove("flex");
+
+}
+
+//Registration of participants start/stop
+async function startEventReg(ev){
+  const eventId = ev.dataset.id;
+  const eventStatus = ev.dataset.status;
+
+
+  if(!eventId){
+    console.error("Missing event ID.");
+        return;
+  }
+  if(eventStatus === "Active"){
+    alert("Registration already started");
+    return;
+  }
+  if (!confirm("Are you sure you want to start registration for this event?")) {
+        return;
+    }
+
+    try{
+      const response = await fetch("../api/start_event_registration.php", {
+        method : "POST",
+          headers :{
+            "Content-Type":"application/json"
+          },
+          body : JSON.stringify({id : eventId})
+      });
+      const result = await response.json();
+
+      if(result.success){
+        alert("Registration started successfully! Event is now active.");
+            
+           
+                viewEvent(ev);
+        
+            
+                loadUpcomingEvents();
+            
+        } else {
+            alert("Failed to start registration: " + result.error);
+        }
+    } catch (error) {
+        console.error("Error starting registration:", error);
+    }
+}

@@ -9,6 +9,7 @@
     --font-nova: "Nova Round", system-ui;
 
     --color-back: #dc2626;
+    --color-bluebtn: #1a2e5c
 }
 /* 1. BASE STYLES                                                             */
 
@@ -64,6 +65,11 @@ body {
   color: #ffffff;
 }
 
+.c_btn_blue {
+  @apply px-4 py-2 rounded-xl text-xs md:text-sm font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2;
+  background-color: #1a2e5c;
+  color: #ffffff;
+} 
 .c_btn:hover {
   background-color: #b91c1c;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);

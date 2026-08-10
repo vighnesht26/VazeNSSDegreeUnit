@@ -127,24 +127,25 @@ async function fetchAdminProfile() {
 //Display Event in dashboard1
 async function displayeventcard() {
     try{
-        const response = await fetch('../api/dash_event.php');
+        const response = await fetch('../api/event_api.php?action=dash_event');
         console.log("step1");
         if(!response.ok){
-            throw new Error('Error status: ${response.status}');
+            throw new Error(`Error status: ${response.status}`);
 
         }
         console.log("step2");
         const data = await response.json();
          console.log("excecuted");
-        if(!data.success){console.log("step3");
+        if(!data.success){
             console.log(data.error);
+            return;
         }
-        if(data.recent){console.log("step4");
-            document.getElementById('ename').textContent= data.recent.name;
-            document.getElementById('edate').textContent= data.recent.date;
-            document.getElementById('etype').textContent= data.recent.event_type;
-            // document.getElementById('evenue').textContent= data.recent.venue;
-            //  document.getElementById('estatus').textContent= data.recent.status;
+        if(data.active){console.log("step4");
+            document.getElementById('ename').textContent= data.active.name;
+            document.getElementById('edate').textContent= data.active.date;
+            document.getElementById('etype').textContent= data.active.event_type;
+            // document.getElementById('evenue').textContent= data.active.venue;
+            //  document.getElementById('estatus').textContent= data.active.status;
 
         }else{
              document.getElementById('ename').textContent= 'None';
@@ -173,7 +174,7 @@ async function displayeventcard() {
         if(data.total_event){
             document.getElementById('e_total').textContent = data.total_event;
         }else{
-             document.getElementById('e_total').textContent = none;
+             document.getElementById('e_total').textContent = 'None';
         }
 
     }catch(error){
@@ -185,7 +186,7 @@ async function loadUpcomingEvents() {
   const container = document.getElementById("u_event");
   
   try {
-    const response = await fetch("../api/upcoming_event.php");
+    const response = await fetch("../api/event_api.php?action=show_upcoming_events");
     const result = await response.json();
 
     if (result.success) {
@@ -290,6 +291,9 @@ async function loadVolunteers() {
           <h2 class="font-header text-2xl font-bold text-slate-800">
             Volunteers List :- <span class="text-red-600">${volunteers.length}</span>
           </h2>
+          <button type="button" onclick="exportStudentList()" cursor-pointer class="bg-blue-900 hover:bg-blue-950 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
+            Export List
+          </button>
           <button type="button" onclick="promoteSelectedLeaders()" cursor-pointer class="bg-blue-950 hover:bg-blue-900 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
             Promote Selected as Leader
           </button>
@@ -387,15 +391,17 @@ async function handleUpdateEvent(e) {
   e.preventDefault();
 
   const updatedData = {
+    action : "update_event",
     id: document.getElementById("edit_id").value,
     date: document.getElementById("edit_date").value,
     event_type: document.getElementById("edit_type").value,
     venue: document.getElementById("edit_venue").value,
     status: document.getElementById("edit_status").value
+    
   };
 
   try {
-    const response = await fetch("../api/update_event.php", {
+    const response = await fetch("../api/event_api.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedData)
@@ -620,12 +626,14 @@ async function viewEvent(button){
     const container = document.getElementById('event_modal');
     const eventId = button.dataset.id;
     try{
-    const response = await fetch("../api/viewevent_attendance.php?",{
+    const response = await fetch("../api/event_api.php",{
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ id: eventId })
+            body: JSON.stringify({ id: eventId,
+              action : 'view_event'
+             })
         });
     const result = await response.json();
 
@@ -634,7 +642,8 @@ async function viewEvent(button){
 
       console.log("Fetched status:", `"${event.status}"`);
 
-      const isActive = event.status && event.status.toLowerCase() === 'scheduled' || 'active';
+      const statusLower = event.status ? event.status.toLowerCase() : '';
+      const isActive = statusLower === 'scheduled' || statusLower === 'active';
       const disabledAttr = isActive ? '' : 'disabled';
       const disabledClasses = isActive ? '' : 'opacity-50 cursor-not-allowed pointer-events-none !bg-gray-400 !text-gray-700';
 
@@ -669,8 +678,8 @@ async function viewEvent(button){
     </div>
     <div class="flex justify-evenly mt-5 border-t rounded-2xl border-t-gray-700 pt-2">
       <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}" data-status="${event.status}" onclick="startEventReg(this)">Start Registration</button>
-      <button  ${disabledAttr} class="c_btn_blue ${disabledClasses}" data-id="${event.event_id}">Stop Registration</button>
-      <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}">Attendance</button>
+      <button  ${disabledAttr} class="c_btn_blue ${disabledClasses}" data-id="${event.event_id}" data-status="${event.status}" onclick = "stopEventReg(this)">Stop Registration</button>
+      <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}" onclick="open_attendance(this)">Attendance</button>
       <div class=" rounded-2xl bg-slate-50 border-t border-slate-100 flex justify-end">
       <button type="button" onclick="closeEventModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-semibold transition">
         Close
@@ -720,17 +729,20 @@ async function startEventReg(ev){
     }
 
     try{
-      const response = await fetch("../api/start_event_registration.php", {
+      const response = await fetch("../api/event_api.php", {
         method : "POST",
           headers :{
             "Content-Type":"application/json"
           },
-          body : JSON.stringify({id : eventId})
+          
+          body : JSON.stringify({id : eventId,
+            action : 'start_event_registration'
+          })
       });
       const result = await response.json();
 
       if(result.success){
-        alert("Registration started successfully! Event is now active.");
+        alert("Registration started successfully! Event is now active." + result.action);
             
            
                 viewEvent(ev);
@@ -744,4 +756,69 @@ async function startEventReg(ev){
     } catch (error) {
         console.error("Error starting registration:", error);
     }
+}
+
+async function stopEventReg(ev){
+    const eventId = ev.dataset.id;
+    const eventStatus = ev.dataset.status;
+
+    if(eventStatus === "Active"){
+      if(!confirm("Are you sure, you want to stop registration?")){
+        return;
+      }
+      
+    }else{
+        alert("Event Registration not started yet");
+        return;
+      }
+
+    
+
+    try{
+      const response = await fetch("../api/event_api.php", {
+        method : "POST",
+          headers :{
+            "Content-Type":"application/json"
+          },
+          
+          body : JSON.stringify({id : eventId,
+            action : 'stop_event_registration'
+          })
+      });
+      const result = await response.json();
+
+      if(result.success){
+        alert("Registration stopped successfully! Event is now Scheduled."+ result.action);
+            
+           
+                viewEvent(ev);
+        
+            
+                loadUpcomingEvents();
+            
+        } else {
+            alert("Failed to start registration: " + result.error);
+        }
+    } catch (error) {
+        console.error("Error starting registration:", error);
+    }
+}
+
+function open_attendance(ev){
+  const eventId = ev.dataset.id;
+
+    if (!eventId) {
+        console.error("Missing event ID on element:", ev);
+        alert("Unable to open attendance: Missing Event ID.");
+        return;
+    }
+
+    
+    window.location.href = `../Attendance/attendance.html?event_id=${eventId}`;
+}
+
+
+//Export Student List
+async function exportStudentList(){
+  window.location.href = '../api/export_student_list.php';
 }

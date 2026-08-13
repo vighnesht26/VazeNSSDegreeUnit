@@ -59,7 +59,7 @@ fputcsv($output, array(
     'Total NSS Hours'
 ));
 
-// 5. Fetch data from database
+
 $sql = "SELECT s.std_id, s.first_name, s.mother_name, s.father_name ,s.surname, s.gender, s.email, s.mobile, 
                s.blood_grp, s.caste, s.dob,
                ad.class, ad.program, ad.division, ad.roll_no, ad.total_hrs

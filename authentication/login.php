@@ -94,7 +94,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                   if($_SESSION['role'] === 'Volunteer'){
                   $Jresponse['location'] = '../Dashboard/dashboardstudent.html';
                   }else if($_SESSION['role'] === 'Leader'){
-                    $Jresponse['location'] = '../Dashboard/dashboardleader.html';
+                    $Jresponse['location'] = '../Dashboard/dashboardadmin.html';
                   }
                 
                 } 

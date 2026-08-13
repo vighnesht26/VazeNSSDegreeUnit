@@ -27,7 +27,8 @@ if (!isset($_SESSION['admin_id'])){
         
         $sql = "SELECT 
                     s.std_id AS id, 
-                    s.first_name, 
+                    s.first_name,
+                    s.surname, 
                     s.mobile, 
                     s.role,
                     a.class, 

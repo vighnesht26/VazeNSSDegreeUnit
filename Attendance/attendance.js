@@ -2,7 +2,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get('event_id');
 
 let allVolunteers = [];
-let defaultApproxHrs = 0;
+
 let isAttendanceCompleted = false;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -21,15 +21,17 @@ async function loadAttendanceData() {
     if (result.success) {
       const event = result.event;
       allVolunteers = result.volunteers || [];
-      defaultApproxHrs = event.approx_hrs;
+      
 
       document.getElementById('event_name_header').textContent = event.name;
       document.getElementById('event_date_header').textContent = event.date;
       document.getElementById('event_time_header').textContent = event.time || '--';
 
       
-      isAttendanceCompleted = event.status === 'Completed' || 
-        allVolunteers.some(v => v.attendance_status === 'Completed');
+      const evtStatus = (event.status || '').toLowerCase();
+      const attStatus = (event.attendance_status || '').toLowerCase();
+      isAttendanceCompleted = evtStatus === 'completed' || attStatus === 'completed';
+       
 
       
       allVolunteers.forEach(v => {
@@ -37,7 +39,7 @@ async function loadAttendanceData() {
       });
 
       renderTable(allVolunteers);
-      //updateUIState();
+      updateState();
     } else {
       alert("Error loading attendance: " + result.error);
     }
@@ -56,10 +58,11 @@ function renderTable(volunteers) {
       <tr>
         <td colspan="7" class="p-6 text-center text-slate-400 italic">No volunteers found.</td>
       </tr>`;
-    // updatePresentCount();
+    updatePCount();
     return;
   }
 
+  const isDisabled = isAttendanceCompleted ? 'disabled' : '';
   let html = '';
   volunteers.forEach((v, index) => {
     const isChecked = v.is_present === 1 ? 'checked' : '';
@@ -74,10 +77,10 @@ function renderTable(volunteers) {
         <td class="p-4 text-center">
           <input 
             type="checkbox" 
-            value="${v.student_id}" 
+            value="${v.std_id}" 
             class="attendance-checkbox w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer disabled:cursor-not-allowed"
-            ${isChecked}
-            onchange="toggleAttendance('${v.student_id}', this.checked)"
+            ${isChecked} ${isDisabled}
+            onchange="toggleAttendance('${v.std_id}', this.checked)"
           />
         </td>
       </tr>
@@ -85,10 +88,142 @@ function renderTable(volunteers) {
   });
 
   tbody.innerHTML = html;
- // updatePresentCount();
+ updatePCount();
 }
 
+//toggle attendance
 
+function toggleAttendance(studentId, isChecked){
+  const volunteer = allVolunteers.find(v => v.std_id == studentId);
+  if(volunteer){
+    volunteer.is_present = isChecked ? 1 : 0;
+
+    if(isChecked){
+      const today = new Date();
+      const year =  today.getFullYear();
+      const month = String(today.getMonth()+ 1).padStart(2,'0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const hours = String(today.getHours()).padStart(2, '0');
+      const min = String(today.getMinutes()).padStart(2, '0');
+      const sec = String(today.getSeconds()).padStart(2, '0');
+
+      volunteer.reporting_mark = `${year}-${month}-${day} ${hours}:${min}:${sec}`
+    }
+    else{
+      volunteer.reporting_mark = null;
+    }
+  }
+  updatePCount();
+}
+
+function updatePCount(){
+  const totalPresent = allVolunteers.filter(v => v.is_present == 1).length;
+  document.getElementById('present_count').textContent = totalPresent;
+}
+
+async function saveAttendanceStatus(){
+  const attData = allVolunteers.map(v => ({
+    student_id :v.std_id,
+    is_present : v.is_present,
+    reporting_mark : v.reporting_mark
+
+
+  }));
+
+  try{
+    const response = await fetch('../api/event_api.php',{
+      method : 'POST',
+      headers : { 'Content-type' : 'application/json'},
+      body : JSON.stringify({
+        action : 'save_attendance_progress',
+        id : eventId,
+        attendance : attData
+      })
+    });
+
+    const result = await response.json();
+
+    if(result.success){
+      alert("reporting progress saved");
+    }
+    else{
+      alert("Failed to save attendce" + result.error);
+    }
+  }catch(error){
+    console.error("Error saving  progress", error);
+
+  }
+}
+
+async function saveFinalAttendance(){
+  if(!confirm("Are you sure, you want to submit? After submittion no changes allowed!")){
+    return;
+  }
+
+  const attendanceData = allVolunteers.map(v =>({
+    student_id : v.std_id,
+    is_present : v.is_present,
+    reporting_mark : v.reporting_mark
+  }));
+
+  try{
+    const response = await fetch('../api/event_api.php', {
+      method : 'POST',
+      headers : {'Content-type' : 'application/json'},
+      body  :JSON.stringify({
+        action : 'submit_attendance',
+        id : eventId,
+        attendance : attendanceData
+      })
+    });
+
+    const result = await response.json();
+    if(result.success){
+      alert("Attendance Submitted Successfully");
+      isAttendanceCompleted = true;
+      
+    }
+    else{
+      alert("Error occured "+ result.error);
+    }
+  }catch(error){  
+    console.error("Error submitting attendance", error);
+
+  }
+}
+
+//shows diabled when completed
+function updateState(){
+  const checkboxes = document.querySelectorAll('.attendance-checkbox');
+  const saveBtn = document.getElementById('mark_reporting_btn');
+  const submitBtn = document.getElementById('final_submit_btn');
+  const status = document.getElementById('attendance_status');
+
+  if(isAttendanceCompleted){
+    checkboxes.forEach(cb => cb.disabled = true);
+    saveBtn.classList.add('hidden');
+    submitBtn.classList.add('hidden');
+
+    status.textContent = "Completed";
+    status.className = "px-3 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-700 border border-slate-300 uppercase"
+  }
+}
+
+//search
+function filterVol(){
+  const search = document.getElementById('volunteer_search').value.toLowerCase().trim();
+
+  const filtered = allVolunteers.filter(v =>{
+    const fullname = `${v.first_name} ${v.surname}`.toLowerCase();
+    const classpro = `${v.class}${v.program}`.toLowerCase();
+    const rollno = `${v.division}${v.roll_no}`.toLowerCase();
+    const mobile = `${v.mobile}`;
+
+    return fullname.includes(search) || classpro.includes(search) ||
+           rollno.includes(search) || mobile.includes(search);
+  });
+  renderTable(filtered);
+}
 
 //Exportint to excel
 window.exportToExcel = function() {
@@ -97,21 +232,17 @@ window.exportToExcel = function() {
     return;
   }
 
-  if (typeof XLSX === 'undefined') {
-    alert("Excel Export library (SheetJS) is not loaded.");
-    return;
-  }
-
-  // Show the modal
   document.getElementById('export_modal').classList.remove('hidden');
+  document.getElementById('export_modal').classList.add('flex');
 };
 
-// 2. Close Modal
+
 window.closeExportModal = function() {
   document.getElementById('export_modal').classList.add('hidden');
+  document.getElementById('export_modal').classList.remove('flex');
 };
 
-// 3. Toggle Select / Deselect All Checkboxes
+
 window.toggleAllExportCols = function(btn) {
   const checkboxes = document.querySelectorAll('.export-col-cb');
   const isDeselect = btn.textContent === 'Deselect All';
@@ -120,7 +251,7 @@ window.toggleAllExportCols = function(btn) {
   btn.textContent = isDeselect ? 'Select All' : 'Deselect All';
 };
 
-// 4. Generate Excel with ONLY checked columns
+
 window.confirmExcelExport = function() {
   const selectedCols = Array.from(document.querySelectorAll('.export-col-cb:checked')).map(cb => cb.value);
 

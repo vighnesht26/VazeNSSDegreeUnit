@@ -1,5 +1,8 @@
-
-
+let currentUserRole = '';
+let isUpcomingLoaded = false;
+let isCompletedLoaded = false;
+let isVolunteersLoaded = false;
+let isLeadersLoaded = false;
 document.addEventListener("DOMContentLoaded", () => {
     fetchAdminProfile();
     displayeventcard();
@@ -50,17 +53,23 @@ function toggleSidebar(element){
 //Changing pages in dashboard 28/06/2026
 
 function switchpage(pageid){
+        if (pageid === 'leaders' && currentUserRole === 'leader') {
+            alert("Unauthorized access.");
+            return;
+        }
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         
         document.getElementById(pageid).classList.add('active');
-
-        if(pageid == 'u_event'){
-            loadUpcomingEvents();
+        if (pageid === 'u_event' && !isUpcomingLoaded) {
+           loadUpcomingEvents();
         }
-        if(pageid == 'volunteers'){
-            loadVolunteers();
+        if (pageid === 'c_event' && !isCompletedLoaded) {
+          loadCompletedEvents();
         }
-        if(pageid == 'leaders'){
+        if (pageid === 'volunteers' && !isVolunteersLoaded) {
+          loadVolunteers();
+        }
+        if (pageid === 'leaders' && currentUserRole !== 'leader' && !isLeadersLoaded) {
           loadLeaders();
         }
 
@@ -80,7 +89,14 @@ async function fetchAdminProfile() {
         const response = await fetch('../config/get_user.php');
         const data = await response.json();
        
-        
+        if (data.success) {
+          currentUserRole = data.role ? data.role.toLowerCase() : '';
+        }
+
+        const leadersNav = document.getElementById('nav_leaders');
+        if (leadersNav) {
+          leadersNav.style.display = (currentUserRole === 'leader') ? 'none' : 'flex';
+        }
         if (data.success) {
            
             const admin = {
@@ -126,6 +142,8 @@ async function fetchAdminProfile() {
 
 //Display Event in dashboard1
 async function displayeventcard() {
+
+  
     try{
         const response = await fetch('../api/event_api.php?action=dash_event');
         console.log("step1");
@@ -180,7 +198,8 @@ async function displayeventcard() {
     }catch(error){
         console.log(error);
     }
-}
+  }
+
 
 async function loadUpcomingEvents() {
   const container = document.getElementById("u_event");
@@ -190,6 +209,7 @@ async function loadUpcomingEvents() {
     const result = await response.json();
 
     if (result.success) {
+      isUpcomingLoaded = true;
       const events = result.data;
 
       
@@ -273,6 +293,7 @@ async function loadVolunteers() {
     const result = await response.json();
 
     if (result.success) {
+      let isVolunteersLoaded = true;
       const volunteers = result.data.volunteer || [];
 
       if (volunteers.length === 0) {
@@ -286,6 +307,12 @@ async function loadVolunteers() {
         return;
       }
 
+      const promoteBtnHTML = (currentUserRole !== 'leader') 
+        ? `<button type="button" onclick="promoteSelectedLeaders()" class="bg-blue-950 hover:bg-blue-900 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
+          Promote Selected as Leader
+          </button>` 
+          : '';
+
       let cardsHTML = `
         <div class="border-b-2 border-slate-200 pb-3 mb-4 flex justify-between items-center">
           <h2 class="font-header text-2xl font-bold text-slate-800">
@@ -294,9 +321,7 @@ async function loadVolunteers() {
           <button type="button" onclick="exportStudentList()" cursor-pointer class="bg-blue-900 hover:bg-blue-950 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
             Export List
           </button>
-          <button type="button" onclick="promoteSelectedLeaders()" cursor-pointer class="bg-blue-950 hover:bg-blue-900 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
-            Promote Selected as Leader
-          </button>
+          ${promoteBtnHTML}
         </div>
         <div class="space-y-3 overflow-y-auto p-1">
       `;
@@ -313,7 +338,7 @@ async function loadVolunteers() {
                   value="${item.id}" 
                   class="volunteer-checkbox w-4 h-4 text-blue-950 rounded border-slate-300 focus:ring-blue-500 cursor-pointer" 
                 />
-                <span class="text-sm font-semibold text-slate-700">Name: <span class="font-bold text-blue-950">${item.first_name || ''}</span></span>
+                <span class="text-sm font-semibold text-slate-700">Name: <span class="font-bold text-blue-950">${item.first_name} ${item.surname}</span></span>
               </label>
               <p class="text-sm font-semibold text-slate-700">Mobile: <span class="font-bold text-blue-950">${item.mobile || ''}</span></p>
             </div>
@@ -411,6 +436,7 @@ async function handleUpdateEvent(e) {
 
     if (result.success) {
       closeEditModal();
+      isUpcomingLoaded = false;
       loadUpcomingEvents(); 
     } else {
       alert("Error updating event: " + (result.error || "Unknown error"));
@@ -469,6 +495,11 @@ function closeProfileModal() {
 
 // LEADER SECTIONS FUNCTIONS
 async function promoteSelectedLeaders(){
+
+  if (currentUserRole === 'leader') {
+        alert("Leaders are not permitted to promote volunteers.");
+        return;
+    }
   const selectedchb = document.querySelectorAll('.volunteer-checkbox:checked');
 
   if(selectedchb.length === 0){
@@ -492,6 +523,7 @@ async function promoteSelectedLeaders(){
 
     if(result.success){
       alert(result.msg);
+      isVolunteersLoaded = false;
       loadVolunteers();
     }
     else{
@@ -514,6 +546,7 @@ async function loadLeaders() {
     const result = await response.json();
 
     if (result.success) {
+      isLeadersLoaded = true;
       const leaders = result.data.leader || [];
 
       if (leaders.length === 0) {
@@ -551,7 +584,7 @@ async function loadLeaders() {
                   value="${item.id}" 
                   class="leader-checkbox w-4 h-4 text-blue-950 rounded border-slate-300 focus:ring-blue-500 cursor-pointer" 
                 />
-                <span class="text-sm font-semibold text-slate-700">Name: <span class="font-bold text-blue-950">${item.first_name || ''}</span></span>
+                <span class="text-sm font-semibold text-slate-700">Name: <span class="font-bold text-blue-950">${item.first_name} ${item.surname}</span></span>
               </label>
               <p class="text-sm font-semibold text-slate-700">Mobile: <span class="font-bold text-blue-950">${item.mobile || ''}</span></p>
             </div>
@@ -608,6 +641,7 @@ async function demoteSelectedLeader(){
 
     if(result.success){
       alert(result.msg);
+      isLeadersLoaded = false;
       loadLeaders();
     }
     else{
@@ -676,7 +710,7 @@ async function viewEvent(button){
       <div><label>Status :-</label><span class="bg-gray-400">${event.status}</span></div>
       <div><label>Count :-</label><span class="bg-gray-400">Not Available</span></div>
     </div>
-    <div class="flex justify-evenly mt-5 border-t rounded-2xl border-t-gray-700 pt-2">
+    <div class="flex justify-evenly mt-2 border-t rounded-2xl border-t-gray-700 pt-2">
       <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}" data-status="${event.status}" onclick="startEventReg(this)">Start Registration</button>
       <button  ${disabledAttr} class="c_btn_blue ${disabledClasses}" data-id="${event.event_id}" data-status="${event.status}" onclick = "stopEventReg(this)">Stop Registration</button>
       <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}" onclick="open_attendance(this)">Attendance</button>
@@ -822,3 +856,72 @@ function open_attendance(ev){
 async function exportStudentList(){
   window.location.href = '../api/export_student_list.php';
 }
+
+//Load Completed Events(Allocate hrs, report status)
+async function loadCompletedEvents(){
+  const container = document.getElementById('c_event');
+
+  try {
+    const response = await fetch("../api/event_api.php?action=show_completed_events");
+    const result = await response.json();
+
+    if (result.success) {
+      isCompletedLoaded = true;
+      const events = result.data;
+
+      
+      if (events.length === 0) {
+        container.innerHTML = `
+          <h2 class="font-header  font-bold text-slate-800 border-b-2 border-slate-200 pb-3 mb-2">
+            Completed Events
+          </h2>
+          <p class="text-slate-500 italic">No pending or upcoming events found.</p>
+        `;
+        return;
+      }
+
+      
+      let cardsHTML = `
+        <div class="border-b-2 border-slate-200 pb-2 mb-2">
+          <h2 class="font-header text-2xl font-bold text-slate-800">
+            Completed Events :- <span class="text-red-600">${events.length}</span>
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto  p-2">
+      `;
+
+     
+      events.forEach(ev => {
+        const statusClass = getStatusColor(ev.report_status);
+        const repStatus = (ev.report_status || '').toLowerCase().trim();
+        const hideView = (repStatus === 'pending') ? '!hidden' : '';
+        const hideAdd = (repStatus === 'pending') ? '' : '!hidden';
+
+        cardsHTML += `
+          <div class="event-card  border border-slate-200 rounded-2xl p-5 bg-white shadow-sm space-y-2">
+            <p class="text-sm font-semibold text-slate-700">Event Name: <span class="font-bold text-blue-950">${ev.name}</span></p>
+            <p class="text-sm font-semibold text-slate-700">Date: <span class="font-bold text-blue-950">${ev.date}</span></p>
+            <p class="text-sm font-semibold text-slate-700">Type: <span class="font-bold text-blue-950">${ev.event_type}</span></p>
+            <p class="text-sm font-semibold text-slate-700">Venue: <span class="font-bold text-blue-950">${ev.venue}</span></p>
+            <p class="text-sm font-semibold text-slate-700">Total: <span class="font-bold text-blue-950">${ev.total_attendees}</span><span>  |Male: <span class="font-bold text-blue-950">${ev.male_count}</span></span><span>  |Female: <span class="font-bold text-blue-950">${ev.female_count}</span></span></p>
+
+            <p class="text-sm font-semibold text-slate-700">Report Status:<span class="font-bold uppercase text-xs px-2.5 py-1 ${statusClass}  rounded-full">${ev.report_status}</span>
+            </p>
+            <div class="flex justify-between"> 
+            <button type="button"  class="c_btn ${hideAdd}"  data-id="${ev.event_id}" onclick="addReport(this)">Add Report</button>
+            <button type="button"  class="c_btn_blue ${hideView}"  data-id="${ev.event_id}" onclick="view_Report(this)">view Report</button>
+            </div>
+          </div>`;
+      });
+
+      cardsHTML += `</div>`;
+      container.innerHTML = cardsHTML;
+
+    } else {
+      console.error("Error loading events:", result.error);
+    }
+  } catch (error) {
+    console.error("Network error fetching upcoming events:", error);
+  }
+}
+

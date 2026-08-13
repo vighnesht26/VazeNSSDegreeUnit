@@ -91,7 +91,7 @@
          <div class="nav-title" onclick="switchpage('volunteers'); activate(this)">
           <span class="nav-icon pl-2">👥</span>Volunteers
         </div>
-        <div class="nav-title" onclick="switchpage('leaders'); activate(this)">
+        <div id="nav_leaders" class="nav-title" onclick="switchpage('leaders'); activate(this)">
           <span class="nav-icon pl-2">👤</span>Leaders
         </div>
         
@@ -134,7 +134,7 @@
             <!-- card-1-event-count -->
             <div class="event-count sec2-card space-y-2">
               <p class="font-bold border-b border-slate-100 pb-2 text-slate-900">Total Events Overview</p>
-              <p class="flex justify-between text-sm"><span>Total Events :</span> <span class="font-bold">0</span></p>
+              <p class="flex justify-between text-sm"><span>Total Events :</span > <span id="e_total" class="font-bold">0</span></p>
               <p class="flex justify-between text-sm"><span>UL :</span> <span class="font-bold">-</span></p>
               <p class="flex justify-between text-sm"><span>CL :</span> <span class="font-bold">-</span></p>
               <p class="flex justify-between text-sm"><span>ABP-1 :</span> <span class="font-bold">-</span></p>
@@ -163,15 +163,7 @@
 
     <!-- Completed events -->
      <div id="c_event" class="Content flex-col border-2 w-screen h-screen page p-6">
-        <div class="border-b-2 border-slate-200 pb-3 mb-4"><h2 class="font-header text-2xl font-bold text-slate-800">Total completed events : <span id="e_total" class="text-red-600">here</span></h2></div>
-        <div class="event-list border border-slate-200 rounded-2xl p-5 bg-white shadow-sm h-40">
-          <div class="event-info space-y-1">
-            <p class="text-sm font-semibold text-slate-700">Event Name :-</p>
-            <p class="text-sm font-semibold text-slate-700">Event Type:-</p>
-            <p class="text-sm font-semibold text-slate-700">Attendance : </p>
-          </div>
-          <div></div>
-        </div>
+        
      </div>
 
      <!-- Upcoming Event -->
@@ -181,7 +173,7 @@
 
      <!-- Report -->
        <div id="report" class="Content flex-col border-2 w-screen h-screen page p-6">
-          <h2 class="font-header text-2xl font-bold text-slate-800">Report</h2>
+          
      </div>
 
      <!-- Volunteers -->

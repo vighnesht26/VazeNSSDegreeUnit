@@ -224,7 +224,7 @@ function requireEventID($id) {
                 $conn->close();
                 break;
         
-        case 'stop_event_registration':
+            case 'stop_event_registration':
                 try {
                     requireEventID($eventID);
                     $sql = "UPDATE event SET status = 'Scheduled' WHERE event_id = ?";
@@ -249,10 +249,10 @@ function requireEventID($id) {
                 $conn->close();
                 break;
 
-        case 'get_attendance_list':
+            case 'get_attendance_list':
                 requireEventID($eventID);
 
-                $event_sql ="SELECT event_id, name, date, time, status FROM event WHERE event_id = ?";
+                $event_sql ="SELECT event_id, name, date, time, status, COALESCE(attendance_status, 'Pending') AS attendance_status FROM event WHERE event_id = ?";
                 $stmt = $conn->prepare($event_sql);
                 $stmt->bind_param("i", $eventID);
                 $stmt->execute();
@@ -261,10 +261,9 @@ function requireEventID($id) {
 
                 $vol_sql="SELECT s.std_id, s.first_name, s.surname, s.mobile, s.gender,s.email,
                 ad.class, ad.program, ad.division, ad.roll_no,
-                a.attendance_no, a.reporting_mark, a.end_mark,
+                a.attendance_no, a.reporting_mark,
                 COALESCE(a.isabsent, 'yes') AS isabsent,
-                a.hrs_alloted, a.marked_by,
-                COALESCE(a.Status, 'Pending') AS attendance_status
+                a.marked_by
                 FROM attendance a
                 JOIN student s ON a.student_id = s.std_id
                 JOIN academic_details ad ON s.std_id = ad.student_id
@@ -282,12 +281,161 @@ function requireEventID($id) {
                         'volunteers' => $volunteers
                 ]);
                     break;
+
+            case 'save_attendance_progress':
+                requireEventID($eventID);
+
+
+
+                $marked_by = $_SESSION['std_id'];
+
+                if(empty($data["attendance"]) || !is_array($data['attendance'])){
+                    echo json_encode(['success'=> false, 'error' => 'No attendance data provided']);
+                    break;
+                }
+
+                $conn->begin_transaction();
+
+                try{
+                    $update_sql = "UPDATE attendance SET isabsent = ?, reporting_mark =?, marked_by=?
+                                    WHERE event_id = ? AND student_id = ?";
+                    
+                    $stmt = $conn->prepare($update_sql);
+
+                   
+
+                    if(!$stmt){
+                        throw new Exception("Prepare failed" . $conn->error);
+                    }
+
+                    foreach($data['attendance'] as $item){
+                        $studentId = intval($item['student_id']);
+                        $isAbsent = ($item['is_present'] == 1) ? 'no' : 'yes' ;
+                        $repMark = ($item['is_present'] == 1) ? 
+                                    (!empty($item['reporting_mark']) ? $item['reporting_mark'] : date('Y-m-d H:i:s')) : NULL;
+
+                        $stmt->bind_param("ssiii", $isAbsent, $repMark, $marked_by, $eventID, $studentId);
+                        $stmt->execute();
+
+                    }
+                    $stmt->close();
+                    $conn->commit();
+
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Attendance progress saved successfully'
+                    ]);
+                    
+
+                }catch(Exception $e){
+                    $conn->rollback();
+                    echo json_encode([
+                        'success' => false,
+                        'error' => 'Failed to save progress' . $e->getMessage()
+                        ]);
+                }
+                break;
+        
+            case 'submit_attendance':
+                requireEventID($eventID);
+
+                $marked_by = $_SESSION['std_id'];
+
+                if(empty($data['attendance']) || !is_array($data['attendance'])){
+                    echo json_encode(['success'=> false, 'error'=>'NO attendance data provided']);
+                    break;
+                }
+
+                $conn->begin_transaction();
+
+                try{
+                      $update_sql = "UPDATE attendance SET isabsent = ?, reporting_mark =?, marked_by=?
+                                    WHERE event_id = ? AND student_id = ?";
+                    
+                    $stmt = $conn->prepare($update_sql);
+
+                   
+
+                    if(!$stmt){
+                        throw new Exception('Prepare failed' . $conn->error);
+                    }
+
+                    foreach($data['attendance'] as $item){
+                        $studentId = intval($item['student_id']);
+                        $isAbsent = ($item['is_present'] == 1) ? 'no' : 'yes' ;
+                        $repMark = ($item['is_present'] == 1) ? 
+                                    (!empty($item['reporting_mark']) ? $item['reporting_mark'] : date('Y-m-d H:i:s')) : NULL;
+
+                        $stmt->bind_param("ssiii", $isAbsent, $repMark, $marked_by, $eventID, $studentId);
+                        $stmt->execute();
+
+                    }
+                    $stmt->close();
+
+                    $event_sql = "UPDATE event SET attendance_status = 'Completed', status = 'Completed' WHERE  event_id = ?";
+                    $stmt_event = $conn->prepare($event_sql);
+                    $stmt_event->bind_param("i", $eventID);
+                    $stmt_event->execute();
+                    $stmt_event->close();
+
+
+                    $conn->commit();
+
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Attendance progress saved successfully'
+                    ]);
+                    
+
+                }catch(Exception $e){
+                    $conn->rollback();
+                    echo json_encode([
+                        'success' => false,
+                        'error' => 'Failed to save progress' . $e->getMessage()
+                        ]);
+                }
+                break;
+
+            case 'show_completed_events':
+                 try {
+       
+                        $sql = "SELECT e.event_id, e.name,e.event_type,e.date, e.venue,e.status,e.report_status,
+                        COUNT(CASE WHEN a.isabsent = 'no' THEN 1 END) AS total_attendees,
+                        COUNT(CASE WHEN a.isabsent = 'no' AND LOWER(gender) = 'male' THEN 1 END ) AS male_count,
+                        COUNT(CASE WHEN a.isabsent = 'no' AND LOWER(gender) = 'female' THEN 1 END) AS female_count
+                        FROM event e
+                        LEFT JOIN attendance a ON e.event_id = a.event_id
+                        LEFT JOIN student s ON a.student_id = s.std_id
+                        WHERE e.status = 'Completed'
+                        GROUP BY e.event_id, e.name,e.event_type,e.date, e.venue,e.status,e.report_status
+                        ORDER BY e.date ASC";
+
+
+                        $stmt = $conn->prepare($sql);
+                        $stmt->execute();
+                        
+                        $result = $stmt->get_result();
+                        
+                    
+                        $events = $result->fetch_all(MYSQLI_ASSOC); 
+                        $stmt->close();
+
+                        echo json_encode(['success' => true,
+                        'data' => $events]);
+                        
+
+                    } catch (Exception $e) {
+                        echo json_encode(['error' => $e->getMessage()]);
+                    }
+                    
+                    $conn->close();
+                    break;
             
             default:
             http_response_code(400);
              echo json_encode(['error' => 'Invalid or missing API action.']);
             break;
-        } 
+            } 
         }
         catch (Exception $e) 
         {

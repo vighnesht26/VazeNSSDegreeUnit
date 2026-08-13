@@ -1,4 +1,12 @@
 <?php
+
+//docker
+// $server = 'db'; 
+// $username = 'root';
+// $password = 'rootpassword';
+// $dbname = 'vazenssdegreeunit';
+
+
 $server= "Localhost";
 $username = "root";
 $password = "";

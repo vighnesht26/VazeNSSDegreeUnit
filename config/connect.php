@@ -29,6 +29,12 @@ $user = getenv('DB_USER');
 $password = getenv('DB_PASSWORD');
 $database = getenv('DB_NAME');
 
+error_log("HOST = " . var_export(getenv('DB_HOST'), true));
+error_log("PORT = " . var_export(getenv('DB_PORT'), true));
+error_log("USER = " . var_export(getenv('DB_USER'), true));
+error_log("DB = " . var_export(getenv('DB_NAME'), true));
+error_log("CA EXISTS = " . (file_exists('/etc/secrets/ca.pem') ? 'YES' : 'NO'));
+
 $conn = mysqli_init();
 
 mysqli_ssl_set(

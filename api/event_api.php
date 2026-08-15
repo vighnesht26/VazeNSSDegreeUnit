@@ -399,7 +399,7 @@ function requireEventID($id) {
             case 'show_completed_events':
                  try {
        
-                        $sql = "SELECT e.event_id, e.name,e.event_type,e.date, e.venue,e.status,e.report_status,
+                        $sql = "SELECT e.event_id, e.name,e.event_type,e.date, e.venue,e.status,e.report_status,e.alloted_hrs,
                         COUNT(CASE WHEN a.isabsent = 'no' THEN 1 END) AS total_attendees,
                         COUNT(CASE WHEN a.isabsent = 'no' AND LOWER(gender) = 'male' THEN 1 END ) AS male_count,
                         COUNT(CASE WHEN a.isabsent = 'no' AND LOWER(gender) = 'female' THEN 1 END) AS female_count
@@ -407,7 +407,7 @@ function requireEventID($id) {
                         LEFT JOIN attendance a ON e.event_id = a.event_id
                         LEFT JOIN student s ON a.student_id = s.std_id
                         WHERE e.status = 'Completed'
-                        GROUP BY e.event_id, e.name,e.event_type,e.date, e.venue,e.status,e.report_status
+                        GROUP BY e.event_id, e.name,e.event_type,e.date, e.venue,e.status,e.report_status,e.alloted_hrs
                         ORDER BY e.date ASC";
 
 
@@ -431,6 +431,64 @@ function requireEventID($id) {
                     $conn->close();
                     break;
             
+            
+
+            case 'hrs_allocation':
+                requireEventID($eventID);
+                if(empty($data['hrs'])){
+                    echo json_encode(['success'=>false, 'error'=>'Hours is missing']);
+                    exit();
+                }else{
+                    $hrs = $data['hrs'];
+                }
+
+                try{
+                    $conn->begin_transaction();
+
+                    $check_sql = "SELECT alloted_hrs FROM event WHERE event_id = ? FOR UPDATE";
+                    $check_stmt = $conn->prepare($check_sql);
+                    $check_stmt->bind_param("i", $eventID);
+                    $check_stmt->execute();
+                    $result = $check_stmt->get_result()->fetch_assoc();
+                    $check_stmt->close();
+
+                    if ((int)$result['alloted_hrs'] > 0) {
+                        throw new Exception("Hours have already been allocated for this event and cannot be modified.");
+                    }
+                    $sql1 = "UPDATE event SET alloted_hrs = ? WHERE event_id = ?";
+                    $stmt1 = $conn->prepare($sql1);
+                    $stmt1->bind_param("ii",$hrs,$eventID);
+                    $stmt1->execute();
+                    $stmt1->close();
+
+                    $sql2 = "UPDATE academic_details ad
+                            JOIN attendance att ON ad.student_id = att.student_id
+                            SET ad.Total_hrs = ad.Total_hrs + ?
+                            WHERE att.event_id = ? AND att.isabsent = 'no'";
+                    $stmt2 = $conn->prepare($sql2);
+                    $stmt2->bind_param("ii",$hrs,$eventID);
+                    $stmt2->execute();
+                    $stmt2->close();
+
+                    $conn->commit();
+
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Event hours and student total hours updated successfully'
+                    ]);
+                        
+                }catch(Exception $e){
+                    $conn->rollback();
+                    echo json_encode([
+                        'success'=>false, 
+                        'error'=>$e->getMessage()
+                    ]);
+
+                }
+                $conn->close();
+                exit();
+                break;
+
             default:
             http_response_code(400);
              echo json_encode(['error' => 'Invalid or missing API action.']);

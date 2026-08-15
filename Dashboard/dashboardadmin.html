@@ -6,8 +6,11 @@
  
   <link href="../output.css" rel="stylesheet">
 
+  <script src="../Event/event.js" defer></script>
   <script src="dashboard_admin.js" defer></script>
-  <title>Admin Dashboard</title>
+  <script src="../Event/report.js" defer></script>
+  
+  <title>Dashboard</title>
 
 </head>
 <body class="flex flex-col h-screen">
@@ -47,7 +50,7 @@
     <div class="flex items-center gap-3">
       <!-- Profile  -->
       <button onclick="openProfile()" class="c_btn_outline flex items-center gap-2">
-        <img src="../icons/profile.png" alt="Profile" class="w-4 h-4 invert">
+        <img src="../assets/profile.png" alt="Profile" class="w-4 h-4 invert">
         <span class="hidden md:inline">View Profile</span>
       </button>
 
@@ -295,6 +298,16 @@
 <div id="event_modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
   
 </div>
+
+<!-- hours allocation  -->
+ <div id="hrs_allocate_modal" class="fixed inset-0 z-50 hidden items-center justify-center  bg-black/50 backdrop-blur-sm p-4">
+  
+ </div>
+
+ <!-- report upload/access -->
+ <div id="report_modal" class="fixed inset-0 z-50 hidden items-center justify-center  bg-black/50 backdrop-blur-sm p-4">
+
+ </div>
 </body>
 
 </html>

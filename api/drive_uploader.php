@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 include '../vendor/autoload.php';
-include './google_config.php';
+// include './google_config.php';
 
 function getGoogleDriveService(){
     $client = new Google\Client();

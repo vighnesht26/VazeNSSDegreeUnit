@@ -3,8 +3,10 @@ session_start();
 header('Content-Type: application/json');
 require_once '../config/connect.php';
 require_once '../vendor/autoload.php';
+require_once './drive_uploader.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
+
 
 $TEMPLATE_Path = __DIR__ . '/../assets/template.docx';
 $REPORT_DIR = __DIR__ . '/../reports/';
@@ -72,8 +74,10 @@ try{
                 $temp->setValue('Conclusion',htmlspecialchars($conclusion));
                 
                 if(isset($_FILES['report_flyer']) && $_FILES['report_flyer']['error'] === UPLOAD_ERR_OK){
+                    $flyerPath = $_FILES['report_flyer']['tmp_name'] . '.jpg';
+                    rename($_FILES['report_flyer']['tmp_name'], $flyerPath);
                     $temp->setImageValue('flyer', array(
-                        'path' => $_FILES['report_flyer']['tmp_name'],
+                        'path' => $flyerPath,
                         'width' => 400,
                         'height' => 250,
                         'ratio' => true
@@ -84,8 +88,10 @@ try{
                 }
 
                 if(isset($_FILES['report_geotagged']) && $_FILES['report_geotagged']['error'] === UPLOAD_ERR_OK){
+                    $geotaggedPath = $_FILES['report_geotagged']['tmp_name'] . '.jpg';
+                    rename($_FILES['report_geotagged']['tmp_name'], $flyerPath);
                     $temp->setImageValue('geotagged', array(
-                        'path' => $_FILES['report_geotagged']['tmp_name'],
+                        'path' => $geotaggedPath,
                         'width' => 400,
                         'height' => 250,
                         'ratio' => true
@@ -95,13 +101,28 @@ try{
                     $temp->setValue('geotagged' , 'Not uploaded');
                 }
                 
-                $fileName  = $event['date'] . '_' . $event['name'] . '.docx';
-                $filePath  = $REPORT_DIR . $fileName;
 
-                $temp->saveAs($filePath);
+                // $fileName  = $event['date'] . '_' . $event['name'] . '.docx';
+                // $filePath  = $REPORT_DIR . $fileName;
+
+                // $temp->saveAs($filePath);
 
             
-                $reportUrl = '../reports/' . $fileName;
+                // $reportUrl = '../reports/' . $fileName;
+
+                $tempFile = tempnam(sys_get_temp_dir(), 'report_');
+                $temp->saveAs($tempFile);
+                $content = file_get_contents($tempFile);
+
+                if(file_exists($tempFile)){
+                    unlink($tempFile);
+                }
+
+                $fileName  = $event['date'] . '_' . $event['name'] . '.docx';
+                $docxmime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+                $driveFile = uploadToGoogleDrive($content, $fileName, $docxmime);
+                $reportUrl = $driveFile->webViewLink ?? ('https://drive.google.com/file/d/' . $driveFile->id . '/view');
 
                 $conn->begin_transaction();
 
@@ -138,10 +159,10 @@ try{
                 $stmt->close();
 
                 if ($row && !empty($row['report_url'])) {
-                    header('Content-Type: application/json');
-                   
                     header("Location: " . $row['report_url']);
                     exit();
+                   
+                
                 } else {
                     http_response_code(404);
                     echo json_encode(['success' => false, 'error' => 'Report not found for this event.']);

@@ -41,6 +41,10 @@ $user     = get_env_var('DB_USER');
 $password = get_env_var('DB_PASSWORD');
 $database = get_env_var('DB_NAME');
 
+define('GOOGLE_CLIENT_ID', getenv('GOOGLE_CLIENT_ID'));
+define('GOOGLE_CLIENT_SECRET', getenv('GOOGLE_CLIENT_SECRET'));
+define('GOOGLE_REFRESH_TOKEN', getenv('GOOGLE_REFRESH_TOKEN'));
+
 $ca_candidates = [
     '/etc/secrets/ca.pem',                 
                      

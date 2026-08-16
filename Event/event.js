@@ -556,7 +556,7 @@ async function loadCompletedEvents(){
             Completed Events :- <span class="text-red-600">${events.length}</span>
           </h2>
 
-          <button type="button" class="c_btn_blue" onclick="exportComEventList()">Export</button>
+          <button type="button" class="c_btn_blue" onclick="exportComEventList()">Export List</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto  p-2">
       `;
@@ -588,6 +588,7 @@ async function loadCompletedEvents(){
             <button type="button"  class="c_btn ${hideAdd}"  data-id="${ev.event_id}" data-name="${ev.name}" data-date="${ev.date}" onclick="openReportModal(this)">Add Report</button>
             <button type="button"  class="c_btn_blue ${hideView}"  data-id="${ev.event_id}" onclick="viewReport(this)">view Report</button>
             <button type="button"  class="c_btn_blue ${DispHrsBtn}"  data-id="${ev.event_id}" data-hrs="${ev.alloted_hrs}" onclick="allocate_hrs_modal(this)">Allocate Hours</button>
+            <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="open_attendance(this)">Attendance</button>
             </div>
           </div>`;
       });

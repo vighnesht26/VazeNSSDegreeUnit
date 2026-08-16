@@ -27,7 +27,8 @@ function uploadToGoogleDrive($filecontent, $fileName, $mimeType){
 
     $filemetadata = new Google\Service\Drive\DriveFile([
         'name'=>$fileName,
-        'parents' => (defined('GOOGLE_DRIVE_FOLDER_ID') && GOOGLE_DRIVE_FOLDER_ID) ? [GOOGLE_DRIVE_FOLDER_ID] : []
+        'parents' => getenv('GOOGLE_DRIVE_FOLDER_ID') 
+                      ?: (defined('GOOGLE_DRIVE_FOLDER_ID') && GOOGLE_DRIVE_FOLDER_ID) ? [GOOGLE_DRIVE_FOLDER_ID] : []
     ]);
 
 

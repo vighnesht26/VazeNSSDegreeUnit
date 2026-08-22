@@ -1,8 +1,7 @@
-output.css
 ca.pem
 credentials.json
 google_config.php
 
 /vendor
 config/connect.php
-config/connect.php
+

@@ -126,9 +126,9 @@ try{
 
                 $conn->begin_transaction();
 
-                $sql1 = "INSERT INTO report (male_count, female_count, description, conclusion, expense, report_url, for_event) VALUES(?,?,?,?,?,?,?,?)";
+                $sql1 = "INSERT INTO report (male_count, female_count, description, conclusion, expense, report_url, for_event) VALUES(?,?,?,?,?,?,?)";
                 $stmt1 = $conn->prepare($sql1);
-                $stmt1->bind_param("iissisii", $event['male_count'],$event['female_count'], $desc, $conclusion,$expense, $reportUrl, $eventID);
+                $stmt1->bind_param("iissisi", $event['male_count'],$event['female_count'], $desc, $conclusion,$expense, $reportUrl, $eventID);
                 $stmt1->execute();
 
                 $sql2 = "UPDATE event SET report_status = 'Completed' WHERE event_id =?";

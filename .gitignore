@@ -3,5 +3,5 @@ credentials.json
 google_config.php
 
 /vendor
-config/connect.php
+
 

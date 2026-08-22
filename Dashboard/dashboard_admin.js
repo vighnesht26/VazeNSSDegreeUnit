@@ -23,7 +23,7 @@ if (addEventButton) {
               
             } else {
                 alert("Unauthorized: Only Admins and Leaders can add events.");
-                window.location.href = '../Authentication/login.html';
+                window.location.href = '../Authentication/index.html';
             }
         } catch (error) {
             console.error("Session verification failed:", error);
@@ -115,23 +115,23 @@ async function fetchAdminProfile() {
 
            
             if (nameElement) {
-                console.log("name RUNNED");
+                
                 nameElement.textContent = admin.name;
             } 
 
             if (roleElement) {
-                console.log("role RUNNED");
+                
                 roleElement.textContent = admin.role;
             }
 
             if(usernameElement){
-                console.log("username RUNNED");
+                
                 usernameElement.textContent = admin.username;
             }   
         } 
         else {
             localStorage.removeItem('user');
-            window.location.href = '../Authentication/login.html';
+            window.location.href = '../Authentication/index.html';
         }
     } catch (error) { 
         

@@ -69,28 +69,90 @@ eventDate.addEventListener('blur', function(){
   }
 });
 }
+const rtPicker = flatpickr('#RT', {
+  enableTime: true,
+  noCalendar: true,
+  dateFormat: "h:i K",
+  minTime: "05:00",
+  disableMobile: true
+}); 
+flatpickr('#e_time',{
+  enableTime : true,
+  noCalendar: true,
+  dateFormat: "h:i K",
+  minTime: "05:00",
+  maxTime:"17:00",
+  disableMobile:true,
+  
+  allowInput: false,
+  onChange: function(selectedDates, dateStr, instance) {
+    const err = document.getElementById("errortime");
+    if (!selectedDates.length) {
+      err.classList.add("hidden");
+      err.textContent = "";
+      return;
+    }
+    const hours = selectedDates[0].getHours();
+    const minutes = selectedDates[0].getMinutes();
+    const totalMinutes = hours * 60 + minutes;
+    if (totalMinutes < 300 || totalMinutes > 1020) {
+      err.classList.remove("hidden");
+      err.textContent = "Please select a time between 05:00 AM and 05:00 PM.";
 
+      instance.setDate("07:00", false, "H:i");
+    } else {
+      err.classList.add("hidden");
+      err.textContent = "";
+    }
 
-function timevalidate(){
-  const etime = document.getElementById("e_time");
-  const err = document.getElementById("errortime");
-  
-  
-  const val = etime.value;
-  
-  if (!val) {
-    err.classList.add("hidden");
-    err.textContent = "";
-    return;
+    if (selectedDates.length > 0) {
+      const hours = String(selectedDates[0].getHours()).padStart(2, '0');
+      const minutes = String(selectedDates[0].getMinutes()).padStart(2, '0');
+      const formatted24h = `${hours}:${minutes}`;
+
+      rtPicker.set('maxTime', formatted24h);
+
+      if (rtPicker.selectedDates.length > 0 && rtPicker.selectedDates[0] >= selectedDates[0]) {
+        rtPicker.clear();
+      }
+    } else {
+      rtPicker.set('maxTime', null);
+    }
   }
-  
-  if (val < "05:00" || val > "17:00") {
-    err.classList.remove("hidden");
-    err.textContent = "Please select a time between 05:00 AM and 05:00 PM.";
-    etime.value = "07:00"
-  } else {
+});
+
+
+function checkApHr(){
+  const hr = document.getElementById("Ah");
+  const err = document.getElementById("errorh");
+
+  if(hr.length == 0){
+    hr.value = 1;
     err.classList.add("hidden");
-    err.textContent = ""; 
+  }
+
+  if(hr.value >12 || hr.value < 1){
+    err.textContent = "Approx hours cannot be less than 1 and greater than 12";
+    err.classList.remove("hidden");
+    hr.value = "";
+  }else{
+    err.textContent = "";
+    err.classList.add("hidden");
+  }
+}
+function checkmx(){
+  const hr = document.getElementById("MP");
+  const err = document.getElementById("errormx");
+
+  
+
+  if(hr.value >300 || hr.value < 2){
+    err.textContent = "Approx hours cannot be less than 2 and greater than 300";
+    err.classList.remove("hidden");
+    hr.value = "";
+  }else{
+    err.textContent = "";
+    err.classList.add("hidden");
   }
 }
 

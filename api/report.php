@@ -74,7 +74,8 @@ try{
                 $temp->setValue('Conclusion',htmlspecialchars($conclusion));
                 
                 if(isset($_FILES['report_flyer']) && $_FILES['report_flyer']['error'] === UPLOAD_ERR_OK){
-                    $flyerPath = $_FILES['report_flyer']['tmp_name'] . '.jpg';
+                    $ext = image_type_to_extension(exif_imagetype($_FILES['report_flyer']['tmp_name']), false) ?: 'jpg';
+                    $flyerPath = $_FILES['report_flyer']['tmp_name'] .'.'.$ext;;
                     rename($_FILES['report_flyer']['tmp_name'], $flyerPath);
                     $temp->setImageValue('flyer', array(
                         'path' => $flyerPath,
@@ -88,8 +89,9 @@ try{
                 }
 
                 if(isset($_FILES['report_geotagged']) && $_FILES['report_geotagged']['error'] === UPLOAD_ERR_OK){
-                    $geotaggedPath = $_FILES['report_geotagged']['tmp_name'] . '.jpg';
-                    rename($_FILES['report_geotagged']['tmp_name'], $flyerPath);
+                    $ext = image_type_to_extension(exif_imagetype($_FILES['report_geotagged']['tmp_name']), false) ?: 'jpg';
+                    $geotaggedPath = $_FILES['report_geotagged']['tmp_name'] .'.'.$ext;
+                    rename($_FILES['report_geotagged']['tmp_name'], $geotaggedPath);
                     $temp->setImageValue('geotagged', array(
                         'path' => $geotaggedPath,
                         'width' => 400,

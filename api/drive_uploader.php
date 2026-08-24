@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 include '../vendor/autoload.php';
-//include './google_config.php';
+include './google_config.php';
 
 function getGoogleDriveService(){
     $client = new Google\Client();
@@ -28,7 +28,9 @@ function uploadToGoogleDrive($filecontent, $fileName, $mimeType){
     $folderId = getenv('GOOGLE_DRIVE_FOLDER_ID') 
         ?: (defined('GOOGLE_DRIVE_FOLDER_ID') ? GOOGLE_DRIVE_FOLDER_ID : null);
 
-    $metadataConfig = ['name' => $fileName];
+    $metadataConfig = ['name' => $fileName,
+    'mimeType' => 'application/vnd.google-apps.document'
+    ];
     
     if (!empty($folderId)) {
         $metadataConfig['parents'] = [$folderId];

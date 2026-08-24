@@ -71,6 +71,9 @@ function switchpage(pageid){
         if (pageid === 'leaders' && currentUserRole !== 'leader' && !isLeadersLoaded) {
           loadLeaders();
         }
+        if(pageid === 'pendings' && currentUserRole == 'leader'){
+          getPendingStd();
+        }
 
         
 }
@@ -458,3 +461,172 @@ async function demoteSelectedLeader(){
 
 }
   
+//approval system
+async function getPendingStd(){
+  if(currentUserRole !== 'leader') {
+      console.warn('Unauthorized: Only leaders can view pending approvals.');
+      return;
+  }
+
+  const Container = document.getElementById('pendings');
+  try{
+    const response = await fetch('../Authentication/approval.php',{
+      method :'GET',
+      headers : {'Accept' : 'application/json'}
+    });
+
+    if(!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+   if (!result.success) {
+      console.error('Failed to fetch data:', result.error);
+      Container.innerHTML = `
+        <div class="border-b-2 border-slate-200 pb-3 mb-4">
+          <h2 class="font-header text-2xl font-bold text-slate-800">Pending Approvals</h2>
+        </div>
+        <p class="text-sm text-red-600 font-medium">${result.error || 'Failed to load requests.'}</p>
+      `;
+      return;
+    }
+
+    const students = result.data || [];
+
+    if (students.length === 0) {
+      Container.innerHTML = `
+        <div class="border-b-2 border-slate-200 pb-3 mb-4">
+          <h2 class="font-header text-2xl font-bold text-slate-800">Pending Approvals</h2>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-sm text-slate-500 italic shadow-sm">
+          No pending registrations found.
+        </div>
+      `;
+      return;
+    }
+
+    let rowsHTML = '';
+    students.forEach(student => {
+      const fullName = `${student.first_name} ${student.surname}`;
+      rowsHTML += `
+        <tr id="row-${student.std_id}" class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+          <td class="px-6 py-4 text-sm font-semibold text-slate-800 whitespace-nowrap">${fullName}</td>
+          <td class="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">${student.email}</td>
+          <td class="px-6 py-4 text-sm font-medium text-blue-950 whitespace-nowrap">${student.mobile}</td>
+          <td class="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">${student.class} - ${student.program}</td>
+          <td class="px-6 py-4 text-sm font-medium text-slate-700 whitespace-nowrap">${student.division}${student.roll_no}</td>
+          <td class="px-6 py-4 text-sm whitespace-nowrap text-center space-x-2">
+            <button 
+              type="button"
+              class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer" 
+              onclick="handleApproval(${student.std_id}, 'approve')">
+              Approve
+            </button>
+            <button 
+              type="button"
+              class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-rose-500 cursor-pointer" 
+              onclick="handleApproval(${student.std_id}, 'reject')">
+              Reject
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+
+    Container.innerHTML = `
+      <div class="border-b-2 border-slate-200 pb-3 mb-4 flex justify-between items-center">
+        <h2 class="font-header text-2xl font-bold text-slate-800">
+          Pending Approvals :- <span class="text-red-600">${students.length}</span>
+        </h2>
+      </div>
+      <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm bg-white">
+        <table class="min-w-full divide-y divide-slate-200 text-left">
+          <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            <tr>
+              <th class="px-6 py-3.5">Name</th>
+              <th class="px-6 py-3.5">Email</th>
+              <th class="px-6 py-3.5">Mobile</th>
+              <th class="px-6 py-3.5">Class & Program</th>
+              <th class="px-6 py-3.5">Div / Roll</th>
+              <th class="px-6 py-3.5 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pending_rows_body" class="divide-y divide-slate-100">
+            ${rowsHTML}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+  }catch(error){
+    console.error('Fetch error:', error);
+        Container.innerHTML = `<tr><td colspan="7" class="text-danger text-center">Error loading requests. Please refresh.</td></tr>`;
+  }
+}
+
+async function handleApproval(studentId, action) {
+  if (action === 'reject') {
+    const confirmed = confirm('Are you sure you want to reject this registration? The application will be permanently removed.');
+    if (!confirmed) return;
+  }
+
+  const row = document.getElementById(`row-${studentId}`);
+  const buttons = row ? row.querySelectorAll('button') : [];
+
+  
+  buttons.forEach(btn => {
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-not-allowed');
+  });
+
+  const formData = new FormData();
+  formData.append('std_id', studentId);
+  formData.append('action', action);
+
+  try{
+    const response = await fetch('../Authentication/approval.php', {
+      method: 'POST',
+      body: formData
+    });
+
+    if(!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if(result.success) {
+      alert(result.message);
+
+      
+      if(row) {
+        row.remove();
+      }
+
+      
+      const container = document.getElementById('pendings');
+      if(container && container.children.length === 0) {
+        container.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-sm text-gray-500 italic">No pending registrations found.</td></tr>`;
+      }
+    } 
+    else{
+      alert('Operation failed: ' + (result.error || 'Unknown error occurred.'));
+      
+      buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      });
+    }
+
+  } 
+  catch(error){
+    console.error('Request failed:', error);
+    alert('An error occurred while processing the request. Please try again.');
+    
+   
+    buttons.forEach(btn =>{
+      btn.disabled = false;
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    });
+  }
+}

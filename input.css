@@ -37,7 +37,7 @@ body {
 }
 
 .nav-title {
-  @apply my-1.5 px-4 py-3 rounded-xl flex items-center gap-3 transition-all duration-200 cursor-pointer font-medium text-sm md:text-base;
+  @apply my-1.5 px-4 py-3 flex rounded-xl  items-center gap-3 transition-all duration-200 cursor-pointer font-medium text-sm md:text-base;
   font-family: "Nova Round", system-ui;
   color: #c5d2eb;
 }

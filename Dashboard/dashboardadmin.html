@@ -85,9 +85,7 @@
         <div class="nav-title" onclick="switchpage('u_event'); activate(this)">
           <span class="nav-icon pl-2">📆</span>Upcoming Events
         </div>
-        <div class="nav-title" onclick="switchpage('report'); activate(this)">
-          <span class="nav-icon pl-2">📋</span>Reports
-        </div>
+        
 
         <!-- admin -->
          <div class="admins border-b border-blue-900/60 my-4 mx-3"></div>
@@ -97,7 +95,13 @@
         <div id="nav_leaders" class="nav-title" onclick="switchpage('leaders'); activate(this)">
           <span class="nav-icon pl-2">👤</span>Leaders
         </div>
-        <div id="nav_pendings" class="nav-title " onclick="switchpage('pendings'); activate(this)">
+        <div id="nav_settings" class="nav-title" onclick="switchpage('settings'); activate(this)">
+          <span class="nav-icon pl-2">⚙️</span>Settings
+        </div>
+
+
+        <!-- leaders -->
+        <div id="nav_pendings" class="nav-title" onclick="switchpage('pendings'); activate(this)">
           <span class="nav-icon pl-2">👤</span>Approvals
         </div>
         
@@ -107,64 +111,171 @@
 
   <!-- Dashboard -->
    
-    <div id="dashboard" class="content flex w-screen h-full overflow-y-auto page active p-6">
-        <!-- section-1 -->
-      <div class="section-1 flex justify-evenly gap-6 mt-2">
-      <!-- card-1 -->
+    <div id="dashboard" class="content w-full h-full overflow-y-auto page active p-4 md:p-6 space-y-6">
 
-        <div class="dash-card">
-          <h3 class="card-header">Active Event </h3>
-          <div class="detail font-text">
-            <p class="card-content">Event name <span id="ename" class="ml-5 font-bold text-blue-950">ee</span></p>
-            <p class="card-content">Date <span id="edate" class="ml-15 font-bold text-blue-950">d</span></p>
-            <p class="card-content">Type<span id="etype" class="ml-15 font-bold text-blue-950">ee</span></p>
-            <p class="card-content">Max Participation<span id="eMP" class="ml-15 font-bold text-blue-950">ee</span></p>
-            <p class="card-content">Attendees :-<span id="eAttendees  " class="ml-15 font-bold text-blue-950">ee</span></p>
+      <!-- Section 1-->
+    <div class="w-full bg-white border border-slate-200 rounded-2xl p-4 md:p-2 shadow-sm ">
+      
+     
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+        <div class="flex flex-wrap items-baseline gap-2">
+          <h3 class="font-header font-bold text-slate-900 text-lg md:text-xl">
+            Pending Actions
+          </h3>
+         
+        </div>
+        
+      </div>
+
+     
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-text">
+        
+        <!-- Pending Reports -->
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 flex flex-col justify-between gap-3">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-slate-600 font-medium">Unsubmitted Reports</span>
+            <span id="pending_report_count" class="font-bold text-sm md:text-base text-back shrink-0">0 Events</span>
+          </div>
+          <div class="flex justify-between items-center text-xs md:text-sm text-slate-500 pt-2 border-t border-slate-200/50">
+            <span class="text-slate-400">Latest Event:</span>
+            <span id="pending_report_name" class="font-semibold text-slate-800 truncate ml-2 max-w-[60%] text-right">—</span>
           </div>
         </div>
-        <!-- card-2 -->
-         <div class="dash-card">
-             <h3 class="card-header">Upcoming Event</h3>
+
+        <!-- Pending Hours Allocation -->
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 flex flex-col justify-between gap-3">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-slate-600 font-medium">Unallocated Hours</span>
+            <span id="pending_hrs_count" class="font-bold text-sm md:text-base text-back shrink-0">0 Events</span>
+          </div>
+          <div class="flex justify-between items-center text-xs md:text-sm text-slate-500 pt-2 border-t border-slate-200/50">
+            <span class="text-slate-400">Latest Event:</span>
+            <span id="pending_hrs_name" class="font-semibold text-slate-800 truncate ml-2 max-w-[60%] text-right">—</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+      <!-- Section 2 -->
+      <div class="section-1">
+        
+        <!-- Active Event -->
+        <div class="dash-card">
+          <div class="card-header">
+            <span>Active Event</span>
+            <span id="active_badge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/40">Live</span>
+          </div>
           <div class="detail font-text">
-            <p class="card-content">Event name <span id="uname" class="ml-5 font-bold text-blue-950">name</span></p>
-             <p class="card-content">Date <span id="udate" class="ml-15 font-bold text-blue-950">d</span></p>
-            <p class="card-content">Type <span id="utype" class="ml-15 font-bold text-blue-950">t</span></p>
-            <p class="card-content">Venue <span id="uvenue" class="ml-15 font-bold text-blue-950">v</span></p>
-            <p class="card-content">Time <span id="ustatus" class="ml-15 font-bold text-blue-950">t</span></p>
-          </div>
-         </div>
-
-         </div>
-         <!-- section-2 -->
-          <div class="section-2 flex justify-evenly gap-6 mt-8">
-            <!-- card-1-event-count -->
-            <div class="event-count sec2-card space-y-2">
-              <p class="font-bold border-b border-slate-100 pb-2 text-slate-900">Total Events Overview</p>
-              <p class="flex justify-between text-sm"><span>Total Events :</span > <span id="e_total" class="font-bold">0</span></p>
-              <p class="flex justify-between text-sm"><span>UL :</span> <span class="font-bold">-</span></p>
-              <p class="flex justify-between text-sm"><span>CL :</span> <span class="font-bold">-</span></p>
-              <p class="flex justify-between text-sm"><span>ABP-1 :</span> <span class="font-bold">-</span></p>
-              <p class="flex justify-between text-sm"><span>ABP-2 :</span> <span class="font-bold">-</span></p>
-              <p class="flex justify-between text-sm"><span>DL :</span> <span class="font-bold">-</span></p>
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Event Name</span>
+              <span id="ename" class="font-bold text-slate-900">—</span>
             </div>
-
-            <!-- card-2-volunteer-count -->
-            <div class="volunteer-count sec2-card space-y-2">
-              <p class="font-bold border-b border-slate-100 pb-2 text-slate-900">Volunteer Stats</p>
-              <p class="flex justify-between text-sm"><span>Volunteer count :</span> <span class="font-bold">-</span></p>
-              <p class="flex justify-between text-sm"><span>Male count :</span> <span class="font-bold">-</span></p>
-              <p class="flex justify-between text-sm"><span>Female count :</span> <span class="font-bold">-</span></p> 
-            </div> 
-            <!-- card-3-leader-count -->
-             <div class="volunteer-count sec2-card space-y-2">
-              <p class="font-bold border-b border-slate-100 pb-2 text-slate-900">Leader Stats</p>
-              <p class="flex justify-between text-sm"><span>Leader count :</span> <span class="font-bold">-</span></p>
-              <p class="flex justify-between text-sm"><span>Male count :</span> <span class="font-bold">-</span></p>
-              <p class="flex justify-between text-sm"><span>Female count :</span> <span class="font-bold">-</span></p> 
-             </div>
-             
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Date</span>
+              <span id="edate" class="font-semibold text-slate-900">—</span>
+            </div>
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Event Type</span>
+              <span id="etype" class="font-bold text-bluebtn">—</span>
+            </div>
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Max Participation</span>
+              <span id="eMP" class="font-semibold text-slate-900">—</span>
+            </div>
+            
+            <div class="p-3 bg-slate-50 flex justify-end">
+              <button type="button" id="btn_active_attendance" onclick=" open_attendance(this)" class="c_btn_outline text-xs">
+                📋 View Attendance
+              </button>
+            </div>
           </div>
-           
+        </div>
+
+        <!-- Upcoming Event Card -->
+        <div class="dash-card">
+          <div class="card-header">
+            <span>Upcoming Event</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-semibold border border-blue-500/40">Scheduled</span>
+          </div>
+          <div class="detail font-text">
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Event Name</span>
+              <span id="uname" class="font-bold text-slate-900">—</span>
+            </div>
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Date</span>
+              <span id="udate" class="font-semibold text-slate-900">—</span>
+            </div>
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Event Type</span>
+              <span id="utype" class="font-bold text-bluebtn">—</span>
+            </div>
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Venue</span>
+              <span id="uvenue" class="font-semibold text-slate-900">—</span>
+            </div>
+            <div class="card-content">
+              <span class="text-slate-500 font-medium">Status</span>
+              <span id="ustatus" class="font-semibold text-slate-700">Scheduled</span>
+            </div>
+            <div class="p-3 bg-slate-50 flex justify-end">
+              <button type="button" onclick="switchpage('u_event')" class="c_btn_outline text-xs">
+                📆 View All Upcoming
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Section 3 -->
+      <div class="section-2">
+        
+        <!-- Events Overview -->
+        <div class="sec2-card space-y-2.5">
+          <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <p class="font-bold font-header text-slate-900">Events Overview</p>
+            <span id="e_total" class="px-2 py-0.5 text-xs font-bold rounded-lg bg-red-100 text-back">0 Total</span>
+          </div>
+          <div class="space-y-1.5 text-xs md:text-sm font-text">
+            <p class="flex justify-between text-slate-600"><span>College Level (CL)</span> <span id="cnt_cl" class="font-bold text-slate-900">—</span></p>
+            <p class="flex justify-between text-slate-600"><span>University Level (UL)</span> <span id="cnt_ul" class="font-bold text-slate-900">—</span></p>
+            <p class="flex justify-between text-slate-600"><span>Area Based Project 1 (ABP-1)</span> <span id="cnt_abp1" class="font-bold text-slate-900">—</span></p>
+            <p class="flex justify-between text-slate-600"><span>Area Based Project 2 (ABP-2)</span> <span id="cnt_abp2" class="font-bold text-slate-900">—</span></p>
+            <p class="flex justify-between text-slate-600"><span>District Level (DL)</span> <span id="cnt_dl" class="font-bold text-slate-900">—</span></p>
+          </div>
+        </div>
+
+        <!-- Volunteer Stats -->
+        <div class="sec2-card space-y-2.5">
+          <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <p class="font-bold font-header text-slate-900">Volunteer Stats</p>
+            <span id="v_total" class="px-2 py-0.5 text-xs font-bold rounded-lg bg-blue-100 text-bluebtn">—</span>
+          </div>
+          <div class="space-y-2 text-xs md:text-sm font-text pt-1">
+            <p class="flex justify-between text-slate-600"><span>Total Volunteers</span> <span id="vol_count" class="font-bold text-slate-900">—</span></p>
+            <p class="flex justify-between text-slate-600"><span>Male Volunteers</span> <span id="vol_male" class="font-bold text-slate-900">—</span></p>
+            <p class="flex justify-between text-slate-600"><span>Female Volunteers</span> <span id="vol_female" class="font-bold text-slate-900">—</span></p>
+          </div>
+        </div>
+
+        <!-- Leader Stats -->
+        <div class="sec2-card space-y-2.5">
+          <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+            <p class="font-bold font-header text-slate-900">Leader Stats</p>
+            <span id="l_total" class="px-2 py-0.5 text-xs font-bold rounded-lg bg-amber-100 text-amber-800">—</span>
+          </div>
+          <div class="space-y-2 text-xs md:text-sm font-text pt-1">
+            <p class="flex justify-between text-slate-600"><span>Total Leaders</span> <span id="lead_count" class="font-bold text-slate-900">—</span></p>
+            <p class="flex justify-between text-slate-600"><span>Male Leaders</span> <span id="lead_male" class="font-bold text-slate-900">—</span></p>
+            <p class="flex justify-between text-slate-600"><span>Female Leaders</span> <span id="lead_female" class="font-bold text-slate-900">—</span></p>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
     <!-- Completed events -->
@@ -177,18 +288,19 @@
         
      </div>
 
-     <!-- Report -->
-       <div id="report" class="Content flex-col border-2 w-screen h-screen page p-6">
-          
-     </div>
+    
 
      <!-- Volunteers -->
-       <div id="volunteers" class="Content flex flex-col border-2 w-screen h-screen page p-6">
+       <div id="volunteers" class="Content flex flex-col border-2 w-full h-full page p-6 overflow-y-auto">
          
      </div>
 
      <!-- Leaders -->
        <div id="leaders" class="Content flex-col border-2 w-screen h-screen page p-6">
+           
+     </div>
+     <!-- SETTINGS -->
+     <div id="settings" class="Content flex-col border-2 w-screen h-screen page p-6">
            
      </div>
 <!-- approvals -->
@@ -242,7 +354,7 @@
       <div>
         <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Status</label>
         <select id="edit_status" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="Tentative" class="font-semibold text-orange-200">Tentative</option>
+          
           <option value="Scheduled">Scheduled</option>
           <!-- <option value="Active">Active</option> -->
           <!-- <option value="Completed">Completed</option> -->

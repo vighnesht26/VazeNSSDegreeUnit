@@ -204,19 +204,28 @@ async function displayeventcard() {
             console.log(data.error);
             return;
         }
+
+        
         if(data.active){console.log("step4");
+
+            currentActiveEventId = data.active.event_id || data.active.id;
             document.getElementById('ename').textContent= data.active.name;
             document.getElementById('edate').textContent= data.active.date;
             document.getElementById('etype').textContent= data.active.event_type;
-            // document.getElementById('evenue').textContent= data.active.venue;
-            //  document.getElementById('estatus').textContent= data.active.status;
-
+            document.getElementById('eMP').textContent= data.active.max_participation;
+            
+            const attendanceBtn = document.getElementById('btn_active_attendance');
+            if (attendanceBtn) {
+                attendanceBtn.dataset.id = data.active.event_id;
+                attendanceBtn.disabled = false;
+                attendanceBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
         }else{
              document.getElementById('ename').textContent= 'None';
             document.getElementById('edate').textContent= 'None';
             document.getElementById('etype').textContent= 'None';
-            // document.getElementById('evenue').textContent= 'None';
-            //  document.getElementById('estatus').textContent= 'None';
+            document.getElementById('eMP').textContent= 'None';
+           document.getElementById('eAttendees').textContent= 'None';
 
         }
 
@@ -281,6 +290,10 @@ async function loadUpcomingEvents() {
 
       events.forEach(ev => {
         const statusClass = getStatusColor(ev.status);
+        const statusLower = ev.status ? ev.status.toLowerCase() : '';
+        const isCan = statusLower != 'cancelled';
+        const disabledAttr = isCan ? '' : 'disabled';
+        const disabledClasses = isCan ? '' : 'opacity-50 cursor-not-allowed pointer-events-none !bg-gray-400 !text-gray-700';
         cardsHTML += `
           <div class="event-card  border border-slate-200 rounded-2xl p-5 bg-white shadow-sm space-y-2">
             <p class="text-sm font-semibold text-slate-700">Event Name: <span class="font-bold text-blue-950">${ev.name}</span></p>
@@ -295,7 +308,7 @@ async function loadUpcomingEvents() {
               data-date="${ev.date}"
               data-type="${ev.event_type}"
               data-venue="${ev.venue}"
-              data-status="${ev.status}" class="c_btn">Update</button>
+              data-status="${ev.status}" ${disabledAttr} class="c_btn ${disabledClasses}">Update</button>
             <button type=" button" class="c_btn_blue  "  data-id="${ev.event_id}" onclick="viewEvent(this)"> view </button>
             </div>
           </div>`;
@@ -688,7 +701,7 @@ function allocate_hrs_modal(ev){
     <div class="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm w-100">
     <div >
     <Label class="font-bold font-header">Enter Hours :</Label>
-    <input  id="hrs" ${dis} type="number" min="1" max="12" class="w-30 pl-3 border border-red-500 rounded-2xl bg-gray-400">
+    <input  id="hrs" ${dis} type="number" step="0.5" min="1" max="12" class="w-30 pl-3 border border-red-500 rounded-2xl bg-gray-400">
   </div>
   <div class="flex justify-evenly mt-5">
     <button   class="${BtnClass}" onclick="allocate_hours(this)" data-id=${eventId}>${isAlloted ? 'Alloted' : 'Confirm'}</button>
@@ -708,8 +721,8 @@ function close_hrs_modal(){
 async function allocate_hours(ev){
   const eventId = ev.dataset.id;
   const hrs = document.getElementById('hrs').value;
-  if(hrs == 0.0){
-    alert("Hrs not alloted");
+  if(hrs == 0.0 || hrs > 12.0){
+    alert("Hrs not allowed, Please enter valid hours between 1 to 12 hrs");
     return;
   }
   if(!confirm("Are you sure, you want to allocate this hour?")){

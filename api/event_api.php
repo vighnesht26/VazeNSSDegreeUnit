@@ -151,7 +151,7 @@ function requireEventID($id) {
                         $current_date = date('Y-m-d');
 
                         //status == active
-                        $active_sql = "SELECT event_id, name, event_type, status, date, venue 
+                        $active_sql = "SELECT event_id, name, event_type, date, max_participation 
                         FROM event 
                         WHERE status = 'Active' 
                         ORDER BY date ASC LIMIT 1";
@@ -436,10 +436,17 @@ function requireEventID($id) {
             case 'hrs_allocation':
                 requireEventID($eventID);
                 if(empty($data['hrs'])){
+                    http_response_code(400);
                     echo json_encode(['success'=>false, 'error'=>'Hours is missing']);
                     exit();
                 }else{
                     $hrs = $data['hrs'];
+                }
+
+                if($hrs == 0.0 || $hrs > 12.0){
+                    http_response_code(400);
+                    echo json_encode(['success'=>false, 'error'=>'Hours are not allowed']);
+                    exit();
                 }
 
                 try{
@@ -471,8 +478,9 @@ function requireEventID($id) {
                     $stmt2->close();
 
                     $conn->commit();
-
+                    http_response_code(200);
                     echo json_encode([
+                        
                         'success' => true,
                         'message' => 'Event hours and student total hours updated successfully'
                     ]);

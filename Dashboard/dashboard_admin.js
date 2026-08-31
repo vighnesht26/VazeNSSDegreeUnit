@@ -1,7 +1,7 @@
-let currentUserRole = '';
+ currentUserRole = '';
 
-let isVolunteersLoaded = false;
-let isLeadersLoaded = false;
+ isVolunteersLoaded = false;
+ isLeadersLoaded = false;
 document.addEventListener("DOMContentLoaded", () => {
     fetchAdminProfile();
     displayeventcard();
@@ -71,8 +71,11 @@ function switchpage(pageid){
         if (pageid === 'leaders' && currentUserRole !== 'leader' && !isLeadersLoaded) {
           loadLeaders();
         }
-        if(pageid === 'pendings' && currentUserRole == 'leader'){
+        if(pageid === 'pendings' && currentUserRole !== 'admin'){
           getPendingStd();
+        }
+         if(pageid === 'settings' && currentUserRole !== 'leader'){
+          
         }
 
         
@@ -98,6 +101,14 @@ async function fetchAdminProfile() {
         const leadersNav = document.getElementById('nav_leaders');
         if (leadersNav) {
           leadersNav.style.display = (currentUserRole === 'leader') ? 'none' : 'flex';
+        }
+        const approvalNav = document.getElementById('nav_pendings');
+        if (approvalNav) {
+          approvalNav.style.display = (currentUserRole === 'leader') ? 'flex' : 'none';
+        }
+        const settingsNav = document.getElementById('nav_settings');
+        if (settingsNav) {
+          settingsNav.style.display = (currentUserRole !== 'leader') ? 'flex' : 'none';
         }
         if (data.success) {
            

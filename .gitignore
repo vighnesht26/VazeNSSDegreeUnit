@@ -1,7 +1,7 @@
 ca.pem
 credentials.json
-google_config.php
-
+cloudinary_config.php
+mail-config.php
 /vendor
 
 

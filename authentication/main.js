@@ -232,7 +232,7 @@ async function submitstudentform(event, form){
                 const message = await response.json();
 
                 if(message.success){
-                    alert(message.message);
+                    // alert(message.message);
                     window.location.href = './login.html';
                 }
                 else if(!message.success){
@@ -511,7 +511,7 @@ async function checklogin(event, form) {
     }
 }
 
-//approval for 
+
     
        
     

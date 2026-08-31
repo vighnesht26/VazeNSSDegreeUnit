@@ -3,7 +3,7 @@ session_start();
 header('Content-Type: application/json');
 require_once '../config/connect.php';
 require_once '../vendor/autoload.php';
-require_once './drive_uploader.php';
+require_once './cloudinary_uploader.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
@@ -112,20 +112,19 @@ try{
             
                 // $reportUrl = '../reports/' . $fileName;
 
-                $tempFile = tempnam(sys_get_temp_dir(), 'report_');
+                $tempFile = tempnam(sys_get_temp_dir(), 'report_'). '.docx';
                 $temp->saveAs($tempFile);
-                $content = file_get_contents($tempFile);
+                
+                $fileName  = 'reports/'. $event['date'] . '_' . $event['name'] . '.docx';
+                $reportUrl = uploadToCloudinary($tempFile, $fileName, 'raw');
 
                 if(file_exists($tempFile)){
                     unlink($tempFile);
                 }
 
-                $fileName  = $event['date'] . '_' . $event['name'] . '.docx';
-                $docxmime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                
 
-                $driveFile = uploadToGoogleDrive($content, $fileName, $docxmime);
-                $reportUrl = $driveFile->webViewLink ?? ('https://drive.google.com/file/d/' . $driveFile->id . '/view');
-
+                
                 $conn->begin_transaction();
 
                 $sql1 = "INSERT INTO report (male_count, female_count, description, conclusion, expense, report_url, for_event) VALUES(?,?,?,?,?,?,?)";

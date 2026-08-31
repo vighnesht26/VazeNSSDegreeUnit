@@ -57,7 +57,7 @@ if ($method === 'POST') {
     try {
         $conn->begin_transaction();
 
-        $checkStmt = $conn->prepare("SELECT first_name, mobile FROM student WHERE std_id = ? AND approved_by IS NULL FOR UPDATE");
+        $checkStmt = $conn->prepare("SELECT first_name, mobile, email FROM student WHERE std_id = ? AND approved_by IS NULL FOR UPDATE");
         $checkStmt->bind_param("i", $student_id);
         $checkStmt->execute();
         $res = $checkStmt->get_result();
@@ -83,11 +83,12 @@ if ($method === 'POST') {
             $updateStmt->close();
 
             $conn->commit();
+            sendVolunteerUsernameEmail($student['email'], $student['first_name'], $generatedUsername);
 
             echo json_encode([
                 'success'  => true,
-                'message'  => "Student approved successfully. Username generated: {$generatedUsername}",
-                'username' => $generatedUsername
+                // 'message'  => "Student approved successfully. Username generated: {$generatedUsername}",
+                // 'username' => $generatedUsername
             ]);
         }
 

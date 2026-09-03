@@ -225,7 +225,7 @@ async function displayeventcard() {
             document.getElementById('edate').textContent= 'None';
             document.getElementById('etype').textContent= 'None';
             document.getElementById('eMP').textContent= 'None';
-           document.getElementById('eAttendees').textContent= 'None';
+          
 
         }
 

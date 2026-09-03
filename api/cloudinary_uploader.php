@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 require __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/cloudinary_config.php';
+// require_once __DIR__ . '/cloudinary_config.php';
 
 use Cloudinary\Configuration\Configuration;
 use Cloudinary\Api\Upload\UploadApi;

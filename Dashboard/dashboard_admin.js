@@ -481,7 +481,7 @@ async function getPendingStd(){
 
   const Container = document.getElementById('pendings');
   try{
-    const response = await fetch('../Authentication/approval.php',{
+    const response = await fetch('../authentication/approval.php',{
       method :'GET',
       headers : {'Accept' : 'application/json'}
     });

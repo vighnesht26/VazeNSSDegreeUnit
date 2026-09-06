@@ -595,7 +595,7 @@ async function handleApproval(studentId, action) {
   formData.append('action', action);
 
   try{
-    const response = await fetch('../Authentication/approval.php', {
+    const response = await fetch('../authentication/approval.php', {
       method: 'POST',
       body: formData
     });

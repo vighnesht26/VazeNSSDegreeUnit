@@ -125,3 +125,62 @@ async function participateInEvent(button){
         console.error("Error submitting registration:", error);
     }
 }
+
+function goToFeedback(btn) {
+  const eventId = btn.dataset.id;
+  if (eventId) {
+    window.location.href = `feedback.html?event_id=${eventId}`;
+  }
+}
+// show feedbacks if active and not submitted
+async function showFeedbackPendings() {
+  const container = document.getElementById('pending_feedback_container');
+  if (!container) return;
+
+  try {
+    const response = await fetch('../api/feedback_api.php?action=showfeedbacks');
+    const result = await response.json();
+
+    if (!result.success) {
+      container.innerHTML = `<p class="text-xs text-red-500 py-3">${result.error || 'Failed to load feedbacks.'}</p>`;
+      return;
+    }
+
+    const events = result.data || [];
+
+    
+    if (events.length === 0) {
+      container.innerHTML = `
+        <div class="py-4 text-center text-slate-400 text-xs italic">
+          No pending feedback for any attended events.
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    events.forEach(evt => {
+      html += `
+      <div class="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm space-y-2">
+        <div class="card-content">
+          <div class="flex flex-col">
+            <span class="font-bold text-slate-800 text-xl">${evt.name}</span>
+            <span class="text-xs text-slate-500 ">${evt.date || ''} • ${evt.venue || 'Campus'}</span>
+          </div>
+          <button data-id="${evt.event_id}" onclick="goToFeedback(this)" class="c_btn text-xs py-1.5 px-3">
+            Give Feedback</button>
+        </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  } catch (error) {
+    console.error("Error fetching pending feedbacks:", error);
+    container.innerHTML = `<p class="text-xs text-red-500 py-3">Network error loading feedback items.</p>`;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  showFeedbackPendings();
+});

@@ -719,12 +719,17 @@ function close_hrs_modal(){
 }
 
 async function allocate_hours(ev){
+  
   const eventId = ev.dataset.id;
   const hrs = document.getElementById('hrs').value;
-  if(hrs == 0.0 || hrs > 12.0){
+  if(hrs < 1.0 || hrs > 12.0){
     alert("Hrs not allowed, Please enter valid hours between 1 to 12 hrs");
     return;
   }
+  if ((hrs * 2) % 1 !== 0) {
+  alert("Invalid format! Hours must end in .0 or .5 (e.g., 1.0, 1.5, 2.0).");
+  return;
+}
   if(!confirm("Are you sure, you want to allocate this hour?")){
     return;
   }
@@ -746,6 +751,7 @@ try{
   if(result.success){
     alert("Allocation successfull");
     isCompletedLoaded = false;
+    close_hrs_modal()
     loadCompletedEvents();
   }
   else{

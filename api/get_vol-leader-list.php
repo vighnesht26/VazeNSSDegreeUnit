@@ -41,7 +41,7 @@ if (!isset($_SESSION['admin_id'])){
                 FROM student s
                 INNER JOIN academic_details a ON s.std_id = a.student_id
                 WHERE a.academic_year = ? AND s.role = ?
-                ORDER BY s.first_name ASC";
+                ORDER BY a.total_hrs DESC";
 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $academic_year, $role);

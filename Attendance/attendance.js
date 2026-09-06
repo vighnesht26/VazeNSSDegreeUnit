@@ -155,11 +155,20 @@ async function saveAttendanceStatus(){
   }
 }
 
-async function saveFinalAttendance(){
-  if(!confirm("Are you sure, you want to submit? After submittion no changes allowed!")){
-    return;
-  }
+function confirmFinalAttendance() {
+  const modal = document.getElementById('confirm_modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
 
+function closeConfirmModal() {
+  const modal = document.getElementById('confirm_modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+async function saveFinalAttendance(){
+ closeConfirmModal();
   const attendanceData = allVolunteers.map(v =>({
     student_id : v.std_id,
     is_present : v.is_present,
@@ -181,7 +190,8 @@ async function saveFinalAttendance(){
     if(result.success){
       alert("Attendance Submitted Successfully");
       isAttendanceCompleted = true;
-      
+      updateState();
+      window.location.reload();
     }
     else{
       alert("Error occured "+ result.error);
@@ -192,7 +202,7 @@ async function saveFinalAttendance(){
   }
 }
 
-//shows diabled when completed
+//shows disabled when completed
 function updateState(){
   const checkboxes = document.querySelectorAll('.attendance-checkbox');
   const saveBtn = document.getElementById('mark_reporting_btn');
@@ -207,6 +217,7 @@ function updateState(){
     status.textContent = "Completed";
     status.className = "px-3 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-700 border border-slate-300 uppercase"
   }
+  
 }
 
 //search

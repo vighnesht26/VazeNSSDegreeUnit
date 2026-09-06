@@ -262,8 +262,8 @@ function requireEventID($id) {
                 $vol_sql="SELECT s.std_id, s.first_name, s.surname, s.mobile, s.gender,s.email,
                 ad.class, ad.program, ad.division, ad.roll_no,
                 a.attendance_no, a.reporting_mark,
-                COALESCE(a.isabsent, 'yes') AS isabsent,
-                a.marked_by
+                COALESCE(a.isabsent, 'yes') AS isabsent
+                
                 FROM attendance a
                 JOIN student s ON a.student_id = s.std_id
                 JOIN academic_details ad ON s.std_id = ad.student_id
@@ -286,8 +286,13 @@ function requireEventID($id) {
                 requireEventID($eventID);
 
 
-
-                $marked_by = $_SESSION['std_id'];
+                if($isAdmin){
+                    $marked_by_admin = $_SESSION['admin_id'];
+                    $marked_by_leader = NULL;
+                }else if($isLeader){
+                    $marked_by_leader = $_SESSION['std_id'];
+                    $marked_by_admin = NULL;
+                }
 
                 if(empty($data["attendance"]) || !is_array($data['attendance'])){
                     echo json_encode(['success'=> false, 'error' => 'No attendance data provided']);
@@ -297,7 +302,7 @@ function requireEventID($id) {
                 $conn->begin_transaction();
 
                 try{
-                    $update_sql = "UPDATE attendance SET isabsent = ?, reporting_mark =?, marked_by=?
+                    $update_sql = "UPDATE attendance SET isabsent = ?, reporting_mark =?, marked_by_leader=?, marked_by_admin=?
                                     WHERE event_id = ? AND student_id = ?";
                     
                     $stmt = $conn->prepare($update_sql);
@@ -314,7 +319,7 @@ function requireEventID($id) {
                         $repMark = ($item['is_present'] == 1) ? 
                                     (!empty($item['reporting_mark']) ? $item['reporting_mark'] : date('Y-m-d H:i:s')) : NULL;
 
-                        $stmt->bind_param("ssiii", $isAbsent, $repMark, $marked_by, $eventID, $studentId);
+                        $stmt->bind_param("ssiiii", $isAbsent, $repMark, $marked_by_leader,$marked_by_admin, $eventID, $studentId);
                         $stmt->execute();
 
                     }
@@ -339,7 +344,13 @@ function requireEventID($id) {
             case 'submit_attendance':
                 requireEventID($eventID);
 
-                $marked_by = $_SESSION['std_id'];
+                if($isAdmin){
+                    $marked_by_admin = $_SESSION['admin_id'];
+                    $marked_by_leader = NULL;
+                }else if($isLeader){
+                    $marked_by_leader = $_SESSION['std_id'];
+                    $marked_by_admin = NULL;
+                }
 
                 if(empty($data['attendance']) || !is_array($data['attendance'])){
                     echo json_encode(['success'=> false, 'error'=>'NO attendance data provided']);
@@ -349,7 +360,7 @@ function requireEventID($id) {
                 $conn->begin_transaction();
 
                 try{
-                      $update_sql = "UPDATE attendance SET isabsent = ?, reporting_mark =?, marked_by=?
+                      $update_sql = "UPDATE attendance SET isabsent = ?, reporting_mark =?, marked_by_leader=?, marked_by_admin=?
                                     WHERE event_id = ? AND student_id = ?";
                     
                     $stmt = $conn->prepare($update_sql);
@@ -366,7 +377,7 @@ function requireEventID($id) {
                         $repMark = ($item['is_present'] == 1) ? 
                                     (!empty($item['reporting_mark']) ? $item['reporting_mark'] : date('Y-m-d H:i:s')) : NULL;
 
-                        $stmt->bind_param("ssiii", $isAbsent, $repMark, $marked_by, $eventID, $studentId);
+                        $stmt->bind_param("ssiiii", $isAbsent, $repMark,$marked_by_leader,$marked_by_admin, $eventID, $studentId);
                         $stmt->execute();
 
                     }
@@ -385,7 +396,7 @@ function requireEventID($id) {
                         'success' => true,
                         'message' => 'Attendance progress saved successfully'
                     ]);
-                    
+                    exit();
 
                 }catch(Exception $e){
                     $conn->rollback();
@@ -393,6 +404,7 @@ function requireEventID($id) {
                         'success' => false,
                         'error' => 'Failed to save progress' . $e->getMessage()
                         ]);
+                        exit();
                 }
                 break;
 
@@ -443,9 +455,14 @@ function requireEventID($id) {
                     $hrs = $data['hrs'];
                 }
 
-                if($hrs == 0.0 || $hrs > 12.0){
+                if($hrs <= 0.0 || $hrs > 12.0){
                     http_response_code(400);
                     echo json_encode(['success'=>false, 'error'=>'Hours are not allowed']);
+                    exit();
+                }
+                if (fmod(round($hrs * 2, 2), 1.0) != 0.0) {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'error' => 'Hours must be in intervals of 0.5 (e.g., 1.0, 1.5, 2.0)']);
                     exit();
                 }
 
@@ -459,12 +476,12 @@ function requireEventID($id) {
                     $result = $check_stmt->get_result()->fetch_assoc();
                     $check_stmt->close();
 
-                    if ((int)$result['alloted_hrs'] > 0) {
+                    if ((int)$result['alloted_hrs'] > 0.0) {
                         throw new Exception("Hours have already been allocated for this event and cannot be modified.");
                     }
                     $sql1 = "UPDATE event SET alloted_hrs = ? WHERE event_id = ?";
                     $stmt1 = $conn->prepare($sql1);
-                    $stmt1->bind_param("ii",$hrs,$eventID);
+                    $stmt1->bind_param("di",$hrs,$eventID);
                     $stmt1->execute();
                     $stmt1->close();
 
@@ -473,7 +490,7 @@ function requireEventID($id) {
                             SET ad.Total_hrs = ad.Total_hrs + ?
                             WHERE att.event_id = ? AND att.isabsent = 'no'";
                     $stmt2 = $conn->prepare($sql2);
-                    $stmt2->bind_param("ii",$hrs,$eventID);
+                    $stmt2->bind_param("di",$hrs,$eventID);
                     $stmt2->execute();
                     $stmt2->close();
 

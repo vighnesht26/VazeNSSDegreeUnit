@@ -664,6 +664,7 @@ async function loadCompletedEvents(){
             <button type="button"  class="c_btn_blue ${hideView}"  data-id="${ev.event_id}" onclick="viewReport(this)">view Report</button>
             <button type="button"  class="c_btn_blue ${DispHrsBtn}"  data-id="${ev.event_id}" data-hrs="${ev.alloted_hrs}" onclick="allocate_hrs_modal(this)">Allocate Hours</button>
             <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="open_attendance(this)">Attendance</button>
+            <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="more(this)">More</button>
             </div>
           </div>`;
       });
@@ -760,4 +761,231 @@ try{
 }catch(error){
    alert("Network error fetching upcoming events:"+error);
 }
+}
+
+//  More" Modal 
+async function more(button) {
+  const eventId = button.dataset.id;
+  const modal = document.getElementById('more_modal');
+  if (!modal) return;
+
+  modal.dataset.id = eventId;
+  const container = document.getElementById('more_modal_content');
+  container.innerHTML = `<div class="p-6 text-center text-slate-400 text-sm">Checking event feedback details...</div>`;
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+
+  try {
+    const response = await fetch(`../api/event_api.php?action=get_event_feedback_summary&id=${eventId}`);
+    const result = await response.json();
+
+    if (!result.success) {
+      container.innerHTML = `<p class="p-4 text-xs text-red-500 text-center">${result.error || 'Failed to load details.'}</p>`;
+      return;
+    }
+
+    const { feedback_status, total_responses, total_attendees } = result.data;
+    const isCompleted = parseInt(total_responses) > 0;
+
+    container.innerHTML = `
+      <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-xl max-w-md w-full space-y-4">
+        <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+          <h3 class="font-header text-lg font-bold text-slate-800">Event Feedback Options</h3>
+          <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${getStatusColor(feedback_status)}">
+            ${feedback_status}
+          </span>
+        </div>
+
+        <div class="text-xs text-slate-600 space-y-1">
+          <p><strong>Total Attendees:</strong> ${total_attendees}</p>
+          <p><strong>Submissions Received:</strong> ${total_responses}</p>
+        </div>
+
+        <div class="flex flex-col gap-2 pt-2">
+          <!-- Button 1: Add Questions -->
+          <button type="button" class="c_btn w-full" onclick="openAddQuestionModal(${eventId})">
+            ➕ Add Feedback Questions
+          </button>
+
+          <!-- Button 2: Toggle Feedback Active/Closed -->
+          <button type="button" class="c_btn_outline w-full" onclick="toggleFeedbackState(${eventId}, '${feedback_status}')">
+            ${feedback_status === 'Active' ? '⏸ Close Feedback Submissions' : '▶ Set Feedback Active'}
+          </button>
+
+          <!-- Button 3: Show Responses (Enabled only if responses exist) -->
+          ${
+            isCompleted
+              ? `<button type="button" class="c_btn_blue w-full" onclick="openViewResponsesModal(${eventId})">
+                   📋 View Volunteer Responses (${total_responses})
+                 </button>`
+              : `<button type="button" disabled class="c_DisBtn w-full">
+                   No Responses Yet
+                 </button>`
+          }
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end">
+          <button type="button" onclick="closeMoreModal()" class="c_btn_light">Close</button>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    console.error("Error fetching event feedback summary:", err);
+    container.innerHTML = `<p class="p-4 text-xs text-red-500 text-center">Failed to connect to server.</p>`;
+  }
+}
+
+function closeMoreModal() {
+  const modal = document.getElementById('more_modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+//  Add Feedback Question 
+function openAddQuestionModal(eventId) {
+  closeMoreModal();
+  const modal = document.getElementById('add_question_modal');
+  document.getElementById('q_event_id').value = eventId;
+  document.getElementById('q_text').value = '';
+  document.getElementById('q_type').value = 'text';
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeAddQuestionModal() {
+  const modal = document.getElementById('add_question_modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+async function handleAddQuestion(e) {
+  e.preventDefault();
+  const eventId = document.getElementById('q_event_id').value;
+  const question = document.getElementById('q_text').value.trim();
+  const q_type = document.getElementById('q_type').value;
+
+  if (!question) {
+    alert("Please enter question text.");
+    return;
+  }
+
+  try {
+    const response = await fetch('../api/event_api.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'add_feedback_question',
+        event_id: eventId,
+        question: question,
+        q_type: q_type
+      })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert("Feedback question added successfully!");
+      closeAddQuestionModal();
+    } else {
+      alert("Error: " + (result.error || "Failed to add question."));
+    }
+  } catch (err) {
+    console.error("Submission failed:", err);
+  }
+}
+
+//  Feedback Status
+async function toggleFeedbackState(eventId, currentStatus) {
+  const nextStatus = currentStatus === 'Active' ? 'Closed' : 'Active';
+  if (!confirm(`Are you sure you want to change feedback status to "${nextStatus}"?`)) return;
+
+  try {
+    const response = await fetch('../api/event_api.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'toggle_feedback_status',
+        id: eventId,
+        status: nextStatus
+      })
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      alert(result.message);
+      closeMoreModal();
+      loadCompletedEvents();
+    } else {
+      alert("Error: " + result.error);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+//  View Responses 
+async function openViewResponsesModal(eventId) {
+  closeMoreModal();
+  const modal = document.getElementById('view_responses_modal');
+  const tableContainer = document.getElementById('responses_table_container');
+  tableContainer.innerHTML = `<div class="p-8 text-center text-slate-400">Loading submitted responses...</div>`;
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+
+  try {
+    const response = await fetch(`../api/event_api.php?action=get_event_responses&id=${eventId}`);
+    const result = await response.json();
+
+    if (!result.success) {
+      tableContainer.innerHTML = `<p class="p-4 text-red-500 text-center text-sm">${result.error}</p>`;
+      return;
+    }
+
+    const { questions, students } = result.data;
+
+    if (!students || students.length === 0) {
+      tableContainer.innerHTML = `<p class="p-6 text-center text-slate-400 italic">No completed responses found.</p>`;
+      return;
+    }
+
+    
+    let html = `
+      <div class="overflow-x-auto max-h-[65vh]">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-slate-800 text-white font-header sticky top-0">
+            <tr>
+              <th class="p-3 border border-slate-700">Student Name</th>
+              <th class="p-3 border border-slate-700">Roll No</th>
+              ${questions.map(q => `<th class="p-3 border border-slate-700 min-w-[160px]">${q.question}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
+    `;
+
+    students.forEach(st => {
+      html += `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-3 font-semibold text-slate-900 border border-slate-200">${st.first_name} ${st.surname}</td>
+          <td class="p-3 border border-slate-200">${st.roll_no || '--'}</td>
+          ${questions.map(q => {
+            const answer = st.answers[q.q_id] || '<span class="italic text-slate-300">N/A</span>';
+            return `<td class="p-3 border border-slate-200">${answer}</td>`;
+          }).join('')}
+        </tr>
+      `;
+    });
+
+    html += `</tbody></table></div>`;
+    tableContainer.innerHTML = html;
+  } catch (err) {
+    console.error(err);
+    tableContainer.innerHTML = `<p class="p-4 text-red-500 text-center text-sm">Failed to load responses.</p>`;
+  }
+}
+
+function closeViewResponsesModal() {
+  const modal = document.getElementById('view_responses_modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
 }

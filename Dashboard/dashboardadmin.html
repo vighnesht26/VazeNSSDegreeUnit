@@ -427,6 +427,61 @@
  <div id="report_modal" class="fixed inset-0 z-50 hidden items-center justify-center  bg-black/50 backdrop-blur-sm p-4">
 
  </div>
+
+ <!-- more modal -->
+ 
+<div id="more_modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4">
+  <div id="more_modal_content" class="w-full max-w-md"></div>
+</div>
+
+<!-- Add Question Modal -->
+<div id="add_question_modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4 border border-slate-200">
+    <div class="card-header rounded-xl">
+      <span>Add Feedback Question</span>
+    </div>
+    
+    <form onsubmit="handleAddQuestion(event)" class="space-y-4 pt-2">
+      <input type="hidden" id="q_event_id" value="">
+
+      <div>
+        <label class="c_label block mb-1">Question Text</label>
+        <textarea id="q_text" required rows="3" placeholder="e.g., How would you rate the venue arrangements?" class="c_in w-full max-w-none resize-none"></textarea>
+      </div>
+
+      <div>
+        <label class="c_label block mb-1">Question Type</label>
+        <select id="q_type" class="c_dropdown w-full max-w-none">
+          <option value="text">Single-line Text</option>
+          <option value="textarea">Paragraph / Essay</option>
+          <option value="rating">Rating (1 to 5 Stars)</option>
+        </select>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeAddQuestionModal()" class="c_btn_light">Cancel</button>
+        <button type="submit" class="c_btn">Add Question</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View Responses Modal -->
+<div id="view_responses_modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4 md:p-8">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full p-6 space-y-4 border border-slate-200 flex flex-col max-h-[90vh]">
+    <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+      <h3 class="font-header text-xl font-bold text-slate-800">Submitted Feedback Responses</h3>
+      <button type="button" onclick="closeViewResponsesModal()" class="text-slate-400 hover:text-slate-700 font-bold text-xl">&times;</button>
+    </div>
+
+    <!-- Dynamic Container -->
+    <div id="responses_table_container" class="flex-1 overflow-hidden"></div>
+
+    <div class="pt-2 border-t border-slate-100 flex justify-end">
+      <button type="button" onclick="closeViewResponsesModal()" class="c_btn_light">Close</button>
+    </div>
+  </div>
+</div>
 </body>
 
 </html>

@@ -129,7 +129,7 @@ async function participateInEvent(button){
 function goToFeedback(btn) {
   const eventId = btn.dataset.id;
   if (eventId) {
-    window.location.href = `feedback.html?event_id=${eventId}`;
+    window.location.href = `../Feedback/feedback.html?event_id=${eventId}`;
   }
 }
 // show feedbacks if active and not submitted
@@ -138,7 +138,7 @@ async function showFeedbackPendings() {
   if (!container) return;
 
   try {
-    const response = await fetch('../api/feedback_api.php?action=showfeedbacks');
+    const response = await fetch('../api/volunteer_api.php?action=showfeedbacks');
     const result = await response.json();
 
     if (!result.success) {

@@ -13,13 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadFeedbackQuestions() {
   try {
-    const response = await fetch(`../api/event_api.php?action=get_feedback_questions&id=${eventId}`);
+    const response = await fetch(`../api/volunteer_api.php?action=get_feedback_questions&id=${eventId}`);
     const result = await response.json();
 
     if (result.success) {
       if (result.event) {
-        document.getElementById('event_title').textContent = result.event.name || 'Event Feedback';
-        document.getElementById('event_date').textContent = result.event.date || '';
+        document.getElementById('event_name_header').textContent = result.event.name || 'Event Feedback';
+        document.getElementById('event_date_header').textContent = result.event.date || '';
       }
 
       questionsData = result.questions || [];
@@ -120,7 +120,7 @@ async function finalizeFeedbackSubmit() {
   });
 
   try {
-    const response = await fetch('../api/event_api.php', {
+    const response = await fetch('../api/volunteer_api.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -132,8 +132,7 @@ async function finalizeFeedbackSubmit() {
 
     const result = await response.json();
     if (result.success) {
-      alert("Thank you! Feedback submitted successfully.");
-      window.location.href = '../dashboard.php';
+      showThankYouModal();
     } else {
       alert("Error: " + (result.error || "Failed to submit feedback."));
     }
@@ -162,4 +161,7 @@ function showThankYouModal() {
       redirectAfterFeedback();
     }
   }, 1000);
+}
+function redirectAfterFeedback() {
+  window.location.href = '../Dashboard/dashboardstudent.html'; 
 }

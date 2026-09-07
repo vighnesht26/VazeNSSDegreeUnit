@@ -513,6 +513,137 @@ function requireEventID($id) {
                 $conn->close();
                 exit();
                 break;
+            case 'get_event_feedback_summary':
+                requireEventID($eventID);
+
+                // Get event feedback status
+                $stmt = $conn->prepare("SELECT feedback_status FROM event WHERE event_id = ?");
+                $stmt->bind_param("i", $eventID);
+                $stmt->execute();
+                $event = $stmt->get_result()->fetch_assoc();
+                $stmt->close();
+
+                if (!$event) {
+                    http_response_code(404);
+                    echo json_encode(['success' => false, 'error' => 'Event not found.']);
+                    exit();
+                }
+
+                // Count attendees who submitted feedback
+                $resp_stmt = $conn->prepare("SELECT COUNT(DISTINCT r.ans_by) AS total_responses
+                    FROM response r
+                    JOIN feedback f ON r.q_id = f.q_id
+                    WHERE f.event_id = ? OR f.event_id IS NULL
+                ");
+                $resp_stmt->bind_param("i", $eventID);
+                $resp_stmt->execute();
+                $total_responses = (int)$resp_stmt->get_result()->fetch_assoc()['total_responses'];
+                $resp_stmt->close();
+
+                // 3. Count actual attendees
+                $att_stmt = $conn->prepare("SELECT COUNT(*) AS total_attendees FROM attendance WHERE event_id = ? AND isabsent = 'no'");
+                $att_stmt->bind_param("i", $eventID);
+                $att_stmt->execute();
+                $total_attendees = (int)$att_stmt->get_result()->fetch_assoc()['total_attendees'];
+                $att_stmt->close();
+
+                echo json_encode([
+                    'success' => true,
+                    'data' => [
+                        'feedback_status' => $event['feedback_status'] ?? 'Pending',
+                        'total_responses' => $total_responses,
+                        'total_attendees' => $total_attendees
+                    ]
+                ]);
+                exit();
+
+            case 'toggle_feedback_status':
+                requireEventID($eventID);
+                $newStatus = trim($data['status'] ?? 'Active');
+
+                $stmt = $conn->prepare("UPDATE event SET feedback_status = ? WHERE event_id = ?");
+                $stmt->bind_param("si", $newStatus, $eventID);
+                if ($stmt->execute()) {
+                    echo json_encode(['success' => true, 'message' => "Feedback status changed to {$newStatus}."]);
+                } else {
+                    http_response_code(500);
+                    echo json_encode(['success' => false, 'error' => $stmt->error]);
+                }
+                $stmt->close();
+                exit();
+
+            case 'add_feedback_question':
+                $targetEventId = isset($data['event_id']) ? intval($data['event_id']) : 0;
+                $questionText  = trim($data['question'] ?? '');
+                $qType         = trim($data['q_type'] ?? 'text');
+
+                if (empty($questionText)) {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'error' => 'Question cannot be empty.']);
+                    exit();
+                }
+
+                $stmt = $conn->prepare("INSERT INTO feedback (question, q_type, event_id) VALUES (?, ?, ?)");
+                $stmt->bind_param("ssi", $questionText, $qType, $targetEventId);
+
+                if ($stmt->execute()) {
+                    echo json_encode(['success' => true, 'message' => 'Question added successfully.']);
+                } else {
+                    http_response_code(500);
+                    echo json_encode(['success' => false, 'error' => $stmt->error]);
+                }
+                $stmt->close();
+                exit();
+
+            case 'get_event_responses':
+                requireEventID($eventID);
+
+                // Fetch all questions of this event
+                $q_stmt = $conn->prepare("SELECT q_id, question FROM feedback WHERE event_id = ? OR event_id IS NULL ORDER BY q_id ASC");
+                $q_stmt->bind_param("i", $eventID);
+                $q_stmt->execute();
+                $questions = $q_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                $q_stmt->close();
+
+                // Fetch all student submissions 
+                $sql = "SELECT  s.std_id,s.first_name,s.surname,ad.roll_no,r.q_id, r.answer
+                    FROM response r
+                    JOIN feedback f ON r.q_id = f.q_id
+                    JOIN student s ON r.ans_by = s.std_id
+                    LEFT JOIN academic_details ad ON s.std_id = ad.student_id
+                    WHERE f.event_id = ? OR f.event_id IS NULL
+                    ORDER BY s.surname ASC, s.first_name ASC
+                ";
+                $r_stmt = $conn->prepare($sql);
+                $r_stmt->bind_param("i", $eventID);
+                $r_stmt->execute();
+                $raw_responses = $r_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                $r_stmt->close();
+
+                // Pivot responses so each row contains one student and all their answers mapped by q_id
+                $students = [];
+                foreach ($raw_responses as $row) {
+                    $sid = $row['std_id'];
+                    if (!isset($students[$sid])) {
+                        $students[$sid] = [
+                            'std_id'     => $sid,
+                            'first_name' => $row['first_name'],
+                            'surname'    => $row['surname'],
+                            'roll_no'    => $row['roll_no'],
+                            'answers'    => []
+                        ];
+                    }
+                    $students[$sid]['answers'][$row['q_id']] = $row['answer'];
+                }
+
+                echo json_encode([
+                    'success' => true,
+                    'data' => [
+                        'questions' => $questions,
+                        'students'  => array_values($students)
+                    ]
+                ]);
+                exit();
 
             default:
             http_response_code(400);

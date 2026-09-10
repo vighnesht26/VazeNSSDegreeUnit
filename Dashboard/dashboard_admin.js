@@ -5,6 +5,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     fetchAdminProfile();
     displayeventcard();
+    pendingActions();
 
     //AddEvent
 const addEventButton = document.getElementById('addEventBtn');
@@ -165,7 +166,7 @@ async function loadVolunteers() {
     const result = await response.json();
 
     if (result.success) {
-      let isVolunteersLoaded = true;
+      isVolunteersLoaded = true;
       const volunteers = result.data.volunteer || [];
 
       if (volunteers.length === 0) {
@@ -639,5 +640,49 @@ async function handleApproval(studentId, action) {
       btn.disabled = false;
       btn.classList.remove('opacity-50', 'cursor-not-allowed');
     });
+  }
+}
+
+async function pendingActions(){
+  const container = document.getElementById('pending_actions');
+  const pendingReport = document.getElementById('pending_report');
+  const pendingHrs = document.getElementById('pending_hrs');
+  const reportcount = document.getElementById('pending_report_count');
+  const hrsremains = document.getElementById('pending_hrs_count')
+  try{const response = await fetch("../api/event_api.php?action=getPendingCounts");
+  if(!response.ok){
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+    const result = await response.json();
+
+    if(result.success){
+      const reports = Number(result.pending_reports || 0);
+      const hrs = Number(result.pending_hrs || 0);
+
+      if (reports > 0 && hrs > 0) {
+         reportcount.textContent = reports;
+        hrsremains.textContent = hrs;
+        container.classList.remove('hidden');
+        pendingReport.classList.remove('hidden');
+        pendingReport.classList.add('flex');
+        pendingHrs.classList.remove('hidden');
+        pendingHrs.classList.add('flex');
+      } else if(reports > 0 && hrs == 0){
+        reportcount.textContent = reports;
+        container.classList.remove('hidden');
+        pendingReport.classList.remove('hidden');
+        pendingReport.classList.add('flex');
+      } else if(reports == 0 && hrs > 0){
+        hrsremains.textContent = hrs;
+        container.classList.remove('hidden');
+        pendingHrs.classList.remove('hidden');
+        pendingHrs.classList.add('flex');
+      }
+    } else {
+      console.error("Error occurred while pending actions counting:", result.error);
+    }
+  } catch (error) {
+    console.error('Request failed:', error);
   }
 }

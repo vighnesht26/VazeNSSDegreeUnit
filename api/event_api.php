@@ -644,7 +644,35 @@ function requireEventID($id) {
                     ]
                 ]);
                 exit();
+                break;
+            case 'getPendingCounts':
+                $sql = "SELECT 
+                SUM(CASE WHEN report_status = 'Pending' THEN 1 ELSE 0 END) AS pending_reports,
+                SUM(CASE WHEN alloted_hrs = 0.0 THEN 1 ELSE 0 END) AS pending_hrs
+                FROM event
+                WHERE attendance_status = 'Completed'";
+                        
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $result = $stmt->get_result();
+                    $row = $result->fetch_assoc();
+                    
+                    echo json_encode([
+                        'success' => true,
+                        'pending_reports' => (int)$row['pending_reports'],
+                        'pending_hrs' => (int)$row['pending_hrs']
+                    ]);
+                } else {
+                    echo json_encode([
+                        'success' => false, 
+                        'error' => 'Database query failed'
+                    ]);
+                }
+                
+                $stmt->close();
 
+                break;
             default:
             http_response_code(400);
              echo json_encode(['error' => 'Invalid or missing API action.']);

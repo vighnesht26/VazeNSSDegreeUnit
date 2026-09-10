@@ -754,6 +754,7 @@ try{
     isCompletedLoaded = false;
     close_hrs_modal()
     loadCompletedEvents();
+    pendingActions();
   }
   else{
     alert("Error"+result.error);

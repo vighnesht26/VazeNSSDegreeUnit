@@ -3,30 +3,30 @@ function openReportModal(ev){
     const container = document.getElementById('report_modal');
 
     let cardHTML = `
-    <div >
+    <div class="bg-white rounded-2xl p-5">
     <form id="report_form" onsubmit="handleReportSubmit(event)">
-    <input type="hidden" id="report_event_id" value="${data.id}" name="event_id">
+    <input  type="hidden" id="report_event_id" value="${data.id}" name="event_id">
     <p class ="font-bold text-2xl font-header ">${data.name}</p>
      <p class ="font-bold font-header ">${data.date}</p>
     <div>
     <label>Description :</label><br>
-    <textarea name="desc_report" id="desc_report" type="text" rows="4" class="resize-none"></textarea>
+    <textarea required class="w-full rounded-2xl border-2 border-blue-700 resize-none"  name="desc_report" id="desc_report" type="text" rows="4" class="resize-none"></textarea>
     </div>
      <div>
-    <label>Conclusion :</label><br>
-    <textarea name="con_report" id="con_report" type="text" rows="4" class="resize-none"></textarea>
+    <label >Conclusion :</label><br>
+    <textarea required class="w-full rounded-2xl border-2 border-blue-700 resize-none" name="con_report" id="con_report" type="text" rows="4" class="resize-none"></textarea>
     </div>
     <div>
     <label>Upload Flyer</label>
-    <input name="report_flyer" id="report_flyer" type="file" accept="image/*"
+    <input  class="bg-gray-300 p-1 rounded-xl border-2 border-blue-700" name="report_flyer" id="report_flyer" type="file" accept="image/*"
     </div>
     <div>
     <label>Upload Geotagged photo</label>
-    <input name="report_geotagged" id="report_geotagged" type="file" accept="image/*"
+    <input required class="bg-gray-300 m-1 p-1 rounded-xl border-2 border-blue-700" name="report_geotagged" id="report_geotagged" type="file" accept="image/*"
     </div>
     <div>
-    <label>Expense :</label><br>
-    <input type="number" name="expense" id="expense" />
+    <label>Expense :</label>
+    <input class="m-1 pl-2 rounded-2xl border-2 border-blue-700" min=0 type="number" name="expense" id="expense" />
     </div>
     <div class="flex justify-evenly">
      <button type="submit" id="submit_report_btn" class="c_btn">Submit</button>
@@ -71,6 +71,7 @@ async function handleReportSubmit(ev){
             closeReportModal();
             isCompletedLoaded = false;
             loadCompletedEvents();
+            pendingActions();
         }else{
             alert("Error "+ result.error);
         }

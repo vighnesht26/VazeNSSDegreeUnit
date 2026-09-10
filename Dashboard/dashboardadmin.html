@@ -114,7 +114,7 @@
     <div id="dashboard" class="content w-full h-full overflow-y-auto page active p-4 md:p-6 space-y-6">
 
       <!-- Section 1-->
-    <div class="w-full bg-white border border-slate-200 rounded-2xl p-4 md:p-2 shadow-sm ">
+    <div id="pending_actions" class="w-full hidden bg-white border border-slate-200 rounded-2xl p-4 md:p-2 shadow-sm ">
       
      
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
@@ -131,27 +131,21 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-text">
         
         <!-- Pending Reports -->
-        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 flex flex-col justify-between gap-3">
+        <div id="pending_report"  class="hidden p-4 rounded-xl bg-slate-50 border border-slate-200/60  flex-col justify-between gap-3">
           <div class="flex justify-between items-center">
-            <span class="text-sm text-slate-600 font-medium">Unsubmitted Reports</span>
-            <span id="pending_report_count" class="font-bold text-sm md:text-base text-back shrink-0">0 Events</span>
+            <span class="text-xl text-red-600 font-medium">Reports</span>
+            <span id="pending_report_count" class="font-bold font-header text-xl md:text-xl text-back shrink-0">0 Events</span>
           </div>
-          <div class="flex justify-between items-center text-xs md:text-sm text-slate-500 pt-2 border-t border-slate-200/50">
-            <span class="text-slate-400">Latest Event:</span>
-            <span id="pending_report_name" class="font-semibold text-slate-800 truncate ml-2 max-w-[60%] text-right">—</span>
-          </div>
+          
         </div>
 
         <!-- Pending Hours Allocation -->
-        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 flex flex-col justify-between gap-3">
+        <div id="pending_hrs" class="hidden p-4 rounded-xl bg-slate-50 border border-slate-200/60  flex-col justify-between gap-3">
           <div class="flex justify-between items-center">
-            <span class="text-sm text-slate-600 font-medium">Unallocated Hours</span>
-            <span id="pending_hrs_count" class="font-bold text-sm md:text-base text-back shrink-0">0 Events</span>
+            <span class="text-xl text-red-600 font-medium">Unallocated Hours</span>
+            <span id="pending_hrs_count" class="font-bold font-header  text-xl md:text-xl text-back shrink-0">0 Events</span>
           </div>
-          <div class="flex justify-between items-center text-xs md:text-sm text-slate-500 pt-2 border-t border-slate-200/50">
-            <span class="text-slate-400">Latest Event:</span>
-            <span id="pending_hrs_name" class="font-semibold text-slate-800 truncate ml-2 max-w-[60%] text-right">—</span>
-          </div>
+          
         </div>
 
       </div>
@@ -453,8 +447,8 @@
         <label class="c_label block mb-1">Question Type</label>
         <select id="q_type" class="c_dropdown w-full max-w-none">
           <option value="text">Single-line Text</option>
-          <option value="textarea">Paragraph / Essay</option>
-          <option value="rating">Rating (1 to 5 Stars)</option>
+          <option value="textarea">Paragraph</option>
+          <option value="rating">Rating</option>
         </select>
       </div>
 

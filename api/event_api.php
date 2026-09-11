@@ -576,6 +576,10 @@ function requireEventID($id) {
                 $targetEventId = isset($data['event_id']) ? intval($data['event_id']) : 0;
                 $questionText  = trim($data['question'] ?? '');
                 $qType         = trim($data['q_type'] ?? 'text');
+                $option_a  = !empty($data['option_a']) ? trim($data['option_a']) : null;
+                $option_b  = !empty($data['option_b']) ? trim($data['option_b']) : null;
+                $option_c  = !empty($data['option_c']) ? trim($data['option_c']) : null;
+                $option_d  = !empty($data['option_d']) ? trim($data['option_d']) : null;
 
                 if (empty($questionText)) {
                     http_response_code(400);
@@ -583,8 +587,8 @@ function requireEventID($id) {
                     exit();
                 }
 
-                $stmt = $conn->prepare("INSERT INTO feedback (question, q_type, event_id) VALUES (?, ?, ?)");
-                $stmt->bind_param("ssi", $questionText, $qType, $targetEventId);
+                $stmt = $conn->prepare("INSERT INTO feedback (question, q_type,option_a,option_b,option_c,option_d, event_id) VALUES (?, ?, ?,?,?,?,?)");
+                $stmt->bind_param("ssssssi", $questionText, $qType,$option_a,$option_b,$option_c,$option_d, $targetEventId);
 
                 if ($stmt->execute()) {
                     echo json_encode(['success' => true, 'message' => 'Question added successfully.']);
@@ -598,14 +602,14 @@ function requireEventID($id) {
             case 'get_event_responses':
                 requireEventID($eventID);
 
-                // Fetch all questions of this event
+                //  questions of this event
                 $q_stmt = $conn->prepare("SELECT q_id, question FROM feedback WHERE event_id = ? OR event_id IS NULL ORDER BY q_id ASC");
                 $q_stmt->bind_param("i", $eventID);
                 $q_stmt->execute();
                 $questions = $q_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 $q_stmt->close();
 
-                // Fetch all student submissions 
+                //  student submissions 
                 $sql = "SELECT  s.std_id,s.first_name,s.surname,ad.roll_no,r.q_id, r.answer
                     FROM response r
                     JOIN feedback f ON r.q_id = f.q_id
@@ -620,7 +624,7 @@ function requireEventID($id) {
                 $raw_responses = $r_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 $r_stmt->close();
 
-                // Pivot responses so each row contains one student and all their answers mapped by q_id
+                
                 $students = [];
                 foreach ($raw_responses as $row) {
                     $sid = $row['std_id'];

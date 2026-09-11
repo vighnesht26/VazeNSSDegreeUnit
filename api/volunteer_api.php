@@ -174,7 +174,7 @@ switch ($action) {
             $chk_stmt->close();
 
             //questions belonging to this event
-            $q_stmt = $conn->prepare("SELECT q_id, question, q_type, event_id FROM feedback WHERE event_id = ? OR event_id IS NULL ORDER BY q_id ASC");
+            $q_stmt = $conn->prepare("SELECT q_id, question, q_type,option_a,option_b,option_c,option_d, event_id FROM feedback WHERE event_id = ? OR event_id IS NULL ORDER BY q_id ASC");
             $q_stmt->bind_param("i", $eventID);
             $q_stmt->execute();
             $questions = $q_stmt->get_result()->fetch_all(MYSQLI_ASSOC);

@@ -439,17 +439,26 @@
       <input type="hidden" id="q_event_id" value="">
 
       <div>
-        <label class="c_label block mb-1">Question Text</label>
-        <textarea id="q_text" required rows="3" placeholder="e.g., How would you rate the venue arrangements?" class="c_in w-full max-w-none resize-none"></textarea>
+        <label class="c_label block mb-1 font-semibold text-sm">Question</label>
+        <textarea id="q_text" rows="3" class="c_dropdown w-full max-w-none resize-none" placeholder="Enter question..." required></textarea>
       </div>
 
       <div>
         <label class="c_label block mb-1">Question Type</label>
-        <select id="q_type" class="c_dropdown w-full max-w-none">
+        <select id="q_type" class="c_dropdown w-full max-w-none" onchange="renderOptionFields()">
           <option value="text">Single-line Text</option>
           <option value="textarea">Paragraph</option>
           <option value="rating">Rating</option>
+           <option value="multiple_choice">multiple choice</option>
         </select>
+      </div>
+
+      <div id="mcq_options_field" class="space-y-2 hidden">
+        <label class="c_label block font-semibold text-sm">Options</label>
+        <input type="text" id="opt_a" maxlength="100" class="c_dropdown w-full max-w-none" placeholder="Option A">
+        <input type="text" id="opt_b" maxlength="100" class="c_dropdown w-full max-w-none" placeholder="Option B">
+        <input type="text" id="opt_c" maxlength="100" class="c_dropdown w-full max-w-none" placeholder="Option C">
+        <input type="text" id="opt_d" maxlength="100" class="c_dropdown w-full max-w-none" placeholder="Option D">
       </div>
 
       <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">

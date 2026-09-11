@@ -67,12 +67,27 @@ function renderFieldByType(q) {
 
   switch (qType) {
     case 'rating':
+      const Rate=[
+        { label: 1, text: "Very Dissatisfied" },
+        { label: 2, text: "Dissatisfied" },
+        { label: 3, text: "Neutral" },
+        { label: 4, text: "Satisfied" },
+        { label: 5, text: "Very Satisfied" }
+
+      ]
       return `
-        <div class="flex items-center gap-4 pt-1">
-          ${[1, 2, 3, 4, 5].map(rating => `
-            <label class="flex items-center gap-1.5 cursor-pointer text-sm font-semibold text-slate-700">
-              <input type="radio" name="q_${q.q_id}" value="${rating}" required class="w-4 h-4 text-red-600 focus:ring-red-500">
-              ${rating}
+        <div class="grid grid-cols-5 gap-2 pt-2 sm:flex sm:items-center sm:justify-between max-w-md">
+          ${Rate.map(item => `
+            <label class="flex flex-col items-center gap-1 cursor-pointer text-center group">
+              <input 
+                type="radio" 
+                name="q_${q.q_id}" 
+                value="${item.label}" 
+                required 
+                class="w-4 h-4 text-red-600 focus:ring-red-500 cursor-pointer"
+              >
+              <span class="text-sm font-semibold text-slate-700 group-hover:text-red-600">${item.label}</span>
+              <span class="text-[10px] text-slate-500 group-hover:text-slate-700 leading-tight">${item.text}</span>
             </label>
           `).join('')}
         </div>
@@ -83,7 +98,24 @@ function renderFieldByType(q) {
         <textarea name="q_${q.q_id}" rows="3" required placeholder="Write your answer..." 
           class="c_in w-full max-w-none resize-none"></textarea>
       `;
+    case 'multiple_choice':
+      const options = [
+        {  text: q.option_a },
+        { text: q.option_b },
+        {  text: q.option_c },
+        { text: q.option_d }
+      ].filter(opt => opt.text && opt.text.trim() !== ''); // ignores empty options
 
+      return `
+        <div class="space-y-2 pt-1">
+          ${options.map(opt => `
+            <label class="flex items-center gap-2.5 cursor-pointer text-sm text-slate-700 hover:text-slate-900">
+              <input type="radio" name="q_${q.q_id}" value="${opt.text.replace(/"/g, '&quot;')}" required class="w-4 h-4 text-red-600 focus:ring-red-500">
+              <span>${opt.text}</span>
+            </label>
+          `).join('')}
+        </div>
+      `;
     case 'text':
     default:
       return `

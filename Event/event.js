@@ -842,13 +842,34 @@ function closeMoreModal() {
   modal.classList.remove('flex');
 }
 
+//rendering based on que type
+function renderOptionFields(){
+  const qType = document.getElementById('q_type').value;
+  const mcqContainer = document.getElementById('mcq_options_field');
+  const optInputs = mcqContainer.querySelectorAll('input');
+
+  if (qType === 'multiple_choice') {
+    mcqContainer.classList.remove('hidden');
+    optInputs.forEach(input => input.required = true);
+  } else {
+    mcqContainer.classList.add('hidden');
+    optInputs.forEach(input => {
+      input.required = false;
+      input.value = '';
+    });
+  }
+}
 //  Add Feedback Question 
 function openAddQuestionModal(eventId) {
   closeMoreModal();
+ 
   const modal = document.getElementById('add_question_modal');
   document.getElementById('q_event_id').value = eventId;
   document.getElementById('q_text').value = '';
   document.getElementById('q_type').value = 'text';
+  renderOptionFields();
+  
+  
 
   modal.classList.remove('hidden');
   modal.classList.add('flex');
@@ -871,16 +892,40 @@ async function handleAddQuestion(e) {
     return;
   }
 
+  const data = {
+    action: 'add_feedback_question',
+    event_id: eventId,
+    question: question,
+    q_type: q_type,
+    option_a: null,
+    option_b: null,
+    option_c: null,
+    option_d: null
+  };
+
+  // Collecting options if MCQ
+  if (q_type === 'multiple_choice') {
+    const optA = document.getElementById('opt_a').value.trim();
+    const optB = document.getElementById('opt_b').value.trim();
+    const optC = document.getElementById('opt_c').value.trim();
+    const optD = document.getElementById('opt_d').value.trim();
+
+    if (!optA || !optB || !optC || !optD) {
+      alert("Please fill in all 4 options.");
+      return;
+    }
+
+    data.option_a = optA;
+    data.option_b = optB;
+    data.option_c = optC;
+    data.option_d = optD;
+  }
+
   try {
     const response = await fetch('../api/event_api.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'add_feedback_question',
-        event_id: eventId,
-        question: question,
-        q_type: q_type
-      })
+      body: JSON.stringify(data )
     });
 
     const result = await response.json();

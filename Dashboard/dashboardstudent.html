@@ -42,8 +42,8 @@
     
     <div class="flex items-center gap-3">
       <!-- Profile  -->
-      <button class="c_btn_outline flex items-center gap-2">
-        <img src="../icons/profile.png" alt="Profile" class="w-4 h-4 invert">
+      <button class="c_btn_outline flex items-center gap-2" onclick="openProfile()">
+        <img src="../assets/profile.png" alt="Profile" class="w-4 h-4 invert">
         <span class="hidden md:inline">View Profile</span>
       </button>
 
@@ -55,9 +55,97 @@
   </div>
 
 </header>
+ <div id="update_notice" class="hidden justify-center"><div><p class="text-red-600 text-xl">Registration is OPEN, Update profile to enroll in this year!</p></div></div>
 <main class="flex justify-evenly">
   <div id="active_events_container" ></div>
   <div id="pending_feedback_container"></div>
+ 
 
 
 </main>
+<!-- profile -->
+ <!-- For Profile -->
+
+<div id="profile_modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  <div class="w-full max-w-lg bg-gray-200 rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+    
+    
+    <div class="px-3 py-4 bg-slate-900 text-white flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="w-8 h-4 rounded-full bg-blue-600 text-white font-bold text-sm flex items-center justify-center">
+          👤
+        </div>
+        <div>
+          <h3 class="text-base text-slate-600 font-bold leading-tight">PROFILE</h3>   
+        </div>
+      </div>
+      <button type="button" onclick="closeProfileModal()" class="text-slate-400 hover:text-white text-xl font-bold transition">
+        &times;
+      </button>
+    </div>
+
+    
+    <div class="p-3">
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+        Account Details
+      </h4>
+
+      
+      <div id="profile_fields" >
+       
+      </div>
+    </div>
+
+    
+    <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+      <button id="academic_update_btn" type="button" onclick="openUpdateModal()" class="px-4 py-2 ml-4 bg-red-500 hover:bg-red-700 text-slate-700 rounded-lg text-sm font-semibold transition">
+        Update
+      </button>
+      <button type="button" onclick="closeProfileModal()"  class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-semibold transition">
+        Close
+      </button>
+      
+    </div>
+
+  </div>
+</div>
+
+<div id="profile_update_modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  <div class="w-full max-w-lg bg-gray-200 rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+    
+    
+    <div class="px-3 py-4 bg-slate-900 text-white flex justify-between items-center">
+      <div class="flex items-center">
+    
+        <div>
+          <h3 class="text-base text-slate-600 font-bold leading-tight">UPDATE PROFILE</h3>   
+        </div>
+      </div>
+      <button type="button" onclick="closeUpdateModal()" class="text-slate-400 hover:text-white text-xl font-bold transition">
+        &times;
+      </button>
+    </div>
+
+    
+    <div class="p-3">
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
+        Update Details
+      </h4>
+
+      
+      <div id="update_fields" >
+       
+      </div>
+    </div>
+
+    
+    <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+     
+      
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

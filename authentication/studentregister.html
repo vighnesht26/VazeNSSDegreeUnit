@@ -33,7 +33,7 @@
                 </div>
 
                 <div>
-                <label for="s_email" class="c_label">Email :</label><br>
+                <label for="s_email" class="c_label">Email : <span class="text-red-400">(Username will be sent through email)</span></label><br>
                 <input required class="c_in mt-2" oninput="validateEmail(this)" id="s_email" type="email" name="s_email" placeholder="example@gmail.com">
                 <p id="s_erroremail" class="text-red-700 text-xs mt-1  hidden"></p>
                 </div>
@@ -147,7 +147,7 @@
                         <option value ='A'>A</option>
                          <option value ='B'>B</option>
                           <option value ='C'>C</option>
-                           <option value ='E'>E</option>
+                           <option value ='D'>D</option>
                            
                     </select>
                     <p id="s_errordiv" class="text-red-700 text-xs mt-1  hidden"></p>
@@ -155,7 +155,7 @@
 
                     <div>
                     <label for="s_roll" class="c_label ">Enter Roll No. :</label>
-                    <input required class="c_in mt-2" onblur="checkRoll(this)" type="number" pattern="\d{3}" id="s_roll" name="s_roll" placeholder="eg., 001"> <br><br>
+                    <input required class="c_in mt-2" onblur="checkRoll(this)" type="text" maxlength="3" id="s_roll" name="s_roll" placeholder="eg., 001"> <br><br>
                     <p id="s_errorRoll" class="text-red-700 text-xs mt-1  hidden"></p>
                     </div>
 

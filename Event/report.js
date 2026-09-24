@@ -10,11 +10,11 @@ function openReportModal(ev){
      <p class ="font-bold font-header ">${data.date}</p>
     <div>
     <label>Description :</label><br>
-    <textarea required class="w-full rounded-2xl border-2 border-blue-700 resize-none"  name="desc_report" id="desc_report" type="text" rows="4" class="resize-none"></textarea>
+    <textarea required class="pl-5 w-full rounded-2xl border-2 border-blue-700 resize-none"  name="desc_report" id="desc_report" type="text" rows="4" class="resize-none"></textarea>
     </div>
      <div>
     <label >Conclusion :</label><br>
-    <textarea required class="w-full rounded-2xl border-2 border-blue-700 resize-none" name="con_report" id="con_report" type="text" rows="4" class="resize-none"></textarea>
+    <textarea required class=" pl-5 w-full rounded-2xl border-2 border-blue-700 resize-none" name="con_report" id="con_report" type="text" rows="4" class="resize-none"></textarea>
     </div>
     <div>
     <label>Upload Flyer</label>

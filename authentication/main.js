@@ -1,5 +1,5 @@
 
-
+document.addEventListener("DOMContentLoaded", checkRegistrationStatus);
 function validatepass(inputpass){
     if(inputpass.id === 'newpass'){
     var show_set = document.getElementById("a_setpass");
@@ -163,43 +163,47 @@ function validnext(pageid){
 
 
 }
-function checkRoll(){
-     const rollno = document.getElementById("s_roll");
-     const errRoll = document.getElementById('s_errorRoll');
+function checkRoll(isRequired = true) {
+  const rollno = document.getElementById("s_roll");
+  const errRoll = document.getElementById("s_errorRoll");
+  if (!rollno || !errRoll) return false;
 
-   const range = /^[0-2]\d{2}$/;
+  // 1. Strip non-digit characters in real-time
+  rollno.value = rollno.value.replace(/\D/g, '');
+  const val = rollno.value;
 
-    rollno.value = rollno.value.replace(/\D/g, '');
+  const showError = (msg) => {
+    errRoll.textContent = msg;
+    errRoll.classList.remove('hidden');
+    return false;
+  };
 
-    const val = rollno.value;
+  const clearError = () => {
+    errRoll.textContent = '';
+    errRoll.classList.add('hidden');
+    return true;
+  };
 
-    if(val.length === 0){
-        errRoll.classList.add('hidden');
-        errRoll.textContent="";
-        return true;
+  if (val.length === 0) {
+    if (isRequired) {
+      return showError("Roll number is required");
     }
-    if(!/^[0-2]/.test(val)){
-        errRoll.classList.remove('hidden');
-        errRoll.textContent="Please Enter valid roll number";
-        return false;
-    }
-    if (val.length < 3) {
-        errRoll.classList.remove('hidden');
-        errRoll.textContent = "Please enter roll number in 3 digits";
-        return false;
-    }
-    if(range.test(val)){
-        errRoll.classList.add('hidden');
-      errRoll.textContent="";
-        
-        return true;
+    return clearError();
+  }
 
-    }else{ 
-        errRoll.classList.remove('hidden');
-        errRoll.textContent="Please Enter 3 digit roll number!";
-        return false;
-    }
-    
+  if (!/^[0-2]/.test(val)) {
+    return showError("Roll number must start with 0, 1, or 2");
+  }
+
+  if (val.length < 3) {
+    return showError("Please enter a 3-digit roll number (e.g. 042)");
+  }
+
+  if (val === '000') {
+    return showError("Roll number cannot be 000");
+  }
+
+  return clearError();
 }
 async function submitstudentform(event, form){
     event.preventDefault();
@@ -233,7 +237,7 @@ async function submitstudentform(event, form){
 
                 if(message.success){
                     // alert(message.message);
-                    window.location.href = './login.html';
+                    window.location.href = './index.html';
                 }
                 else if(!message.success){
                     alert('❌Error'+ message.error);
@@ -323,7 +327,7 @@ async function submitform(event, form){
 
                 if(message.success){
                     alert(message.message);
-                    window.location.href = './login.html';
+                    window.location.href = './index.html';
                 }
                 else if(message.success === false){
                     alert('❌Error'+ message.error);
@@ -512,6 +516,34 @@ async function checklogin(event, form) {
 }
 
 
-    
+async function checkRegistrationStatus(){
+  const link = document.getElementById("regLinkAnchor");
+  const badge = document.getElementById("registerlink");
+
+  try {
+    const res = await fetch("../api/settings.php?action=get_registration_status");
+    const data = await res.json();
+
+    if (data.success && data.status === 'open') {
+      // Registration is OPEN
+      link.href = "./studentregister.html";
+      link.classList.remove("pointer-events-none", "opacity-50", "cursor-not-allowed", "text-slate-400");
+      link.classList.add("text-blue-600", "hover:underline");
+
+      badge.textContent = "OPEN";
+      badge.className = "text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700";
+    } else {
+      // Registration is CLOSED
+      link.removeAttribute("href");
+      link.classList.add("hidden");
+      link.classList.remove("text-blue-600", "text-red-400", "hover:underline");
+
+      badge.textContent = "Registration is CLOSED";
+      badge.className = "text-xs font-bold px-2 py-0.5 rounded-md bg-rose-100 text-rose-700";
+    }
+  } catch (err) {
+    console.error("Failed to check registration status:", err);
+  }
+}
        
     

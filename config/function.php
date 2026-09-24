@@ -79,7 +79,8 @@ function sendVolunteerUsernameEmail(string $recipientEmail, string $recipientNam
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = $smtpPort;
         $mail->CharSet    = 'UTF-8';
-
+        $mail->SMTPDebug = 2; 
+        $mail->Debugoutput = 'html';
         
         $mail->setFrom($smtpUser, 'Vaze NSS Degree Unit');
         $mail->addAddress($recipientEmail, $recipientName);

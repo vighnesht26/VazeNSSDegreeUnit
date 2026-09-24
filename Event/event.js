@@ -156,6 +156,7 @@ function checkmx(){
   }
 }
 
+
 //Submit
 async function submitEventData(event , form){
   
@@ -255,6 +256,63 @@ async function displayeventcard() {
     }
   }
 
+async function loadEventsOverview(){
+  try {
+    
+
+    const response = await fetch('../api/event_api.php?action=event_counts');
+    const result = await response.json();
+
+    if (result.success && result.data) {
+      const d = result.data;
+
+      // Update Total 
+      const totalEl = document.getElementById('e_total');
+      if (totalEl) totalEl.textContent = `${d.total} Total`;
+
+      // Update  Counts
+      const clEl   = document.getElementById('cnt_cl');
+      const ulEl   = document.getElementById('cnt_ul');
+      const abp1El = document.getElementById('cnt_abp1');
+      const abp2El = document.getElementById('cnt_abp2');
+      const dlEl   = document.getElementById('cnt_dl');
+
+      if (clEl)   clEl.textContent   = d.cl;
+      if (ulEl)   ulEl.textContent   = d.ul;
+      if (abp1El) abp1El.textContent = d.abp1;
+      if (abp2El) abp2El.textContent = d.abp2;
+      if (dlEl)   dlEl.textContent   = d.dl;
+    }
+  } catch (error) {
+    console.error('Failed to load event counts overview:', error);
+  }
+}
+// Dashboard vol leader count
+async function loadStudentStats(){
+  try {
+    const response = await fetch('../api/event_api.php?action=vol_leader_count');
+    const result = await response.json();
+
+    if (result.success && result.data) {
+      const vol  = result.data.volunteer;
+      const lead = result.data.leader;
+
+      // Update Volunteer Card
+      
+      const vCount = document.getElementById('vol_count').textContent = vol.total;;
+      const vMale  = document.getElementById('vol_male').textContent  = vol.male;;
+      const vFem   = document.getElementById('vol_female').textContent   = vol.female;;
+      
+      // Update Leader Card
+      const lCount = document.getElementById('lead_count').textContent = lead.total;;
+      const lMale  = document.getElementById('lead_male').textContent  = lead.male;;
+      const lFem   = document.getElementById('lead_female').textContent = lead.female;;
+ 
+    }
+  } catch (error) {
+    console.error('Failed to load student statistics:', error);
+  }
+}
 
 async function loadUpcomingEvents() {
   const container = document.getElementById("u_event");
@@ -596,10 +654,7 @@ function open_attendance(ev){
 }
 
 
-//Export Student List
-async function exportStudentList(){
-  window.location.href = '../api/export_list.php?action=export_std_list';
-}
+
 
 //Load Completed Events(Allocate hrs, report status)
 async function loadCompletedEvents(){
@@ -631,7 +686,7 @@ async function loadCompletedEvents(){
             Completed Events :- <span class="text-red-600">${events.length}</span>
           </h2>
 
-          <button type="button" class="c_btn_blue" onclick="exportComEventList()">Export List</button>
+          <button type="button" class="c_btn_blue" onclick="openEveExp()">Export List</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto  p-2">
       `;
@@ -681,9 +736,17 @@ async function loadCompletedEvents(){
 }
 
 //export cmpleted event list
-async function exportComEventList(){
-  window.location.href = '../api/export_list.php?action=export_c_event_list';
+function openEveExp(){
+  currentExportSection = 'events';
+  document.getElementById("exportModalTitle").innerText = "Export Events List";
+  document.getElementById("volunteerFilterFields").classList.add("hidden"); // Hide class & division
+  document.getElementById("volunteerFilterFields").classList.remove("flex");
+  showExportModal();
 }
+  // window.location.href = '../api/export_list.php?action=export_c_event_list';
+
+//Other methods are in dashboard.js-->>
+
 
 //hours allocation
 function allocate_hrs_modal(ev){

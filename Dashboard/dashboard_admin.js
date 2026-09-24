@@ -1,12 +1,17 @@
  currentUserRole = '';
-
+  volunteerSearchTimeout = null;
  isVolunteersLoaded = false;
  isLeadersLoaded = false;
+  currentExportSection = '';
+isProgramsLoaded = false;
+activeAcademicYear = "";
+let currentRegStatus = 'closed';
 document.addEventListener("DOMContentLoaded", () => {
     fetchAdminProfile();
     displayeventcard();
     pendingActions();
-
+    loadEventsOverview()
+    loadStudentStats()
     //AddEvent
 const addEventButton = document.getElementById('addEventBtn');
 
@@ -76,7 +81,7 @@ function switchpage(pageid){
           getPendingStd();
         }
          if(pageid === 'settings' && currentUserRole !== 'leader'){
-          
+          loadRegistrationStatus()
         }
 
         
@@ -158,52 +163,63 @@ async function fetchAdminProfile() {
 
 
 //Volunteers list
-async function loadVolunteers() {
+async function loadVolunteers(searchTerm = '') {
   const container = document.getElementById("volunteers"); 
 
   try {
-    const response = await fetch("../api/get_vol-leader-list.php?role=Volunteer");
+    const response = await fetch(`../api/get_vol-leader-list.php?role=Volunteer&search=${encodeURIComponent(searchTerm)}`);
     const result = await response.json();
 
     if (result.success) {
       isVolunteersLoaded = true;
       const volunteers = result.data.volunteer || [];
 
-      if (volunteers.length === 0) {
-        container.innerHTML = `
-          <div class="border-b-2 border-slate-200 pb-3 mb-4">
+      const promoteBtnHTML = (currentUserRole !== 'leader') 
+        ? `<button type="button" onclick="promoteSelectedLeaders()" class="bg-blue-950 hover:bg-blue-900 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
+            Promote Selected as Leader
+          </button>` 
+        : '';
+
+      let cardsHTML = `
+        <div class="border-b-2 border-slate-200 pb-3 mb-4 space-y-3">
+          <div class="flex justify-between items-center">
             <h2 class="font-header text-2xl font-bold text-slate-800">
-              Volunteers List
+              Volunteers List :- <span class="text-red-600">${volunteers.length}</span>
             </h2>
+            <div class="flex gap-2">
+              <button type="button" onclick="openVolExp()" class="bg-blue-900 hover:bg-blue-950 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition cursor-pointer">
+                Export List
+              </button>
+              ${promoteBtnHTML}
+            </div>
           </div>
-        `;
+
+          <!-- Search Input -->
+          <div>
+            <input 
+              type="text" 
+              id="searchVolunteerInput"
+              placeholder="Search by name, roll no, mobile..." 
+              value="${searchTerm}"
+              oninput="onVolunteerSearch(this.value)"
+              class="w-72 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900"
+            />
+          </div>
+        </div>
+      `;
+
+      if (volunteers.length === 0) {
+        cardsHTML += `<p class="text-slate-500 text-center py-6">No matching volunteers found.</p>`;
+        container.innerHTML = cardsHTML;
+        retainFocus();
         return;
       }
 
-      const promoteBtnHTML = (currentUserRole !== 'leader') 
-        ? `<button type="button" onclick="promoteSelectedLeaders()" class="bg-blue-950 hover:bg-blue-900 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
-          Promote Selected as Leader
-          </button>` 
-          : '';
-
-      let cardsHTML = `
-        <div class="border-b-2 border-slate-200 pb-3 mb-4 flex justify-between items-center">
-          <h2 class="font-header text-2xl font-bold text-slate-800">
-            Volunteers List :- <span class="text-red-600">${volunteers.length}</span>
-          </h2>
-          <button type="button" onclick="exportStudentList()" cursor-pointer class="bg-blue-900 hover:bg-blue-950 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition">
-            Export List
-          </button>
-          ${promoteBtnHTML}
-        </div>
-        <div class="space-y-3 overflow-y-auto p-1">
-      `;
+      cardsHTML += `<div class="space-y-3 overflow-y-auto p-1">`;
 
       volunteers.forEach(item => {
         cardsHTML += `
           <div class="volunteer-card border border-slate-200 rounded-2xl p-4 bg-white shadow-sm space-y-3">
-            
-            
             <div class="flex items-center gap-6 border-b border-slate-100 pb-2">
               <label class="flex items-center gap-2 cursor-pointer">
                 <input 
@@ -214,21 +230,20 @@ async function loadVolunteers() {
                 <span class="text-sm font-semibold text-slate-700">Name: <span class="font-bold text-blue-950">${item.first_name} ${item.surname}</span></span>
               </label>
               <p class="text-sm font-semibold text-slate-700">Mobile: <span class="font-bold text-blue-950">${item.mobile || ''}</span></p>
+              <p class="text-sm font-semibold text-slate-700">NSS Year: <span class="font-bold text-blue-950">${item.nss_year|| ''}</span></p>
             </div>
 
-            
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-semibold text-slate-700">
-              <p>Class: <span class="font-bold text-blue-950">${item.class || ''}</span></p>
-              <p>Program: <span class="font-bold text-blue-950">${item.program || ''}</span></p>
-              <p>Roll no.: <span class="font-bold text-blue-950">${item.division}${item.roll_no || ''}</span></p>
+              <p>Class & Program:: <span class="font-bold text-blue-950">${item.class || ''}${item.program || ''}</span></p>
+              <p>Roll no.: <span class="font-bold text-blue-950">${item.division || ''}${item.roll_no || ''}</span></p>
               <p>Total hrs: <span class="font-bold text-blue-950">${item.total_hrs || 0}</span></p>
             </div>
-
           </div>`;
       });
 
       cardsHTML += `</div>`;
       container.innerHTML = cardsHTML;
+      retainFocus();
 
     } else {
       console.error("Error loading volunteers:", result.error);
@@ -237,6 +252,112 @@ async function loadVolunteers() {
     console.error("Network error fetching volunteers:", error);
   }
 }
+function onVolunteerSearch(value) {
+  clearTimeout(volunteerSearchTimeout);
+  volunteerSearchTimeout = setTimeout(() => {
+    loadVolunteers(value);
+  }, 300);
+}
+
+function retainFocus() {
+  const input = document.getElementById("searchVolunteerInput");
+  if (input) {
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  }
+}
+//Export Student List
+async function openVolExp(){
+  currentExportSection = 'volunteers';
+  
+  document.getElementById("exportModalTitle").innerText = "Export Volunteers List";
+  document.getElementById("volunteerFilterFields").classList.remove("hidden"); // Show class & division
+  document.getElementById("volunteerFilterFields").classList.add("flex");
+  showExportModal();
+  // window.location.href = '../api/export_list.php?action=export_std_list';
+}
+// To dyanmic years 
+
+
+async function showExportModal() {
+  const modal = document.getElementById("exportModal");
+  const yearDropdown = document.getElementById("modalAcademicYear");
+
+  // Fetch registered years from db
+  if (yearDropdown.children.length === 0) {
+    try {
+      const res = await fetch("../api/export_list.php?action=get_academic_years");
+      const json = await res.json();
+
+      if (json.success && json.years) {
+        yearDropdown.innerHTML = json.years.map(yr => `
+          <option value="${yr}" ${yr === json.current_year ? 'selected' : ''}>
+            ${yr} ${yr === json.current_year ? '(Current)' : ''}
+          </option>
+        `).join('');
+      }
+    } catch (err) {
+      console.error("Failed to fetch academic years:", err);
+    }
+  }
+  await loadDynamicPrograms();
+  modal.classList.remove("hidden");
+}
+
+function closeExportModal() {
+  document.getElementById("exportModal").classList.add("hidden");
+  document.getElementById("exportModal").classList.remove("flex");
+}
+// to show programs dynamically
+async function loadDynamicPrograms() {
+  const programSelect = document.getElementById("modalProgram");
+  if (!programSelect || isProgramsLoaded) return;
+
+  try {
+    const res = await fetch("../api/export_list.php?action=get_programs");
+    const json = await res.json();
+
+    if (json.success && Array.isArray(json.programs)) {
+      let optionsHTML = '<option value="">All Programs</option>';
+      json.programs.forEach(prog => {
+        optionsHTML += `<option value="${prog}">${prog}</option>`;
+      });
+      programSelect.innerHTML = optionsHTML;
+      isProgramsLoaded = true;
+    }
+  } catch (err) {
+    console.error("Failed to load programs:", err);
+  }
+}
+//exporting event and volunteer list
+function executeExport() {
+  const selectedYear = document.getElementById("modalAcademicYear").value;
+
+  if (currentExportSection === 'volunteers') {
+    const selectedClass = document.getElementById("modalClass").value;
+    const selectedProgram   = document.getElementById("modalProgram").value;
+
+    const params = new URLSearchParams({
+      action: 'export_std_list',
+      academic_year: selectedYear,
+      class: selectedClass,
+      program: selectedProgram
+    });
+
+    window.location.href = `../api/export_list.php?${params.toString()}`;
+
+  } else if (currentExportSection === 'events') {
+    const params = new URLSearchParams({
+      action: 'export_c_event_list',
+      academic_year: selectedYear
+    });
+
+    window.location.href = `../api/export_list.php?${params.toString()}`;
+  }
+
+  closeExportModal();
+}
+
 
 async function logout(){
     try {
@@ -265,12 +386,17 @@ document.getElementById('edit_date').min = fdate;
 
 
 //profile
+
 function openProfile(){
+  
   const modal = document.getElementById('profile_modal');
   const prof = document.getElementById('profile_fields');
    
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(localStorage.getItem('data'));
 
+  const role = (user.role || '').toLowerCase().trim();
+
+  AcademicButtonForRole(role);
   if(prof){
    prof.innerHTML = `
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
@@ -685,4 +811,65 @@ async function pendingActions(){
   } catch (error) {
     console.error('Request failed:', error);
   }
+}
+
+
+//Registrations
+async function loadRegistrationStatus() {
+  const btn = document.getElementById("toggleRegBtn");
+  if (!btn) return;
+
+  try {
+    const res = await fetch("../api/settings.php?action=get_registration_status");
+    const data = await res.json();
+    if (data.success) {
+      currentRegStatus = data.status;
+      updateToggleButtonUI();
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function updateToggleButtonUI() {
+  const btn = document.getElementById("toggleRegBtn");
+  if (!btn) return;
+
+  if (currentRegStatus === 'open') {
+    btn.textContent = "Close Registration";
+    btn.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow";
+  } else {
+    btn.textContent = "Open Registration";
+    btn.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow";
+  }
+}
+
+async function toggleRegistration() {
+  const nextStatus = (currentRegStatus === 'open') ? 'closed' : 'open';
+  if (!confirm(`Are you sure you want to set registration to ${nextStatus.toUpperCase()}?`)) return;
+
+  try {
+    const res = await fetch("../api/settings.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "toggle_registration",
+        status: nextStatus
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      currentRegStatus = data.status;
+      updateToggleButtonUI();
+      alert(`Registration is now ${data.status.toUpperCase()}.`);
+    } else {
+      alert("Failed: " + data.error);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function openAdminRegistration(){
+  window.location.href = "../authentication/adminregister.html";
 }

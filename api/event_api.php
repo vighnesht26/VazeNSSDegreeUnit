@@ -33,6 +33,9 @@ function requireEventID($id) {
     }
 }
 
+$currentMonth = (int)date('n'); 
+$currentYear  = (int)date('Y');
+$startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
    
 
     try{
@@ -173,16 +176,6 @@ function requireEventID($id) {
                         $u_event = $upcoming_event->fetch_assoc();
                         $sql1->close();
 
-                        $totalcount_sql = "SELECT COUNT(*) AS totalevent FROM event";
-                        $sql3 = $conn->prepare($totalcount_sql);
-                        //$status = 'completed';
-                        // $sql3 = bind_param("s",$status);
-                        $sql3->execute();
-                        $total_event = $sql3->get_result()->fetch_assoc();
-                        
-                        $sql3->close();
-
-
                         echo json_encode(['success'=> true,
                         'active' => $active_event ?:null,
                         'upcoming' => $u_event ?: null,
@@ -197,6 +190,102 @@ function requireEventID($id) {
                     }
                     $conn->close();
                     break;
+            case 'event_counts':
+                $endYearFull  = ($currentMonth >= 6) ? $currentYear + 1 : $currentYear;
+            
+                $startDate = "{$startYear}-06-01";
+                $endDate   = "{$endYearFull}-05-31";
+                $sql = "SELECT
+                    COUNT(*) AS total_events,
+                    COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('CL') THEN 1 END) AS cl_count,
+                    COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('UL') THEN 1 END) AS ul_count,
+                    COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('ABP-1') THEN 1 END) AS abp1_count,
+                    COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('ABP-2') THEN 1 END) AS abp2_count,
+                    COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('DL') THEN 1 END) AS dl_count
+                FROM event
+                        WHERE date BETWEEN ? AND ? AND status = 'Completed'";
+
+                $stmt = $conn->prepare($sql);
+                if (!$stmt) {
+                    echo json_encode(['success' => false, 'error' => $conn->error]);
+                    $conn->close();
+                    exit();
+                }
+
+                $stmt->bind_param("ss", $startDate, $endDate);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $counts = $result->fetch_assoc();
+
+                echo json_encode([
+                    'success' => true,
+                    'data' => [
+                        'total' => (int)($counts['total_events'] ?? 0),
+                        'cl'    => (int)($counts['cl_count'] ?? 0),
+                        'ul'    => (int)($counts['ul_count'] ?? 0),
+                        'abp1'  => (int)($counts['abp1_count'] ?? 0),
+                        'abp2'  => (int)($counts['abp2_count'] ?? 0),
+                        'dl'    => (int)($counts['dl_count'] ?? 0)
+                    ]
+                ]);
+
+                $stmt->close();
+                $conn->close();
+                exit();
+                break;
+            case 'vol_leader_count':
+                $endYearShort = ($currentMonth >= 6) ? substr((string)($currentYear + 1), -2) : substr((string)$currentYear, -2);
+                $AcademicYear = "{$startYear}-{$endYearShort}";
+    
+
+                $sql = "SELECT 
+                            -- Volunteer counts
+                            COUNT(*) AS vol_total,
+                            COUNT(CASE WHEN LOWER(TRIM(s.gender)) = 'male' THEN 1 END) AS vol_male,
+                            COUNT(CASE WHEN LOWER(TRIM(s.gender)) = 'female' THEN 1 END) AS vol_female,
+
+                            -- Leader counts
+                            COUNT(CASE WHEN LOWER(TRIM(s.role)) = 'leader' THEN 1 END) AS lead_total,
+                            COUNT(CASE WHEN LOWER(TRIM(s.role)) = 'leader' AND LOWER(TRIM(s.gender)) = 'male' THEN 1 END) AS lead_male,
+                            COUNT(CASE WHEN LOWER(TRIM(s.role)) = 'leader' AND LOWER(TRIM(s.gender)) = 'female' THEN 1 END) AS lead_female
+
+                        FROM student s
+                        INNER JOIN academic_details ad ON s.std_id = ad.student_id
+                        WHERE ad.academic_year = ?";
+
+                $stmt = $conn->prepare($sql);
+                if (!$stmt) {
+                    http_response_code(500);
+                    echo json_encode(['success' => false, 'error' => $conn->error]);
+                    $conn->close();
+                    exit();
+                }
+
+                $stmt->bind_param("s", $AcademicYear);
+                $stmt->execute();
+                $counts = $stmt->get_result()->fetch_assoc();
+
+                echo json_encode([
+                    'success'       => true,
+                    'academic_year' => $AcademicYear,
+                    'data'          => [
+                        'volunteer' => [
+                            'total'  => (int)($counts['vol_total'] ?? 0),
+                            'male'   => (int)($counts['vol_male'] ?? 0),
+                            'female' => (int)($counts['vol_female'] ?? 0)
+                        ],
+                        'leader' => [
+                            'total'  => (int)($counts['lead_total'] ?? 0),
+                            'male'   => (int)($counts['lead_male'] ?? 0),
+                            'female' => (int)($counts['lead_female'] ?? 0)
+                        ]
+                    ]
+                ]);
+
+                $stmt->close();
+                $conn->close();
+                exit();
+                break;
             case 'start_event_registration':
                 try {
                     requireEventID($eventID);

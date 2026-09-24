@@ -87,8 +87,8 @@ if ($method === 'POST') {
 
             echo json_encode([
                 'success'  => true,
-                // 'message'  => "Student approved successfully. Username generated: {$generatedUsername}",
-                // 'username' => $generatedUsername
+                 'message'  => "Student approved successfully. Username generated: {$generatedUsername}",
+                 'username' => $generatedUsername
             ]);
         }
 

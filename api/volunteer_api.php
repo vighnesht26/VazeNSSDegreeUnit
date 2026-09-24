@@ -224,11 +224,162 @@ switch ($action) {
                 echo json_encode(['success' => false, 'error' => 'Failed to save responses: ' . $e->getMessage()]);
                 exit();
             }    
+            break;
+        case 'get_academic_details':
+                $currentMonth = (int)date('n');
+                $currentYear  = (int)date('Y');
+                $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
+                $endYearShort = substr((string)($startYear + 1), -2);
+                $targetAcademicYear = "{$startYear}-{$endYearShort}";
 
-    default:
-        http_response_code(400);
-        $response['error'] = 'Invalid or missing API action.';
-        break;
+                
+                $sql = "SELECT s.username, s.first_name, s.surname,
+                            ad.class AS Class, ad.nss_year, ad.program AS Program, 
+                            ad.division AS Division, ad.roll_no, ad.academic_year
+                        FROM student s
+                        LEFT JOIN academic_details ad ON s.std_id = ad.student_id
+                        WHERE s.std_id = ?
+                        ORDER BY ad.academic_year DESC 
+                        LIMIT 1";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $studentId);
+                $stmt->execute();
+                $details = $stmt->get_result()->fetch_assoc();
+                $stmt->close();
+
+                if ($details) {
+                    $lastClass     = strtoupper(trim($details['Class'] ?? ''));
+                    $lastNssYear   = strtoupper(trim($details['nss_year'] ?? ''));
+                    $lastYear      = trim($details['academic_year'] ?? '');
+
+                    
+                    $alreadyRegistered = ($lastYear === $targetAcademicYear);
+
+                    
+                    $isCompleted = ($lastClass === 'TY' || $lastNssYear === 'TY');
+
+                    echo json_encode([
+                        'success'            => true,
+                        'name'               => trim(($details['first_name']) . ' ' . ($details['surname'])),
+                        'Class'              => $details['Class'],
+                        'nss_year'           => $details['nss_year'],
+                        'Program'            => $details['Program'] ,
+                        'Division'           => $details['Division'] ,
+                        'roll_no'            => $details['roll_no'] ,
+                        'academic_year'      => $lastYear,
+                        'target_year'        => $targetAcademicYear,
+                        'already_registered' => $alreadyRegistered,
+                        'is_completed'       => $isCompleted,
+                        'can_progress'       => (!$alreadyRegistered && !$isCompleted)
+                    ]);
+                } else {
+                    echo json_encode(['success' => false, 'error' => 'Academic records not found.']);
+                }
+                break;
+
+        case 'update_academic_details':
+            $division = strtoupper(trim($data['division'] ?? ''));
+            $rollNo   = trim($data['roll_no'] ?? '');
+
+            if (empty($division) || empty($rollNo)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Division and roll number are required.']);
+                break;
+            }
+
+           
+            $currentMonth = (int)date('n');
+            $currentYear  = (int)date('Y');
+            $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
+            $endYearShort = substr((string)($startYear + 1), -2);
+            $targetAcademicYear = "{$startYear}-{$endYearShort}";
+
+           
+            $histSql = "SELECT class, nss_year, program, academic_year 
+                        FROM academic_details 
+                        WHERE student_id = ? 
+                        ORDER BY academic_year DESC 
+                        LIMIT 1";
+
+            $histStmt = $conn->prepare($histSql);
+            $histStmt->bind_param("i", $studentId);
+            $histStmt->execute();
+            $latestRecord = $histStmt->get_result()->fetch_assoc();
+            $histStmt->close();
+
+            if (!$latestRecord) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'error' => 'No initial academic record found.']);
+                break;
+            }
+
+            $lastClass   = strtoupper(trim($latestRecord['class']));
+            $lastNssYear = strtoupper(trim($latestRecord['nss_year']));
+            $lastYear    = trim($latestRecord['academic_year']);
+            $program     = trim($latestRecord['program']);
+
+            // If already at TY
+            if ($lastClass === 'TY' || $lastNssYear === 'TY') {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false, 
+                    'error'   => 'NSS tenure concludes at TY. Further academic advancement is not allowed.'
+                ]);
+                break;
+            }
+
+            // Already enrolled in the current academic year
+            if ($lastYear === $targetAcademicYear) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false, 
+                    'error'   => "Academic details for {$targetAcademicYear} are already registered."
+                ]);
+                break;
+            }
+
+            // Next Academic Class & NSS Year
+            $nextClass   = ($lastClass === 'FY') ? 'SY' : 'TY';
+            $nextNssYear = ($lastNssYear === 'FY') ? 'SY' : 'TY';
+
+            $insertSql = "INSERT INTO academic_details 
+                        (student_id, academic_year, nss_year, class, program, division, roll_no, total_hrs)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, 0.0)";
+
+            $insStmt = $conn->prepare($insertSql);
+            if (!$insStmt) {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'error' => 'Database error preparing insertion.']);
+                break;
+            }
+
+            $insStmt->bind_param("issssss", $studentId, $targetAcademicYear, $nextNssYear, $nextClass, $program, $division, $rollNo);
+
+            if ($insStmt->execute()) {
+                echo json_encode([
+                    'success'       => true, 
+                    'next_class'    => $nextClass,
+                    'next_nss_year' => $nextNssYear,
+                    'academic_year' => $targetAcademicYear,
+                    'message'       => "Successfully promoted to {$nextClass} (NSS Year: {$nextNssYear}) for {$targetAcademicYear}."
+                ]);
+            } else {
+                if ($conn->errno === 1062) {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'error' => "A record for academic year {$targetAcademicYear} already exists."]);
+                } else {
+                    http_response_code(500);
+                    echo json_encode(['success' => false, 'error' => $insStmt->error]);
+                }
+            }
+
+            $insStmt->close();
+            break;
+        default:
+            http_response_code(400);
+            $response['error'] = 'Invalid or missing API action.';
+            break;
 
 }
 $conn->close();

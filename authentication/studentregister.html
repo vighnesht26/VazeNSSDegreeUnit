@@ -3,184 +3,227 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
   <link href="../output.css" rel="stylesheet">
   <script src="main.js" defer></script>
   <title>Student Registration</title>
-
 </head>
-<body>
-     
- 
-  
-  
+<body class="bg-slate-100 min-h-screen py-6 px-3 sm:px-6">
 
-</header>
+  <!-- Header -->
+  <div class="text-center mb-6">
+    <h1 class="font-header font-bold text-2xl sm:text-3xl md:text-4xl text-red-700">
+      Volunteer Registration
+    </h1>
+    <p class="text-xs sm:text-sm text-slate-500 mt-1">NSS Degree Unit Enrollment</p>
+  </div>
+
+  <div class="flex justify-center w-full">
+    <form id="std_form" action="stdregister.php" method="POST" onsubmit="submitstudentform(event, this)" class="w-full max-w-3xl">
+      
+      <!-- Personal Details-->
+      <div id="form1" class="page active bg-white p-4 sm:p-6 rounded-2xl border border-red-700 shadow-sm space-y-4">
         
-        <div class="flex justify-center-safe"> <h1 class="font-header font-bold text-4xl text-red-700">Volunteer Registration</h1></div>
-  <div class="flex justify-center-safe  ">
-   
-            <form id=   "std_form" action="stdregister.php" method="POST" onsubmit="submitstudentform(event, this)">
-               <div id="form1" class="page active border-2 w-200 flex-row rounded-2xl border-red-700"> 
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-3"> 
-                <div class="md:col-span-2">
-                <label for="name" class="c_label">Enter Name : </label><br>
-                <input required autocomplete="additional-name" class="c_in font-bold" id="name" onblur="validatename(this)" oninput="validatename(this)"  type="text" name="y_name" placeholder="Your name">
-                <input required class="c_in font-bold " id="f_name" onblur="validatename(this)" oninput="validatename(this)" type="text" name="f_name" placeholder="Father name">
-                <input required class="c_in font-bold " id="m_name" onblur="validatename(this)" oninput="validatename(this)" type="text" name="m_name" placeholder="Mother name">
-                <input required class="c_in font-bold " id="s_name" onblur="validatename(this)" oninput="validatename(this)" type="text" name="s_name" placeholder="Surname"><br>
-                <p id="s_errorname" class="text-red-700 text-xs mt-1 hidden"></p>
-                </div>
+        <h2 class="text-sm font-bold uppercase tracking-wider text-red-700 border-b border-slate-100 pb-2">
+          Personal Information
+        </h2>
 
-                <div>
-                <label for="s_email" class="c_label">Email : <span class="text-red-400">(Username will be sent through email)</span></label><br>
-                <input required class="c_in mt-2" oninput="validateEmail(this)" id="s_email" type="email" name="s_email" placeholder="example@gmail.com">
-                <p id="s_erroremail" class="text-red-700 text-xs mt-1  hidden"></p>
-                </div>
-
-                <div>
-                <label for="s_mobile" class="c_label " >Mobile No.:</label><br>
-                <input required maxlength="10" class="c_in  mt-2 " oninput="validatemobile(this)" id="s_mobile" type="text" name="s_mobile" placeholder="Enter Mobile No.">
-                <p id="s_errormobile" class="text-red-700 text-xs mt-1  hidden"></p>
-                </div>
-            
-                <div> 
-                <label for="s_DOB" class="c_label">Date of Birth :</label><br>
-                <input required class="c_in mt-2" onblur="validateDate(this)"  type="date" id="s_DOB" name="s_DOB">
-                <p id="s_errordate" class="text-red-700 text-xs mt-1  hidden"></p>
-                </div>
         
-                <div>
-                <label for="s_gender" class="c_label">Gender :</label><br>
-                <select required id="s_gender" onclick="validatedropdown(this)" class="c_dropdown" name="s_gender">
-                    <option value="" disabled selected hidden>Not Selected</option>
-                    <option value="Male" >Male</option>
-                    <option value="Female">Female</option>
-                </select>
-                 <p id="s_errorgender" class="text-red-700 text-xs mt-1  hidden"></p>
-                </div>
-
-                <div>
-                <label  for="bld_grp" class="c_label">Blood Grp :</label>
-                <select required class="c_dropdown "  onclick="validatedropdown(this)" id="bld_grp" name="bld_grp">
-                    <option value="" selected disabled hidden>Not selected</option>
-                    <option value="A+" >A+</option>
-                    <option value="B+">B+</option>
-                    <option value="AB+">AB+</option>
-                    <option value="O+">O+</option>
-                    <option value="A-">A-</option>
-                    <option value="B-">B-</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O-">O-</option>
-                </select>
-                 <p id="s_errorbld" class="text-red-700 text-xs mt-1  hidden"></p>
-                </div>
-
-                <div>
-                <label for="caste" class="c_label">Caste :</label><br>
-                <select required class="c_dropdown " onclick="validatedropdown(this)" id="caste" name="s_caste" >
-                    <option value="" selected disabled hidden>Not selected</option>
-                    <option value="GENERAL">GENERAL</option>
-                    <option value="OBC">OBC</option>
-                    <option value="SC">SC</option>
-                    <option value="ST">ST</option>
-                    <option value="MINOR">MINOR</option>
-                </select>
-                 <p id="s_errorcaste" class="text-red-700 text-xs mt-1  hidden"></p>
-                </div>
-
-                <div>
-                <label for="nssyear" class="c_label">NSS Year :</label>
-                <select required class="c_dropdown " onclick="validatedropdown(this)" id="nssyear" name="nssyear">
-                    <option value="" selected disabled hidden>Not selected</option>
-                    <option value="FY">First year</option>
-                    <option value="SY">Second year</option>
-                    <option value="TY">Third year</option>
-                </select>
-                 <p id="s_errornssyr" class="text-red-700 text-xs mt-1  hidden"></p>
-                </div>
-            </div>
-                <div class=" flex justify-center"><button type="button" onclick="validnext(this);" class="c_btn mt-3 ">Next</button></div>
-                
-                </div>
-        
-<!-- Academic details -->
-                <div  id="form2" class=" page border-2 p-2 rounded-2xl border-red-700">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-3">
-
-                    <div>
-                    <label for="s_class" class="c_label">Select Class :</label>
-                    <select required class="c_dropdown " onclick="validatedropdown(this)" id="s_class" name="s_class">
-                         <option value="" selected disabled hidden>Not selected</option>
-                        <option value="FY">FY</option>
-                        <option value="SY">SY</option>
-                        <option value="TY">TY</option>
-                    </select>
-                     <p id="s_errorclass" class="text-red-700 text-xs mt-1  hidden"></p>
-                    </div>
-
-                    <div>
-                    <label for="s_program" class="c_label">Select Program :</label> 
-                    <select required class="c_dropdown" onclick="validatedropdown(this)" id="s_program" name="s_program" >
-                        <option value="" selected disabled hidden>Not Selected</option>
-                        <option value="BA">BA</option>
-                        <option value="BSC">BSC</option>
-                        <option value="BCOM">BCOM</option>
-                        <option value="BAF">BAF</option>
-                        <option value="BBI">BBI</option>
-                        <option value="BAMMAC">BAMMAC</option>
-                        <option value="BMS">BMS</option>
-                        <option value="BVOC">BVOC</option>
-                        <option value="BSCIT">BSC-IT</option>
-                        <option value="BSCBT">BSC-BT</option>
-                        <option value="BSCAIML">BSC-AIML</option>
-                        <option value="BSCDS">BSC-DS</option>
-                       
-                    </select>
-                     <p id="s_errorprogram" class="text-red-700 text-xs mt-1  hidden"></p>
-                    </div>
-
-                    <div>
-                    <label for="s_div" class="c_label">Enter Division :</label>
-                    <select required id="s_div" class="c_in mt-2 " onclick="validatedropdown(this)" type="text"  name="s_div">
-                        <option value="" selected disabled hidden>Not Selected</option>
-                        <option value ='A'>A</option>
-                         <option value ='B'>B</option>
-                          <option value ='C'>C</option>
-                           <option value ='D'>D</option>
-                           
-                    </select>
-                    <p id="s_errordiv" class="text-red-700 text-xs mt-1  hidden"></p>
-                    </div>
-
-                    <div>
-                    <label for="s_roll" class="c_label ">Enter Roll No. :</label>
-                    <input required class="c_in mt-2" onblur="checkRoll(this)" type="text" maxlength="3" id="s_roll" name="s_roll" placeholder="eg., 001"> <br><br>
-                    <p id="s_errorRoll" class="text-red-700 text-xs mt-1  hidden"></p>
-                    </div>
-
-                    <div>
-                    <label  class="c_label" for="s_newpass">Password :</label><br>
-                    <input id="s_newpass" required class="c_in" oninput="validatepass(this)" type="password" placeholder="Enter password" ><br>
-                    <p id="s_setpass" class="text-red-700 text-xs mt-1  hidden"></p>
-                    <button id="s_passbtn"  class="text-xs py-2 px-1  bg-back  rounded-xl md:text-xs font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95   " type="button" onclick="toggleshow(this)">SHOW</button><br>
-                    </div>
-                    
-                    <div>
-                    <label for="s_cnfpass" class="c_label">Confirm Password :</label><br>
-                    <input required id="s_cnfpass" oninput="checkpass(this)" class="c_in" type="password" name="s_pass" placeholder="Enter password"><br>
-                        <p id="s_errorpasswd" class="hidden text-red-500 text-xs mt-1"></p>
-                    </div>
-                    <div class="flex justify-center-safe">
-                    
-                
-                    <button type="button" class="c_btn " onclick="nextpage('form1')">Back</button>
-                    <button type="submit" name="s_submit " class="c_btn ml-45" >SUBMIT</button>
-                    </div>
-                </div>
-            </form>
+        <div>
+          <label class="c_label block mb-1">Enter Full Name :</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+            <input required autocomplete="given-name" class="c_in font-bold w-full" id="name" onblur="validatename(this)" oninput="validatename(this)" type="text" name="y_name" placeholder="Your name">
+            <input required class="c_in font-bold w-full" id="f_name" onblur="validatename(this)" oninput="validatename(this)" type="text" name="f_name" placeholder="Father name">
+            <input required class="c_in font-bold w-full" id="m_name" onblur="validatename(this)" oninput="validatename(this)" type="text" name="m_name" placeholder="Mother name">
+            <input required autocomplete="family-name" class="c_in font-bold w-full" id="s_name" onblur="validatename(this)" oninput="validatename(this)" type="text" name="s_name" placeholder="Surname">
+          </div>
+          <p id="s_errorname" class="text-red-700 text-xs mt-1 hidden"></p>
         </div>
-    
+
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          
+          <div>
+            <label for="s_email" class="c_label block">
+              Email <span class="text-red-400 text-[11px] block sm:inline">(Username sent via email)</span>
+            </label>
+            <input required class="c_in mt-1 w-full" oninput="validateEmail(this)" id="s_email" type="email" name="s_email" placeholder="example@gmail.com">
+            <p id="s_erroremail" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          
+          <div>
+            <label for="s_mobile" class="c_label block">Mobile No. :</label>
+            <input required maxlength="10" inputmode="numeric" class="c_in mt-1 w-full" oninput="validatemobile(this)" id="s_mobile" type="text" name="s_mobile" placeholder="10-digit mobile number">
+            <p id="s_errormobile" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          
+          <div>
+            <label for="s_DOB" class="c_label block">Date of Birth :</label>
+            <input required class="c_in mt-1 w-full" onblur="validateDate(this)" type="date" id="s_DOB" name="s_DOB">
+            <p id="s_errordate" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          
+          <div>
+            <label for="s_gender" class="c_label block">Gender :</label>
+            <select required id="s_gender" onchange="validatedropdown(this)" class="c_dropdown mt-1 w-full" name="s_gender">
+              <option value="" disabled selected hidden>Not Selected</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            <p id="s_errorgender" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          
+          <div>
+            <label for="bld_grp" class="c_label block">Blood Group :</label>
+            <select required class="c_dropdown mt-1 w-full" onchange="validatedropdown(this)" id="bld_grp" name="bld_grp">
+              <option value="" selected disabled hidden>Not Selected</option>
+              <option value="A+">A+</option>
+              <option value="B+">B+</option>
+              <option value="AB+">AB+</option>
+              <option value="O+">O+</option>
+              <option value="A-">A-</option>
+              <option value="B-">B-</option>
+              <option value="AB-">AB-</option>
+              <option value="O-">O-</option>
+            </select>
+            <p id="s_errorbld" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          
+          <div>
+            <label for="caste" class="c_label block">Caste :</label>
+            <select required class="c_dropdown mt-1 w-full" onchange="validatedropdown(this)" id="caste" name="s_caste">
+              <option value="" selected disabled hidden>Not Selected</option>
+              <option value="GENERAL">GENERAL</option>
+              <option value="OBC">OBC</option>
+              <option value="SC">SC</option>
+              <option value="ST">ST</option>
+              <option value="MINOR">MINOR</option>
+            </select>
+            <p id="s_errorcaste" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          
+          <div class="sm:col-span-2">
+            <label for="nssyear" class="c_label block">NSS Year :</label>
+            <select required class="c_dropdown mt-1 w-full" onchange="validatedropdown(this)" id="nssyear" name="nssyear">
+              <option value="" selected disabled hidden>Not Selected</option>
+              <option value="FY">First year (FY)</option>
+              <option value="SY">Second year (SY)</option>
+              <option value="TY">Third year (TY)</option>
+            </select>
+            <p id="s_errornssyr" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+        </div>
+
+        
+        <div class="pt-4 flex justify-end">
+          <button type="button" onclick="validnext(this);" class="c_btn w-full sm:w-auto px-8 py-2.5">
+            Next 
+          </button>
+        </div>
+
+      </div>
+
+      <!--  Academic Details -->
+      <div id="form2" class="page hidden bg-white p-4 sm:p-6 rounded-2xl border border-red-700 shadow-sm space-y-4">
+        
+        <h2 class="text-sm font-bold uppercase tracking-wider text-red-700 border-b border-slate-100 pb-2">
+          Academic Details & Password
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+         
+          <div>
+            <label for="s_class" class="c_label block">College Class :</label>
+            <select required class="c_dropdown mt-1 w-full" onchange="validatedropdown(this)" id="s_class" name="s_class">
+              <option value="" selected disabled hidden>Not Selected</option>
+              <option value="FY">FY</option>
+              <option value="SY">SY</option>
+              <option value="TY">TY</option>
+            </select>
+            <p id="s_errorclass" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          
+          <div>
+            <label for="s_program" class="c_label block">Program / Stream :</label>
+            <select required class="c_dropdown mt-1 w-full" onchange="validatedropdown(this)" id="s_program" name="s_program">
+              <option value="" selected disabled hidden>Not Selected</option>
+              <option value="BA">BA</option>
+              <option value="BSC">BSC</option>
+              <option value="BCOM">BCOM</option>
+              <option value="BAF">BAF</option>
+              <option value="BBI">BBI</option>
+              <option value="BAMMAC">BAMMAC</option>
+              <option value="BMS">BMS</option>
+              <option value="BVOC">BVOC</option>
+              <option value="BSCIT">BSC-IT</option>
+              <option value="BSCBT">BSC-BT</option>
+              <option value="BSCAIML">BSC-AIML</option>
+              <option value="BSCDS">BSC-DS</option>
+            </select>
+            <p id="s_errorprogram" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+         
+          <div>
+            <label for="s_div" class="c_label block">Division :</label>
+            <select required id="s_div" class="c_dropdown mt-1 w-full" onchange="validatedropdown(this)" name="s_div">
+              <option value="" selected disabled hidden>Not Selected</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </select>
+            <p id="s_errordiv" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+         
+          <div>
+            <label for="s_roll" class="c_label block">Roll Number :</label>
+            <input required class="c_in mt-1 w-full" onblur="checkRoll(this)" type="text" maxlength="3" inputmode="numeric" id="s_roll" name="s_roll" placeholder="e.g. 042">
+            <p id="s_errorRoll" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          <div>
+            <label class="c_label block" for="s_newpass">Password :</label>
+            <div class="relative mt-1">
+              <input id="s_newpass" required class="c_in w-full pr-16" oninput="validatepass(this)" type="password" placeholder="Enter password">
+              <button id="s_passbtn" class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[11px] py-1 px-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg transition" type="button" onclick="toggleshow(this)">
+                SHOW
+              </button>
+            </div>
+            <p id="s_setpass" class="text-red-700 text-xs mt-1 hidden"></p>
+          </div>
+
+          <div>
+            <label for="s_cnfpass" class="c_label block">Confirm Password :</label>
+            <input required id="s_cnfpass" oninput="checkpass(this)" class="c_in mt-1 w-full" type="password" name="s_pass" placeholder="Re-enter password">
+            <p id="s_errorpasswd" class="hidden text-red-500 text-xs mt-1"></p>
+          </div>
+
+        </div>
+
+        <div class="pt-4 flex flex-col-reverse sm:flex-row justify-between items-center gap-3">
+          <button type="button" class="c_btn_light w-full sm:w-auto px-6 py-2.5" onclick="nextpage('form1')">
+            Back
+          </button>
+          <button type="submit" name="s_submit" class="c_btn w-full sm:w-auto px-8 py-2.5 font-bold">
+            Submit Registration
+          </button>
+        </div>
+
+      </div>
+
+    </form>
+  </div>
 
 </body>
 </html>

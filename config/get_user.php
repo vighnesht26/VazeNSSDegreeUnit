@@ -6,7 +6,7 @@ session_start();
 header('Content-Type: application/json');
 
 
-
+$isAdmin  = isset($_SESSION['admin_id']);
 if (isset($_SESSION['admin_id']) || isset($_SESSION['std_id']  )){
 if (isset($_SESSION['admin_id'])) {
     $admin_id = $_SESSION['admin_id'];

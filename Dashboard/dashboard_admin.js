@@ -151,7 +151,7 @@ async function fetchAdminProfile() {
         } 
         else {
             localStorage.removeItem('user');
-            window.location.href = '../Authentication/index.html';
+            window.location.href = '../authentication/index.html';
         }
     } catch (error) { 
         
@@ -359,20 +359,6 @@ function executeExport() {
 }
 
 
-async function logout(){
-    try {
-    const response = await fetch('../authentication/logout.php', { method: 'POST' });
-    const data = await response.json();
-
-    if (data.success) {
-      localStorage.removeItem('user');
-      window.location.href = data.location;
-    }
-  } catch (error) {
-    console.error('Logout Error:', error);
-  }
-
-}
 
 //datevalidate
 const today = new Date();

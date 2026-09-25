@@ -48,11 +48,10 @@ async function fetchStudentProfile() {
             const updateBtn = document.getElementById('academic_update_btn');
             if (updateBtn) {
                 const userRole = (std.role || '').toLowerCase().trim();
-                if (userRole === 'leader') {
+                if (userRole === 'leader'|| userRole === 'volunteer') {
                     updateBtn.classList.remove('hidden');
-                    if (typeof checkAcademicProgressionStatus === 'function') {
-                        await checkAcademicProgressionStatus();
-                    }
+                    await AcademicUpdateStatus();
+                    
                 } else {
                     updateBtn.classList.add('hidden');
                     updateBtn.disabled = true;
@@ -368,7 +367,7 @@ async function submitAcademicUpdate(e){
     if (json.success) {
       alert("Academic details updated successfully!");
       closeUpdateModal();
-      await checkAcademicProgressionStatus();
+      await AcademicUpdateStatus();
     } else {
       alert(json.error || "Update failed");
     }
@@ -378,7 +377,7 @@ async function submitAcademicUpdate(e){
   }
 }
 
-//status of update
+//status of update on button
 async function AcademicUpdateStatus(){
   const updateBtn = document.getElementById('academic_update_btn');
   if (!updateBtn) return;
@@ -399,6 +398,9 @@ async function AcademicUpdateStatus(){
       updateBtn.title = title;
       updateBtn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-400');
       updateBtn.classList.remove('cursor-pointer', 'hover:bg-blue-900');
+
+      const notice = document.getElementById("update_notice");
+      if (notice) notice.classList.add("hidden");
     };
 
     if (!setData.success || setData.status !== 'open') {
@@ -424,15 +426,17 @@ async function AcademicUpdateStatus(){
       return;
     }
 
-    
+    showUpdateNotice()
     btn.disabled = false;
-    btn.textContent = "Academic Progression";
+    
+    btn.textContent = "Academic Update";
     btn.title = "Click to enroll for the upcoming academic year (" + acadData.target_year + ")";
     btn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-400');
     btn.classList.add('cursor-pointer');
+    
 
   } catch (error) {
-    console.error("Failed to check academic progression status:", error);
+    console.error("Failed to check academic updatation status:", error);
     btn.disabled = true;
     btn.classList.add('opacity-50', 'cursor-not-allowed');
   }
@@ -445,6 +449,19 @@ function showUpdateNotice(){
     notice.classList.remove("hidden");
     notice.classList.add("flex");
 
-    cardHTML = `
-    <div></div>`
+    
+}
+
+async function logout(){
+    try {
+    const response = await fetch('../authentication/logout.php', { method: 'POST' });
+    const data = await response.json();
+
+    if (data.success) {
+      localStorage.removeItem('user');
+      window.location.href = data.location;
+    }
+  } catch (error) {
+    console.error('Logout Error:', error);
+  }
 }

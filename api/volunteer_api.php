@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 require '../config/connect.php';
-
+require '../config/function.php';
 
 
 $isStudent = isset($_SESSION['std_id']);
@@ -34,17 +34,48 @@ function requireEventID($id) {
 }
 
 switch ($action) {
-
+    case 'get_total_hrs':
+        $year = getAcademicYear();
+        $sql = "SELECT total_hrs FROM academic_details 
+                WHERE student_id = ? AND academic_year = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('is',$studentId,$year);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $hrs = $res->fetch_assoc();
+        echo json_encode(['success'=>true, 'total_hrs'=>$hrs['total_hrs']]);
+        exit();
+        break;  
     case 'get_active_event':
         try{
-            $sql =  "SELECT * FROM event WHERE LOWER(status) = 'active'
-            ORDER BY date ASC";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute();
-            $result = $stmt->get_result();
+            $sql =  "SELECT e.event_id, e.name,e.date, e.time, e.venue,e.organised_by,e.event_type,e.approx_hrs,e.max_participation,e.status,e.reporting_time, e.reporting_venue, e.description,
+                    CASE WHEN a.attendance_no IS NOT NULL THEN 1 ELSE 0 
+                    END AS isRegistered
+                    FROM event e
+                    LEFT JOIN attendance a 
+                         ON e.event_id = a.event_id AND a.student_id = ?
+                    WHERE LOWER(e.status) = 'active'
+                    ORDER BY e.date ASC";
 
-            echo json_encode(['success' => true,'data' => $result->fetch_all(MYSQLI_ASSOC)]);
-            $stmt->close();
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $studentId);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                $events = [];
+                while ($row = $result->fetch_assoc()) {
+                    
+                    $row['isRegistered'] = (bool)$row['isRegistered'];
+                    $events[] = $row;
+                }
+
+                $stmt->close();
+
+                echo json_encode([
+                    'success' => true,
+                    'data' => $events
+                ]);
+                exit;
         }catch (Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
@@ -62,7 +93,7 @@ switch ($action) {
            
             $checkSql = "SELECT attendance_no FROM attendance WHERE event_id = ? AND student_id = ?";
             $checkStmt = $conn->prepare($checkSql);
-            $checkStmt->bind_param("ii", $eventID, $stdID);
+            $checkStmt->bind_param("ii", $eventID, $studentId);
             $checkStmt->execute();
 
             if ($checkStmt->get_result()->num_rows > 0) {
@@ -78,7 +109,7 @@ switch ($action) {
                             )";
                 
                 $insertStmt = $conn->prepare($insertSql);
-                $insertStmt->bind_param("iii", $eventID, $eventID, $stdID);
+                $insertStmt->bind_param("iii", $eventID, $eventID, $studentId);
 
                 if ($insertStmt->execute()) {
                     echo json_encode(['success' => true]);
@@ -92,6 +123,36 @@ switch ($action) {
             echo json_encode(['error' => $e->getMessage()]);
         }
         break;
+    case 'view_event':
+       
+                try{
+                    requireEventID($eventID);
+                    $sql ="SELECT * FROM event WHERE event_id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $eventID);
+
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $event = $result->fetch_assoc(); 
+                    $stmt->close();
+
+                    if ($event) {
+                        echo json_encode([
+                                    "success" => true,
+                                    "data" => $event
+                                ]);
+                        
+                    } else {
+                        echo json_encode(['error' => 'Event not found.']);
+                    }
+
+                } 
+                catch (Exception $e) {
+                echo json_encode(['error' => $e->getMessage()]);
+                    }
+    
+                
+                break;
      case 'showfeedbacks':
             
             $std_id = intval($studentId);

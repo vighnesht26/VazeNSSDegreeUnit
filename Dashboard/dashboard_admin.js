@@ -77,11 +77,14 @@ function switchpage(pageid){
         if (pageid === 'leaders' && currentUserRole !== 'leader' && !isLeadersLoaded) {
           loadLeaders();
         }
-        if(pageid === 'pendings' && currentUserRole !== 'admin'){
+        if(pageid === 'pendings' && currentUserRole == 'leader' ){
           getPendingStd();
         }
          if(pageid === 'settings' && currentUserRole !== 'leader'){
           loadRegistrationStatus()
+        }
+        if(pageid === 'faq' && currentUserRole == 'leader'){
+          loadUnansweredQuestions()
         }
 
         
@@ -115,6 +118,10 @@ async function fetchAdminProfile() {
         const settingsNav = document.getElementById('nav_settings');
         if (settingsNav) {
           settingsNav.style.display = (currentUserRole !== 'leader') ? 'flex' : 'none';
+        }
+        const faqNav = document.getElementById('nav_faq');
+        if (faqNav) {
+          faqNav.style.display = (currentUserRole == 'leader') ? 'flex' : 'none';
         }
         if (data.success) {
            

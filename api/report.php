@@ -252,40 +252,41 @@ try{
 
                 $columnIndex = 3; //column C
                 foreach($events as $event){
-                    $colLetter = Coordinate::stringFromColumnIndex($columnIndex);
-                    $sheet->setCellValue($columnIndex . '1',$event['name']);
+                    $sheet->setCellValue([$columnIndex ,1],$event['name']);
                     $columnIndex++;
                 }
-                $totalColLetter = Coordinate::stringFromColumnIndex($columnIndex);
-                $sheet->setCellValue($totalColLetter . '1','Total Hours');
+                $totalColNum = $columnIndex;
+                //$totalColLetter = Coordinate::stringFromColumnIndex($columnIndex);
+                $sheet->setCellValue([$totalColNum ,1],'Total Hours');
 
                 $rowNum = 2;
                 $srno = 1;
                 $hasEvent = !empty($events);
-                $lastEventColLetter = Coordinate::stringFromColumnIndex(count($events) +2);
+                
+                $lastEventColLetter = Coordinate::stringFromColumnIndex($totalColNum - 1);
 
                 foreach($volunteers as $volunteer){
-                    $sheet->setCellValue('A' . $rowNum, $srno++);
-                    $sheet->setCellValue('B' . $rowNum, $volunteer['full_name']);
+                    $sheet->setCellValue([1 , $rowNum], $srno++);
+                    $sheet->setCellValue([2, $rowNum], $volunteer['full_name']);
 
                     $columnIndex = 3;
                     foreach($events as $event){
-                        $colLetter = Coordinate::stringFromColumnIndex($columnIndex);
+                        //$colLetter = Coordinate::stringFromColumnIndex($columnIndex);
                         $studentId = $volunteer['std_id'];
                         $eventId = $event['event_id'];
 
                         if(isset($attendance[$studentId][$eventId])){
                             $hours = (float)$event['alloted_hrs'];
-                            $sheet->setCellValue($colLetter . $rowNum, $hours);
+                            $sheet->setCellValue([$columnIndex , $rowNum], $hours);
 
                         }
                         else{
-                            $sheet->setCellValue($colLetter . $rowNum, 0);
+                            $sheet->setCellValue([$columnIndex , $rowNum], 0);
                         }
                         $columnIndex++;
                     }
                         if($hasEvent){
-                            $sheet->setCellValue($totalColLetter . $rowNum,"=SUM(C{$rowNum}:{$lastEventColLetter}{$rowNum})");
+                            $sheet->setCellValue([$totalColNum , $rowNum],"=SUM(C{$rowNum}:{$lastEventColLetter}{$rowNum})");
 
                         }
                         $rowNum++;
@@ -297,7 +298,7 @@ try{
                         $fileName = "Volunteer_Hours_{$AcademicYear}.xlsx";
 
                         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                        header("Content-Disposition: attachment; filename=\"{$filename}\"");
+                        header("Content-Disposition: attachment; filename=\"{$fileName}\"");
                         header('Cache-Control: max-age=0');
 
                         $writer = new Xlsx($spreadsheet);

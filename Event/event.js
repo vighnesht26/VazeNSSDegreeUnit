@@ -193,34 +193,40 @@ async function displayeventcard() {
   
     try{
         const response = await fetch('../api/event_api.php?action=dash_event');
-        console.log("step1");
+        
         if(!response.ok){
             throw new Error(`Error status: ${response.status}`);
 
         }
-        console.log("step2");
+        
         const data = await response.json();
-         console.log("excecuted");
+         
         if(!data.success){
             console.log(data.error);
             return;
         }
+        const active_badge = document.getElementById('active_badge');
+        active_badge.classList.remove('bg-emerald-500/20', 'text-emerald-300' ,'border-emerald-500/40');
+        active_badge.classList.add('bg-gray-500/20', 'text-gray-300' ,'border-gray-500/40');
+        active_badge.textContent = 'No Active Event';
+        const attendanceBtn = document.getElementById('btn_active_attendance');
+        attendanceBtn.disabled = true;
 
-        
-        if(data.active){console.log("step4");
-
+        if(data.active){
+            
             currentActiveEventId = data.active.event_id || data.active.id;
             document.getElementById('ename').textContent= data.active.name;
             document.getElementById('edate').textContent= data.active.date;
             document.getElementById('etype').textContent= data.active.event_type;
             document.getElementById('eMP').textContent= data.active.max_participation;
             
-            const attendanceBtn = document.getElementById('btn_active_attendance');
-            if (attendanceBtn) {
+                active_badge.classList.remove('bg-gray-500/20', 'text-gray-300' ,'border-gray-500/40');
+                active_badge.classList.add('bg-emerald-500/20', 'text-emerald-300' ,'border-emerald-500/40');
+                active_badge.textContent = 'Active';
                 attendanceBtn.dataset.id = data.active.event_id;
                 attendanceBtn.disabled = false;
                 attendanceBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
+            
         }else{
              document.getElementById('ename').textContent= 'None';
             document.getElementById('edate').textContent= 'None';
@@ -644,8 +650,7 @@ function open_attendance(ev){
   const eventId = ev.dataset.id;
 
     if (!eventId) {
-        console.error("Missing event ID on element:", ev);
-        alert("Unable to open attendance: Missing Event ID.");
+        alert("No Event is Active");
         return;
     }
 

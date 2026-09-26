@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     fetchStudentProfile();
     getEvents();
-    AcademicUpdateStatus()
+    AcademicUpdateStatus();
+    get_hrs();
 });
 
 async function fetchStudentProfile() {
@@ -69,7 +70,14 @@ async function fetchStudentProfile() {
     }
 }
 
+async function get_hrs(){
+  const container = document.getElementById('total_hrs');
+  const response = await fetch('../api/volunteer_api.php?action=get_total_hrs');
+  
+  const result = await response.json();
 
+  container.textContent = result.total_hrs;
+}
 
 //active events load
 async function getEvents(){
@@ -85,10 +93,17 @@ async function getEvents(){
                 container.innerHTML = `<p class="text-slate-500 italic">No active events open right now.</p>`;
                 return;
             }
+            
 
             let html = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">`;
             events.forEach(ev => {
-                
+                const participateBtn = ev.isRegistered
+                    ? `<button disabled data-id="${ev.event_id}" class="c_btn opacity-50 cursor-not-allowed ">
+                         Already Registered
+                       </button>`
+                    : `<button onclick="participateInEvent(this)" data-id="${ev.event_id}" class="c_btn">
+                         Participate Now
+                       </button>`;
                 html += `
                 <div class="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm space-y-2">
                     <h3 class="font-bold text-slate-800">${ev.name}</h3>
@@ -96,11 +111,9 @@ async function getEvents(){
                     <p class="text-sm text-slate-600"><strong>Reporting time:</strong> ${ev.reporting_time}</p>
                     <p class="text-sm text-slate-600"><strong>Venue:</strong> ${ev.venue}</p>
                     <div class="pt-2 flex justify-evenly">
-                         
-                            <button onclick="participateInEvent(this)" data-id="${ev.event_id}" class="c_btn ">
-                                Participate Now
-                            </button>
-                            <button class="c_btn_blue"> view</button>
+
+                            ${participateBtn}
+                            <button data-id="${ev.event_id}" onclick="openViewEvent(this)" class="c_btn_blue"> view</button>
                         
                     </div>
                 </div>`;
@@ -465,3 +478,117 @@ async function logout(){
     console.error('Logout Error:', error);
   }
 }
+async function openViewEvent(button){
+  const container = document.getElementById('view_event_modal');
+    const eventId = button.dataset.id;
+    try{
+    const response = await fetch("../api/volunteer_api.php",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: eventId,
+              action : 'view_event'
+             })
+        });
+    const result = await response.json();
+
+    if(result.success){
+      const event = result.data;
+
+      console.log("Fetched status:", `"${event.status}"`);
+
+      let eventHTML = `
+      <div  class="w-full max-w-xl mx-auto bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden font-sans">
+  
+  <!-- Header Bar -->
+  <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+    <div>
+      <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">${event.status}</span>
+      <h2 class="text-xl font-bold">${event.name}</h2>
+    </div>
+    <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700">
+      ${event.event_type}
+    </span>
+  </div>
+
+  <div class="p-6 space-y-5">
+    
+    <!-- Reporting Notice Callout -->
+    <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl flex flex-wrap sm:flex-nowrap gap-4 justify-between text-xs text-amber-950">
+      <div>
+        <p class="font-bold text-amber-800">⏰ Reporting Time</p>
+        <p class="text-sm font-semibold">${event.reporting_time}</p>
+      </div>
+      <div>
+        <p class="font-bold text-amber-800">📍 Reporting Venue</p>
+        <p class="text-sm font-semibold">${event.reporting_venue}</p>
+      </div>
+    </div>
+
+    <!-- Description Block -->
+    <div>
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Description</h3>
+      <p class="text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl p-3 leading-relaxed">
+        ${event.description?.trim() ? event.description : 'No additional details or instructions provided for this event.'}
+      </p>
+    </div>
+
+    <!-- Compact Key-Value Details (No empty boxes) -->
+    <div class="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-sm bg-white">
+      <div class="flex justify-between px-4 py-2.5 bg-slate-50/50">
+        <span class="text-slate-500 font-medium">Date</span>
+        <span class="text-slate-800 font-bold">${event.date}</span>
+      </div>
+      <div class="flex justify-between px-4 py-2.5">
+        <span class="text-slate-500 font-medium">Time</span>
+        <span class="text-slate-800 font-bold">${event.time}</span>
+      </div>
+      <div class="flex justify-between px-4 py-2.5 bg-slate-50/50">
+        <span class="text-slate-500 font-medium">Event Venue</span>
+        <span class="text-slate-800 font-bold truncate max-w-50">${event.venue}</span>
+      </div>
+      <div class="flex justify-between px-4 py-2.5">
+        <span class="text-slate-500 font-medium">Approx. Hours</span>
+        <span class="text-slate-800 font-bold">${event.approx_hrs} hrs</span>
+      </div>
+      <div class="flex justify-between px-4 py-2.5 bg-slate-50/50">
+        <span class="text-slate-500 font-medium">Max Volunteers</span>
+        <span class="text-slate-800 font-bold">${event.max_participation}</span>
+      </div>
+      <div class="flex justify-between px-4 py-2.5">
+        <span class="text-slate-500 font-medium">Registered</span>
+        <span class="text-slate-400 font-medium">${event.count ?? 'Not Available'}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+    <button type="button" onclick="closeViewEventModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+      Close
+    </button>
+  </div>
+
+</div>
+      `
+      container.innerHTML = eventHTML;
+      container.classList.remove("hidden");
+      container.classList.add("flex");
+
+    }else{
+      alert("Error occured" , result.error);
+    }
+    }catch(error){
+      console.log("Error occured", error);
+    } 
+}
+
+function closeViewEventModal(){
+  const container = document.getElementById('view_event_modal');
+    container.classList.add("hidden");
+      container.classList.remove("flex");
+
+}
+

@@ -1,8 +1,8 @@
 <?php
 header('Content-Type: application/json'); 
 session_start();
-include '../config/connect.php';
-require_once '../config/function.php';
+require '../config/connect.php';
+require '../config/function.php';
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $name = $_POST['y_name'];

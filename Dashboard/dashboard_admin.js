@@ -187,8 +187,11 @@ async function loadVolunteers(searchTerm = '') {
               Volunteers List :- <span class="text-red-600">${volunteers.length}</span>
             </h2>
             <div class="flex gap-2">
+              <button type="button" onclick="openVolunteerHoursModal()" class="bg-blue-900 hover:bg-blue-950 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition cursor-pointer">
+                Export Volunteer Hours Data
+              </button>
               <button type="button" onclick="openVolExp()" class="bg-blue-900 hover:bg-blue-950 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition cursor-pointer">
-                Export List
+                Export Volunteer List
               </button>
               ${promoteBtnHTML}
             </div>

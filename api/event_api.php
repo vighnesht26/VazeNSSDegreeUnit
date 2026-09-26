@@ -1,7 +1,7 @@
 <?php
 session_start(); 
 header('Content-Type: application/json');
-include '../config/connect.php';
+require '../config/connect.php';
 
 
 
@@ -128,7 +128,11 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                         $sql = "SELECT event_id, name, event_type, status, date, venue
                                 FROM event 
                                 WHERE status <> 'completed'
-                                ORDER BY date ASC"; 
+                                ORDER BY 
+                                    CASE WHEN  status = 'cancelled' THEN 1
+                                    ELSE 0
+                                    END ASC,
+                                    date ASC"; 
 
                         $stmt = $conn->prepare($sql);
                         $stmt->execute();

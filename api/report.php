@@ -1,11 +1,17 @@
 <?php
+
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+
+
 session_start();
-header('Content-Type: application/json');
-require_once '../config/connect.php';
-require_once '../vendor/autoload.php';
-require_once './cloudinary_uploader.php';
+
+require '../config/connect.php';
+require '../vendor/autoload.php';
+require './cloudinary_uploader.php';
 
 use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 
 $TEMPLATE_Path = __DIR__ . '/../assets/template.docx';
@@ -26,7 +32,7 @@ $action = $_REQUEST['action'] ?? '';
 try{
     switch($action){
         case 'generate_report':
-            
+            header('Content-Type: application/json');
                 if($_SERVER['REQUEST_METHOD'] !== 'POST'){
                     throw new Exception("Invlaid method");
                 }
@@ -149,6 +155,7 @@ try{
                 $eventID = filter_input(INPUT_GET, 'event_id', FILTER_VALIDATE_INT);
                 if (!$eventID) {
                     http_response_code(400);
+                    header('Content-Type: application/json');
                     echo json_encode(['success' => false, 'error' => 'Invalid Event ID.']);
                     exit();
                 }
@@ -166,10 +173,144 @@ try{
                 
                 } else {
                     http_response_code(404);
+                    header('Content-Type: application/json');
                     echo json_encode(['success' => false, 'error' => 'Report not found for this event.']);
                     exit();
                 }
                 break;
+            case 'vol_event_report':
+                $getAcademicYear = $_GET['academic_year'];
+
+                if (!empty($getAcademicYear) && preg_match('/^(\d{4})-(\d{2}|\d{4})$/', trim($getAcademicYear), $matches)) {
+                    $startYear    = (int)$matches[1];
+                    $endYearStr   = $matches[2];
+                    $endYearFull  = (strlen($endYearStr) === 2) ? (int)(substr((string)$startYear, 0, 2) . $endYearStr) : (int)$endYearStr;
+                    $endYearShort = (strlen($endYearStr) === 4) ? substr($endYearStr, -2) : $endYearStr;
+                    $AcademicYear = "{$startYear}-{$endYearShort}";
+                } else {
+                    $currentMonth = (int)date('n'); 
+                    $currentYear  = (int)date('Y');
+                    $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
+                    $endYearFull  = ($currentMonth >= 6) ? $currentYear + 1 : $currentYear;
+                    $endYearShort = ($currentMonth >= 6) ? substr((string)($currentYear + 1), -2) : substr((string)$currentYear, -2);
+                    $AcademicYear = "{$startYear}-{$endYearShort}";
+                }
+
+                $startDate = "{$startYear}-06-01";
+                $endDate   = "{$endYearFull}-05-31";
+                
+               
+                $sqlevent = "SELECT event_id, name, date, alloted_hrs
+                            FROM event
+                            WHERE date BETWEEN ?  AND ? AND status = 'Completed'
+                            ORDER BY date ASC";
+
+                $stmtevent = $conn->prepare($sqlevent);
+                $stmtevent->bind_param('ss',$startDate,$endDate);
+                $stmtevent->execute();
+
+                $events = $stmtevent->get_result()->fetch_all(MYSQLI_ASSOC);
+
+                $sqlvol = "SELECT s.std_id, CONCAT_WS(' ',s.surname,s.first_name,s.father_name,s.mother_name) AS full_name
+                            FROM student s
+                            INNER JOIN academic_details ad
+                                ON s.std_id = ad.student_id
+                            WHERE ad.academic_year = ?
+                            ORDER BY s.surname";
+                        $stmtvol = $conn->prepare($sqlvol);
+                        $stmtvol->bind_param('s',$AcademicYear);
+                        $stmtvol->execute();
+
+                        $volunteers = $stmtvol->get_result()->fetch_all(MYSQLI_ASSOC);
+
+
+                $sqlatt = "SELECT a.event_id, a.student_id, a.isabsent
+                            FROM attendance a
+                            INNER JOIN  event e
+                                ON a.event_id = e.event_id
+                            WHERE e.date BETWEEN ? AND ? AND isabsent = 'no'";
+                        
+                        $stmtatt = $conn->prepare($sqlatt);
+                        $stmtatt->bind_param('ss',$startDate,$endDate);
+                        $stmtatt->execute();
+
+                        $attendanceresult = $stmtatt->get_result();
+
+                $attendance = [];
+
+                while ($row = $attendanceresult->fetch_assoc()) {
+                    $attendance[$row['student_id']][$row['event_id']] = true;
+                }
+                
+
+                $spreadsheet = new Spreadsheet();
+                $sheet = $spreadsheet->getActiveSheet();
+                $sheet->setTitle("Volunteer_Event_List_". $AcademicYear);
+
+                $sheet->setCellValue('A1','Sr. No.');
+                $sheet->setCellValue('B1', 'Volunteer Name');
+
+                $columnIndex = 3; //column C
+                foreach($events as $event){
+                    $colLetter = Coordinate::stringFromColumnIndex($columnIndex);
+                    $sheet->setCellValue($columnIndex . '1',$event['name']);
+                    $columnIndex++;
+                }
+                $totalColLetter = Coordinate::stringFromColumnIndex($columnIndex);
+                $sheet->setCellValue($totalColLetter . '1','Total Hours');
+
+                $rowNum = 2;
+                $srno = 1;
+                $hasEvent = !empty($events);
+                $lastEventColLetter = Coordinate::stringFromColumnIndex(count($events) +2);
+
+                foreach($volunteers as $volunteer){
+                    $sheet->setCellValue('A' . $rowNum, $srno++);
+                    $sheet->setCellValue('B' . $rowNum, $volunteer['full_name']);
+
+                    $columnIndex = 3;
+                    foreach($events as $event){
+                        $colLetter = Coordinate::stringFromColumnIndex($columnIndex);
+                        $studentId = $volunteer['std_id'];
+                        $eventId = $event['event_id'];
+
+                        if(isset($attendance[$studentId][$eventId])){
+                            $hours = (float)$event['alloted_hrs'];
+                            $sheet->setCellValue($colLetter . $rowNum, $hours);
+
+                        }
+                        else{
+                            $sheet->setCellValue($colLetter . $rowNum, 0);
+                        }
+                        $columnIndex++;
+                    }
+                        if($hasEvent){
+                            $sheet->setCellValue($totalColLetter . $rowNum,"=SUM(C{$rowNum}:{$lastEventColLetter}{$rowNum})");
+
+                        }
+                        $rowNum++;
+                    }
+                        foreach(range(1,$columnIndex) as $cell){
+                            $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($cell))->setAutoSize(true);
+
+                        }
+                        $fileName = "Volunteer_Hours_{$AcademicYear}.xlsx";
+
+                        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                        header("Content-Disposition: attachment; filename=\"{$filename}\"");
+                        header('Cache-Control: max-age=0');
+
+                        $writer = new Xlsx($spreadsheet);
+                        $writer->save('php://output');
+                        exit();
+                        break;
+            default:
+                    http_response_code(400);
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'error' => 'Invalid or missing action.']);
+                    $conn->close();
+                    exit();        
+
             
     }
 }catch(Exception $e){
@@ -179,7 +320,9 @@ try{
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error'   => $e->getMessage()
+        'error'   => $e->getMessage(),
+        'file'    => $e->getFile(),
+        'line'    => $e->getLine()
     ]);
 }
 

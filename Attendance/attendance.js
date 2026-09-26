@@ -271,8 +271,9 @@ window.confirmExcelExport = function() {
     return;
   }
 
-  
-  const excelRows = allVolunteers.map((v, index) => {
+  const volunteersToExport = isAttendanceCompleted ? allVolunteers.filter(v => v.is_present === 1) : allVolunteers;
+
+const excelRows = volunteersToExport.map((v, index) => {
     const row = {};
 
     if (selectedCols.includes('sr_no'))      row["SR No."] = index + 1;

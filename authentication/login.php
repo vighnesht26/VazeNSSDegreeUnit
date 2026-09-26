@@ -2,7 +2,7 @@
 
 session_start();
 
-include '../config/connect.php';
+require '../config/connect.php';
 header('Content-Type: application/json');
 // login
 if($_SERVER['REQUEST_METHOD']==='POST'){

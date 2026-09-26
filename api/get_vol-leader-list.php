@@ -1,8 +1,8 @@
 <?php
 session_start(); 
 header('Content-Type: application/json');
-include '../config/connect.php';
-require_once '../config/function.php';
+require '../config/connect.php';
+require '../config/function.php';
 
 $response = [
     'success' => false,

@@ -2,8 +2,8 @@
 header('Content-Type: application/json');
 session_start();
 
-include '../config/connect.php';
-require_once '../config/function.php';
+require '../config/connect.php';
+require './mailsender.php';
 
 $isLeader = isset($_SESSION['std_id'], $_SESSION['role']) && $_SESSION['role'] === 'Leader';
 
@@ -94,6 +94,7 @@ if ($method === 'POST') {
 
         //LEADER REJECTS
         if ($action === 'reject') {
+            sendRejectedEmail($student['email'], $student['first_name']);
             $delAcc = $conn->prepare("DELETE FROM academic_details WHERE student_id = ?");
             $delAcc->bind_param("i", $student_id);
             $delAcc->execute();

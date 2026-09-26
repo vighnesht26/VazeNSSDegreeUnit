@@ -91,3 +91,45 @@ function viewReport(ev) {
     
     window.open(`../api/report.php?action=view_report&event_id=${eventId}`, '_blank');
 }
+
+async function openVolunteerHoursModal(){
+    const container = document.getElementById('volunteerHoursModal');
+    const yearDropdown = document.getElementById("modalAcademicYearvolhr");
+  // Fetch registered years from db
+    if (yearDropdown.children.length === 0) {
+        try {
+        const res = await fetch("../api/export_list.php?action=get_academic_years");
+        const json = await res.json();
+
+        if (json.success && json.years) {
+            yearDropdown.innerHTML = json.years.map(yr => `
+            <option value="${yr}" ${yr === json.current_year ? 'selected' : ''}>
+                ${yr} ${yr === json.current_year ? '(Current)' : ''}
+            </option>
+            `).join('');
+        }
+        } catch (err) {
+        console.error("Failed to fetch academic years:", err);
+        }
+    }
+    
+    container.classList.remove('hidden');
+    container.classList.add('flex');
+}
+
+function closeVolunteerHoursModal(){
+    const container = document.getElementById('volunteerHoursModal');
+    container.classList.add('hidden');
+    container.classList.remove('flex');
+}
+
+async function executeVolunteerHoursExport(){
+    const selectedYear = document.getElementById("modalAcademicYearvolhr").value;
+
+    const params = new URLSearchParams({
+      action: 'vol_event_report',
+      academic_year: selectedYear,
+    });
+
+    window.location.href = `../api/report.php?${params.toString()}`;
+}

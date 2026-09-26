@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json'); 
 session_start();
-include '../config/connect.php';
+require '../config/connect.php';
 
 if (!isset($_SESSION['clg_id'])) {
     http_response_code(401);

@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-include '../config/connect.php';
+require '../config/connect.php';
 
 $action = $_GET['action'] ?? '';
 $input  = file_get_contents("php://input");
@@ -24,7 +24,7 @@ switch ($action) {
 
         echo json_encode([
             'success' => true,
-            'status'  => $status // 'open' or 'closed'
+            'status'  => $status
         ]);
         $conn->close();
         exit();

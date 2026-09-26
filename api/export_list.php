@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../config/connect.php';
+require '../config/connect.php';
 
 $isAdmin  = isset($_SESSION['admin_id']);
 $isLeader = isset($_SESSION['std_id'], $_SESSION['role']) && $_SESSION['role'] === 'Leader';
@@ -78,27 +78,28 @@ switch ($action) {
         exit();
 
     case 'export_std_list':
-        $getAcademicYear = $_GET['academic_year'] ?? $data['academic_year'] ?? '';
-        $classFilter     = isset($_GET['class']) ? trim($_GET['class']) : '';
-        $programFilter   = isset($_GET['program']) ? trim($_GET['program']) : '';
+        $getAcademicYear = $_GET['academic_year'];
+        $classFilter     = isset($_GET['class']);
+        $programFilter   = isset($_GET['program']);
 
-        // Normalize academic year to 2-digit format (e.g., 2026-27)
-        if (!empty($getAcademicYear) && preg_match('/^(\d{4})-(\d{2}|\d{4})$/', trim($getAcademicYear), $matches)) {
+        
+        if (!empty($getAcademicYear) && preg_match('/^(\d{4})-(\d{2})$/', trim($getAcademicYear), $matches)) {
             $startYear    = (int)$matches[1];
-            $endYearShort = (strlen($matches[2]) === 4) ? substr($matches[2], -2) : $matches[2];
-            $AcademicYear = "{$startYear}-{$endYearShort}";
+            $endYear=  (int)$matches[2];
+            $AcademicYear = "{$startYear}-{$endYear}";
         } else {
             $currentMonth = (int)date('n'); 
             $currentYear  = (int)date('Y');
             $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
-            $endYearShort = ($currentMonth >= 6) ? substr((string)($currentYear + 1), -2) : substr((string)$currentYear, -2);
-            $AcademicYear = "{$startYear}-{$endYearShort}";
+            $endYear = ($currentMonth >= 6) ? substr((string)($currentYear + 1), -2) : substr((string)$currentYear, -2);
+            $AcademicYear = "{$startYear}-{$endYear}";
         }
 
-        $safeYear = str_replace(['/', '\\'], '-', $AcademicYear);
-        $filename = "NSS_Volunteer_list_" . $safeYear;
-        if (!empty($programFilter)) $filename .= "_{$programFilter}";
-        if (!empty($classFilter))   $filename .= "_{$classFilter}";
+        $filename = "NSS_Volunteer_list_" .  $AcademicYear;
+        if(!empty($programFilter)){
+            $filename .= "_{$programFilter}";}
+        if(!empty($classFilter)){
+            $filename .= "_{$classFilter}";}
         $filename .= ".csv";
 
         header('Content-Type: text/csv; charset=utf-8');
@@ -232,8 +233,8 @@ switch ($action) {
                        COUNT(CASE WHEN a.isabsent = 'no' AND LOWER(s.gender) = 'male' THEN 1 END) AS male_count,
                        COUNT(CASE WHEN a.isabsent = 'no' AND LOWER(s.gender) = 'female' THEN 1 END) AS female_count
                 FROM event e
-                LEFT JOIN attendance a ON e.event_id = a.event_id
-                LEFT JOIN student s ON a.student_id = s.std_id
+                INNER JOIN attendance a ON e.event_id = a.event_id
+                INNER JOIN student s ON a.student_id = s.std_id
                 WHERE e.status = 'Completed'
                   AND e.date BETWEEN ? AND ?
                 GROUP BY e.event_id, e.name, e.event_type, e.date, e.venue, e.organised_by, e.alloted_hrs
@@ -269,7 +270,9 @@ switch ($action) {
         fclose($output);
         $conn->close();
         exit();
-
+        break;
+    
+    
     default:
         http_response_code(400);
         header('Content-Type: application/json');

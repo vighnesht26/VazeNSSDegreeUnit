@@ -615,6 +615,43 @@
 
   </div>
 </div>
+
+<div id="volunteerHoursModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50  items-center justify-center p-4 md:p-8">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4 ">
+    
+    <!--Header -->
+    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+      <h3 id="volunteerHoursModalTitle" class="font-header text-xl font-bold text-slate-800">
+        Export Data
+      </h3>
+      <button type="button" onclick="closeVolunteerHoursModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">&times;</button>
+    </div>
+    <div class="space-y-4 text-left">
+      <!-- Academic Year-->
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Academic Year</label>
+        <select id="modalAcademicYearvolhr" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-blue-900 focus:outline-none">
+          <!-- Dynamically displayed if previous exists-->
+        </select>
+      </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
+      <button 
+        type="button" 
+        onclick="closeVolunteerHoursModal()" 
+        class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition"
+      >
+        Cancel
+      </button>
+      <button 
+        type="button" 
+        onclick="executeVolunteerHoursExport()" 
+        class="px-5 py-2 text-sm bg-blue-950 hover:bg-blue-900 text-white font-semibold rounded-xl shadow transition"
+      >
+        Download
+      </button>
+    </div>
 </body>
 
 </html>

@@ -72,18 +72,18 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                         $admin_id = $_SESSION['admin_id'];
                         $sql =$conn->prepare( "INSERT INTO event(name, date, time, venue, organised_by, collaboration, event_type,approx_hrs, max_participation, status, reporting_time, reporting_venue, description, created_by_admin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                         $sql->bind_param("sssssssiissssi",$name,$date, $time, $venue, $organiser,$collab, $type , $appHrs, $maxPart,$status, $rtime, $rvenue, $desc, $admin_id);
-                        echo json_encode(['success'=>true,'location' => '../Dashboard/dashboardadmin.html']);
+                        
                     }
                     elseif(isset($_SESSION['std_id'])){
                         $leader_id = $_SESSION['std_id'];
                         $sql =$conn->prepare( "INSERT INTO event(name, date, time, venue, organised_by, collaboration, event_type,approx_hrs, max_participation, status, reporting_time, reporting_venue, description, created_by_leader) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                         $sql->bind_param("sssssssiissssi",$name,$date, $time, $venue, $organiser,$collab, $type , $appHrs, $maxPart,$status, $rtime, $rvenue, $desc,$leader_id);
-                        echo json_encode(['sucess'=>true,'location' => '../Dashboard/dashboardleader.html']);
+                        
                     }
 
                     if($sql->execute()){
                         http_response_code(200);
-                        echo json_encode(['success' => true,'msg'=> 'Event Registered Successfully']);
+                        echo json_encode(['success' => true,'msg'=> 'Event Registered Successfully','location' => '../Dashboard/dashboardadmin.html']);
                         
                     }
                     $sql->close();
@@ -96,7 +96,9 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
             case 'view_event':
                 try{
                     requireEventID($eventID);
-                    $sql ="SELECT * FROM event WHERE event_id = ?";
+                    $sql ="SELECT e.*, (SELECT COUNT(*) FROM attendance a WHERE a.event_id =e.event_id) AS registered
+                             FROM event e 
+                             WHERE event_id = ?";
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("i", $eventID);
 
@@ -129,10 +131,11 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                 $eventType   = trim($data['event_type'] ?? '');
                 $eventVenue  = trim($data['venue'] ?? '');
                 $eventStatus = trim($data['status'] ?? '');
+                $eventMP = trim($data['MP'] ?? '');
                 try {
     
                         $sql = "UPDATE event SET date = COALESCE(NULLIF(?, ''), date), event_type = COALESCE(NULLIF(?, ''), event_type), 
-                                venue = COALESCE(NULLIF(?, ''), venue),  status = COALESCE (NULLIF( ?, ''), status), updated_at = NOW()
+                                venue = COALESCE(NULLIF(?, ''), venue),  status = COALESCE (NULLIF( ?, ''), status),max_participation = COALESCE (NULLIF( ?, ''), max_participation), updated_at = NOW()
                                 WHERE event_id = ?";
 
                         $stmt = $conn->prepare($sql);
@@ -142,7 +145,7 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                         }
 
                         
-                        $stmt->bind_param("ssssi", $eventDate, $eventType, $eventVenue, $eventStatus ,$eventID);
+                        $stmt->bind_param("ssssii", $eventDate, $eventType, $eventVenue, $eventStatus,$eventMP ,$eventID);
 
                         if ($stmt->execute()) {
                             if ($stmt->affected_rows > 0) {
@@ -178,7 +181,7 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
             case 'show_upcoming_events':
                 try {
        
-                        $sql = "SELECT event_id, name, event_type, status, date, venue
+                        $sql = "SELECT event_id, name, event_type, status, date, venue,max_participation
                                 FROM event 
                                 WHERE status <> 'completed'
                                 ORDER BY 

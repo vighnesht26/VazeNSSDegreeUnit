@@ -18,7 +18,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     
     $clg = $_SESSION['clg_id'];
     $role= $_POST['role'];
-    $username = generateUsername($fname);
 
     $msg = ['success'=>false, 'message'=>'', 'error'=>' ' ];
 //Validations
@@ -30,7 +29,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
      if (empty($lname)) {
          $msg['error'] = "Last name is required.";
-    } elseif (!preg_match("/^[A-Za-z]+$/", $inputs['username'])) {
+    } elseif (!preg_match("/^[A-Za-z]+$/", $lname)) {
          $msg['error'] = "Last Name should not contain any digit or special character";
     }
 
@@ -40,22 +39,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $msg['error'] = "Please enter a valid email format.";
     }
 
-
-    $sql = $conn->prepare("SELECT 1 FROM admin WHERE username = ?");
-
-
-    while (true) {
-        $sql->bind_param("s", $username);
-        $sql->execute();
-        $res = $sql->get_result();
-
-        
-        if ($res->num_rows === 0) {
-            break; 
-        }
-
-        
-        $username = generateUsername($fname); 
+     $username = generateAdminUsername($conn,$fname,$mobile); 
     }
             
         
@@ -96,27 +80,37 @@ catch(Exception $e){
      echo json_encode($msg);
      $conn->close();
         exit();
-}
 
-function generateUsername(string $fname): string{
-    $maxlen = 12;
-    $minlen = 8;
-    $uname = $fname;
-    if(strlen($fname) <4){
-        $uname = $uname. 'user';
+
+function generateAdminUsername(mysqli $conn, string $name, string $mobile): string {
+    $cleanName = strtolower(preg_replace('/[^a-zA-Z]/', '', $name));
+    if (strlen($cleanName) < 4) {
+        $cleanName .= 'user';
     }
-    $remainlen = $maxlen - strlen($uname);
-     if($remainlen < 3){
-        $uname = substr($uname, 0 , $maxlen - 4);
-        $remainlen = 4;
-     }
-    $minRange = pow(10, max(2, $remainlen - 2)); 
-    $maxRange = pow(10,  max(2,$remainlen - 1))-1;
-
-    $usernum = rand( $minRange, $maxRange);
-    $username = $uname. $usernum;
     
+    
+    $suffix = substr($mobile, -3);
+    $baseUsername = $cleanName . $suffix;
+    $username = $baseUsername;
+    $counter = 1;
 
+    $stmt = $conn->prepare("SELECT 1 FROM admin WHERE username = ? LIMIT 1");
+
+    while (true) {
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        if ($res->num_rows === 0) {
+            break;
+        }
+
+        
+        $username = $baseUsername . '' . $counter;
+        $counter++;
+    }
+
+    $stmt->close();
     return $username;
 }
 ?>

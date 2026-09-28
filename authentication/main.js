@@ -296,7 +296,7 @@ function validatedropdown(dropdown){
         return true;
     }
 }
-//Rponse registered or not
+//Rponse admin registered or not
 async function submitform(event, form){
     try{event.preventDefault();
         let isValid =false;
@@ -324,7 +324,7 @@ async function submitform(event, form){
                 const response = await fetch('register.php',{method:'POST', body: formData });
                 
                 const message = await response.json();
-
+                debugger
                 if(message.success){
                     alert(message.message);
                     window.location.href = './index.html';

@@ -55,11 +55,49 @@
   </div>
 
 </header>
- <div id="update_notice" class="hidden justify-center"><div><p class="text-red-600 text-xl">Registration is OPEN, Update profile to enroll in this year!</p></div></div>
- <div class="h-10 w-20 bg-slate-500 text-amber-700 font-header text-2xl flex justify-center"><h4>Total Hours = </h4><strong id="total_hrs">Loading...</strong></div>
-<main class="flex justify-evenly">
-  <div id="active_events_container" ></div>
-  <div id="pending_feedback_container"></div>
+ <div id="update_notice" class="hidden my-4 max-w-5xl mx-auto px-4">
+  <div class="flex items-center gap-3 p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-xl shadow-sm text-amber-900">
+    <span class="text-xl">⚠️</span>
+    <p class="text-sm md:text-base font-semibold">
+      Registration is OPEN. Please update your profile to enroll for this academic year!
+    </p>
+  </div>
+</div>
+<!-- total hrs -->
+<div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+  <div class="flex items-center gap-3 bg-white border border-slate-200 px-5 py-3 rounded-2xl shadow-sm">
+    <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl text-lg font-bold">⏱️</div>
+    <div>
+      <div class="flex items-baseline gap-1.5">
+        <h4 class="text-base font-bold text-slate-700">Total Hours:</h4>
+        <span id="total_hrs" class="text-2xl font-extrabold text-blue-600">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<main class="max-w-7xl mx-auto px-6 pb-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <!-- Active Events-->
+  <section class="lg:col-span-2">
+    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+      <span>Active Events</span>
+    </h3>
+    <div id="active_events_container"  >
+      <!-- Events -->
+    </div>
+  </section>
+
+  
+  <section class="lg:col-span-1">
+    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+      <span>Pending Feedback</span>
+    </h3>
+    <div id="pending_feedback_container" class="space-y-4">
+      <!-- Feedback -->
+    </div>
+  </section>
+</main>
  
 
 

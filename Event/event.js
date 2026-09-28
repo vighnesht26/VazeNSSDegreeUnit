@@ -381,7 +381,7 @@ async function loadUpcomingEvents() {
               data-date="${ev.date}"
               data-type="${ev.event_type}"
               data-venue="${ev.venue}"
-              data-status="${ev.status}" ${disabledAttr} class="c_btn ${disabledClasses}">Update</button>
+              data-status="${ev.status}" data-maxp  ="${ev.max_participation}" ${disabledAttr} class="c_btn ${disabledClasses}">Update</button>
             <button type=" button" class="c_btn_blue  "  data-id="${ev.event_id}" onclick="viewEvent(this)"> view </button>
             </div>
           </div>`;
@@ -426,6 +426,10 @@ function openEditModal(button) {
   document.getElementById("edit_type").value = data.type;
   document.getElementById("edit_venue").value = data.venue;
   document.getElementById("edit_status").value = data.status;
+  document.getElementById("edit_MP").value = data.maxp;
+  console.log("Raw response data:", data);
+console.log("data.maxP:", data.maxP, "Type:", typeof data.maxp);
+
 
   const modal = document.getElementById("edit_modal");
   modal.classList.remove("hidden");
@@ -448,7 +452,8 @@ async function handleUpdateEvent(e) {
     date: document.getElementById("edit_date").value,
     event_type: document.getElementById("edit_type").value,
     venue: document.getElementById("edit_venue").value,
-    status: document.getElementById("edit_status").value
+    status: document.getElementById("edit_status").value,
+    MP: document.getElementById("edit_MP").value
     
   };
 
@@ -499,47 +504,128 @@ async function viewEvent(button){
       const disabledClasses = isActive ? '' : 'opacity-50 cursor-not-allowed pointer-events-none !bg-gray-400 !text-gray-700';
 
       let eventHTML = `
-      <div class="w-full bg-gray-300 border-2 h-full rounded-2xl">
-    <div class="border-b-2 border-black h-15 flex justify-center pt-5 font-header text-3xl font-bold">
-      <div  class="bg-gray-400 w-150 flex justify-center rounded-2xl"><span>${event.name} </span></div>
+      <div class="w-full max-w-4xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col font-sans">
+    
+    
+    <div class="px-6 py-5 bg-linear-to-b   from-slate-900 to-slate-800 text-white flex items-center justify-between border-b border-slate-700">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight">${event.name}</h2>
+        
+      </div>
+      <span class="text-2xl font-bold text-emerald-300">Total Registered : <strong>${event.registered}</strong></span>
+      <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
+        event.status === 'Scheduled' 
+          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
+          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+      }">
+        ${event.status}
+      </span>
+    </div>
+
+    
+    <div class="p-6 space-y-6">
       
-    </div>
-    <div class="flex justify-evenly font-bold font-header">
-      <div><label>Date :-</label><span class="bg-gray-400">${event.date}</span></div>
-      <div><label>Time :-</label><span class="bg-gray-400">${event.time}</span></div>
-      <div><label>Venue :-</label><span class="bg-gray-400">${event.venue}</span></div>
-    </div>
-    <div class="flex justify-center">
-      <textarea disabled rows="4" class="resize-none font-header rows-4 bg-gray-400 rounded-2xl  mt-5 h-35 w-250 p-3">${event.description}</textarea>
-    </div>
-    <div class="flex justify-evenly font-header mt-10">
-      <div><label>⏰Reporting Time :-</label><span class="bg-gray-400">${event.reporting_time}</span></div>
-      <div><label>📍Reporting Location :-</label><span class="bg-gray-400">${event.reporting_venue}</span></div>
-    </div>
-    <div class="flex justify-evenly font-header mt-10">
-      <div><label>Type :-</label><span class="bg-gray-400">${event.event_type}</span></div>
-      <div><label>Approx hours :-</label><span class="bg-gray-400">${event.approx_hrs}</span></div>
-      <div><label>Max Participation :-</label><span class="bg-gray-400">${event.max_participation}</span></div>
+      <!-- Primary Schedule & Location Banner -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 border border-slate-100 rounded-xl">
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 bg-blue-50 text-blue-600 rounded-lg">📅</div>
+          <div>
+            <p class="text-xs font-medium text-slate-500 uppercase">Date</p>
+            <p class="text-sm font-semibold text-slate-800">${event.date}</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg">⏰</div>
+          <div>
+            <p class="text-xs font-medium text-slate-500 uppercase">Event Time</p>
+            <p class="text-sm font-semibold text-slate-800">${event.time}</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 bg-rose-50 text-rose-600 rounded-lg">📍</div>
+          <div>
+            <p class="text-xs font-medium text-slate-500 uppercase">Venue</p>
+            <p class="text-sm font-semibold text-slate-800 truncate" title="${event.venue}">${event.venue}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description  -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Event Description</label>
+        <div class="w-full min-h-22.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 leading-relaxed overflow-y-auto whitespace-pre-wrap">
+          ${event.description || '<span class="text-slate-400 italic">No description provided for this event.</span>'}
+        </div>
+      </div>
+
       
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        
+        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+          <p class="text-xs text-slate-500 font-medium">Reporting Time</p>
+          <p class="text-sm font-semibold text-slate-800 mt-0.5">${event.reporting_time}</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+          <p class="text-xs text-slate-500 font-medium">Reporting Spot</p>
+          <p class="text-sm font-semibold text-slate-800 mt-0.5 truncate" title="${event.reporting_venue}">${event.reporting_venue}</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+          <p class="text-xs text-slate-500 font-medium">Event Type</p>
+          <p class="text-sm font-semibold text-slate-800 mt-0.5">${event.event_type}</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+          <p class="text-xs text-slate-500 font-medium">Est. Hours</p>
+          <p class="text-sm font-semibold text-slate-800 mt-0.5">${event.approx_hrs} hrs</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+          <p class="text-xs text-slate-500 font-medium">Max Participation</p>
+          <p class="text-sm font-semibold text-slate-800 mt-0.5">${event.max_participation}</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Footer / Actions -->
+    <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
       
-    </div>
-    <div class="flex justify-evenly font-header mt-10">
-      <div><label>Status :-</label><span class="bg-gray-400">${event.status}</span></div>
-      <div><label>Count :-</label><span class="bg-gray-400">Not Available</span></div>
-    </div>
-    <div class="flex justify-evenly mt-2 border-t rounded-2xl border-t-gray-700 pt-2">
-      <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}" data-status="${event.status}" onclick="startEventReg(this)">Start Registration</button>
-      <button  ${disabledAttr} class="c_btn_blue ${disabledClasses}" data-id="${event.event_id}" data-status="${event.status}" onclick = "stopEventReg(this)">Stop Registration</button>
-      <button ${disabledAttr} class="c_btn ${disabledClasses}" data-id="${event.event_id}" onclick="open_attendance(this)">Attendance</button>
-      <div class=" rounded-2xl bg-slate-50 border-t border-slate-100 flex justify-end">
-      <button type="button" onclick="closeEventModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-semibold transition">
+      <!-- Management Controls -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <button ${disabledAttr} 
+          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
+          data-id="${event.event_id}" 
+          data-status="${event.status}" 
+          onclick="startEventReg(this)">
+          Start Registration
+        </button>
+
+        <button ${disabledAttr} 
+          class="px-4 py-2 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
+          data-id="${event.event_id}" 
+          data-status="${event.status}" 
+          onclick="stopEventReg(this)">
+          Stop Registration
+        </button>
+
+        <button ${disabledAttr} 
+          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
+          data-id="${event.event_id}" 
+          onclick="open_attendance(this)">
+          Attendance
+        </button>
+      </div>
+
+      <!-- Close Button -->
+      <button type="button" 
+        onclick="closeEventModal()" 
+        class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold shadow-sm transition">
         Close
       </button>
-    </div>
-    </div>
-    
 
-
+    </div>
   </div>
       `
       container.innerHTML = eventHTML;
@@ -700,7 +786,7 @@ async function loadCompletedEvents(){
             Completed Events :- <span class="text-red-600">${events.length}</span>
           </h2>
 
-          <button type="button" class="c_btn_blue" onclick="openEveExp()">Export List</button>
+          <button type="button" class="c_btn_blue" onclick="openEveExp()">Download CSV</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto  p-2">
       `;
@@ -729,9 +815,9 @@ async function loadCompletedEvents(){
             <p class="${DispHrs} text-sm font-semibold text-slate-700">Hours Alloted:<span class="font-bold  text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full ">${ev.alloted_hrs}</span>
             </p>
             <div class="flex justify-between"> 
-            <button type="button"  class="c_btn ${hideAdd}"  data-id="${ev.event_id}" data-name="${ev.name}" data-date="${ev.date}" onclick="openReportModal(this)">Add Report</button>
-            <button type="button"  class="c_btn_blue ${hideView}"  data-id="${ev.event_id}" onclick="viewReport(this)">view Report</button>
-            <button type="button"  class="c_btn_blue ${DispHrsBtn}"  data-id="${ev.event_id}" data-hrs="${ev.alloted_hrs}" onclick="allocate_hrs_modal(this)">Allocate Hours</button>
+            <button type="button"  class=" px-4 py-2 rounded-xl text-xs bg-emerald-500 font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2  ${hideAdd}"  data-id="${ev.event_id}" data-name="${ev.name}" data-date="${ev.date}" onclick="openReportModal(this)">Add Report</button>
+            <button type="button"  class="c_btn_blue ${hideView}"  data-id="${ev.event_id}" onclick="viewReport(this)">Report</button>
+            <button type="button"  class="px-1 py-2 rounded-xl text-xs bg-emerald-500 font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2 ${DispHrsBtn}"  data-id="${ev.event_id}" data-hrs="${ev.alloted_hrs}" onclick="allocate_hrs_modal(this)">Allocate Hours</button>
             <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="open_attendance(this)">Attendance</button>
             <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="more(this)">More</button>
             </div>

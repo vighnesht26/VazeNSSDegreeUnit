@@ -867,5 +867,5 @@ async function toggleRegistration() {
 }
 
 function openAdminRegistration(){
-  window.location.href = "../authentication/adminregister.html";
+  window.location.href = "../authentication/index.html";
 }

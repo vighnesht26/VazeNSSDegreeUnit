@@ -81,53 +81,153 @@ async function get_hrs(){
 
 //active events load
 async function getEvents(){
-    const container = document.getElementById("active_events_container");
-    if (!container) return;
+  
+   const leaderContainer = document.getElementById("part_event_leader");
+    const volunteerContainer = document.getElementById("active_events_container");
+    if (!leaderContainer && !volunteerContainer) {
+          return;
+      }
+    let user = null;
+    try {
+        const storedUser = localStorage.getItem("user");
+        user = storedUser ? JSON.parse(storedUser) : null;
+    } catch (e) {
+        console.error("Failed to parse user from localStorage:", e);
+    }
+
+   
+    const isLeader = user?.role === "Leader";
+
+    
+    if (leaderContainer) {
+        if (!isLeader) {
+            leaderContainer.classList.add("hidden");
+            leaderContainer.innerHTML = "";   
+        } else {
+            leaderContainer.classList.remove("hidden");
+        }
+    }
+
+    
+    if (!volunteerContainer && !isLeader) {
+        return;
+    }
     try {
         const response = await fetch("../api/volunteer_api.php?action=get_active_event");
         const result = await response.json();
 
-        if (result.success) {
-            const events = result.data;
-            if (events.length === 0) {
-                container.innerHTML = `<p class="text-slate-500 italic">No active events open right now.</p>`;
-                return;
-            }
-            
-
-            let html = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">`;
-            events.forEach(ev => {
-                const participateBtn = ev.isRegistered
-                    ? `<button disabled data-id="${ev.event_id}" class="c_btn opacity-50 cursor-not-allowed ">
-                         Already Registered
-                       </button>`
-                    : `<button onclick="participateInEvent(this)" data-id="${ev.event_id}" class="c_btn">
-                         Participate Now
-                       </button>`;
-                html += `
-                <div class="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm space-y-2">
-                    <h3 class="font-bold text-slate-800">${ev.name}</h3>
-                    <p class="text-sm text-slate-600"><strong>Date:</strong> ${ev.date}</p>
-                    <p class="text-sm text-slate-600"><strong>Reporting time:</strong> ${ev.reporting_time}</p>
-                    <p class="text-sm text-slate-600"><strong>Venue:</strong> ${ev.venue}</p>
-                    <div class="pt-2 flex justify-evenly">
-
-                            ${participateBtn}
-                            <button data-id="${ev.event_id}" onclick="openViewEvent(this)" class="c_btn_blue"> view</button>
-                        
-                    </div>
-                </div>`;
-            });
-            html += `</div>`;
-            container.innerHTML = html;
-        } else {
+        if (!result.success) {
             console.error("Error loading events:", result.error);
+            const errHtml = `<p class="text-rose-500 text-sm">Failed to load events: ${result.error || 'Unknown error'}</p>`;
+            if (leaderContainer) leaderContainer.innerHTML = errHtml;
+            if (volunteerContainer) volunteerContainer.innerHTML = errHtml;
+            return;
         }
+
+        const events = result.data || [];
+
+        if (events.length === 0) {
+            const emptyHtml = `<p class="text-slate-500 italic text-sm">No active events open right now.</p>`;
+            if (leaderContainer) leaderContainer.innerHTML = emptyHtml;
+            if (volunteerContainer) volunteerContainer.innerHTML = emptyHtml;
+            return;
+        }
+
+        if (volunteerContainer) {
+            let volHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+            events.forEach(ev => {
+                const maxP = parseInt(ev.max_participation, 10);
+                const regCount = parseInt(ev.registered_count, 10);
+                const isFull = regCount >= maxP;
+
+                const participateBtn = ev.isRegistered ? `<button disabled data-id="${ev.event_id}" class="flex-1 py-2 px-3 bg-slate-100 text-slate-400 font-semibold rounded-lg text-xs cursor-not-allowed">
+                        Already Registered </button>` : isFull ? `<button disabled data-id="${ev.event_id}" class="flex-1 py-2 px-3 bg-rose-50 text-rose-500 border border-rose-200 font-semibold rounded-lg text-xs cursor-not-allowed">
+                        Registration full (${regCount}/${maxP}) </button>` : `<button onclick="participateInEvent(this)" data-id="${ev.event_id}" class="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold rounded-lg text-xs shadow-sm transition">
+                        Participate Now
+                      </button>`;
+
+
+                volHtml += `
+                    <div class="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-start justify-between gap-2">
+                                <h3 class="font-bold text-slate-800 text-base leading-snug truncate" title="${ev.name}">
+                                    ${ev.name}
+                                </h3>
+                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                                    ${ev.event_type || 'Event'}
+                                </span>
+                            </div>
+                            <div class="text-xs text-slate-600 space-y-1">
+                                <p><strong class="text-slate-700">Date:</strong> ${ev.date}</p>
+                                <p><strong class="text-slate-700">Reporting Time:</strong> ${ev.reporting_time || ev.time}</p>
+                                <p class="truncate" title="${ev.venue}"><strong class="text-slate-700">Venue:</strong> ${ev.venue}</p>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
+                            ${participateBtn}
+                            <button data-id="${ev.event_id}" onclick="openViewEvent(this)" class="py-2 px-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg text-xs transition">
+                                View
+                            </button>
+                        </div>
+                    </div>`;
+            });
+            volHtml += `</div>`;
+            volunteerContainer.innerHTML = volHtml;
+        }
+
+       
+        if (leaderContainer) {
+          if(user.role === 'Leader'){
+            leaderContainer.classList.remove("hidden");}
+            let leaderHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
+            events.forEach(ev => {
+              const maxP = parseInt(ev.max_participation, 10);
+              const regCount = parseInt(ev.registered_count, 10);
+              const isFull = regCount >= maxP;
+
+              const participateBtn = ev.isRegistered ? `<button disabled data-id="${ev.event_id}" class="flex-1 py-2 px-3 bg-slate-100 text-slate-400 font-semibold rounded-lg text-xs cursor-not-allowed">
+                        Already Registered </button>` : isFull ? `<button disabled data-id="${ev.event_id}" class="flex-1 py-2 px-3 bg-rose-50 text-rose-500 border border-rose-200 font-semibold rounded-lg text-xs cursor-not-allowed">
+                        Registration full</button>` : `<button onclick="participateInEvent(this)" data-id="${ev.event_id}" class="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold rounded-lg text-xs shadow-sm transition">
+                        Participate Now
+                      </button>`;
+                leaderHtml += `
+                    <div class="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm flex flex-col justify-between space-y-4">
+                        <div class="space-y-2.5">
+                            <div class="flex items-start justify-between gap-2">
+                                <h3 class="font-bold text-slate-900 text-base leading-snug truncate" title="${ev.name}">
+                                    ${ev.name}
+                                </h3>
+                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                    ${ev.status || 'Active'}
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs text-slate-600">
+                                <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Date</span>${ev.date}</p>
+                                <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Reporting</span>${ev.reporting_time}</p>
+                                <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Capacity</span>${ev.max_participation ?? 'N/A'} max</p>
+                                <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Credit</span>${ev.approx_hrs ?? 0} hrs</p>
+                            </div>
+                        </div>
+
+                        
+                        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
+                            <button data-id="${ev.event_id}" onclick="open_attendance(this)" class="flex-1 py-1.5 px-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold transition text-center">
+                                Attendance
+                            </button>
+                            ${participateBtn}
+                        </div>
+                    </div>`;
+            });
+            leaderHtml += `</div>`;
+            leaderContainer.innerHTML = leaderHtml;
+        }
+
     } catch (error) {
         console.error("Fetch error:", error);
     }
 }
-
 async function participateInEvent(button){
         const eventID = button.dataset.id;
 
@@ -138,7 +238,7 @@ async function participateInEvent(button){
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
-                action: "register_event", 
+                action: "participate_event", 
                 event_id: eventID 
             })
         });
@@ -146,7 +246,7 @@ async function participateInEvent(button){
         const result = await response.json();
 
         if (result.success) {
-            alert("Successfully registered!");
+            alert(result.attendance_no + result.message);
             getEvents(); 
         } else {
             alert("Registration failed: " + result.error);
@@ -534,7 +634,7 @@ async function openViewEvent(button){
       </p>
     </div>
 
-    <!-- Compact Key-Value Details (No empty boxes) -->
+    
     <div class="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-sm bg-white">
       <div class="flex justify-between px-4 py-2.5 bg-slate-50/50">
         <span class="text-slate-500 font-medium">Date</span>
@@ -558,13 +658,11 @@ async function openViewEvent(button){
       </div>
       <div class="flex justify-between px-4 py-2.5">
         <span class="text-slate-500 font-medium">Registered</span>
-        <span class="text-slate-400 font-medium">${event.count ?? 'Not Available'}</span>
+        <span class="text-slate-800 font-medium">${event.registered ?? 'Not Available'}</span>
       </div>
     </div>
 
   </div>
-
-  <!-- Footer -->
   <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
     <button type="button" onclick="closeViewEventModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold shadow-sm transition">
       Close

@@ -49,6 +49,7 @@ switch ($action) {
     case 'get_active_event':
         try{
             $sql =  "SELECT e.event_id, e.name,e.date, e.time, e.venue,e.organised_by,e.event_type,e.approx_hrs,e.max_participation,e.status,e.reporting_time, e.reporting_venue, e.description,
+                        (SELECT COUNT(*) FROM attendance att WHERE att.event_id = e.event_id) AS registered_count,
                     CASE WHEN a.attendance_no IS NOT NULL THEN 1 ELSE 0 
                     END AS isRegistered
                     FROM event e
@@ -80,7 +81,7 @@ switch ($action) {
             echo json_encode(['error' => $e->getMessage()]);
         }
         break;
-    case 'register_event':
+    case 'participate_event':
         if (!isset($data['event_id'])) {
             http_response_code(400);
             echo json_encode(['error' => 'Missing event ID.']);
@@ -89,45 +90,99 @@ switch ($action) {
 
         $eventID = intval($data['event_id']);
 
+        $conn->begin_transaction();
         try {
-           
+            //event status and max participation
+            $eventSql = "SELECT status, max_participation FROM event WHERE event_id = ? FOR UPDATE";
+            $eventStmt = $conn->prepare($eventSql);
+            $eventStmt->bind_param("i", $eventID);
+            $eventStmt->execute();
+            $event = $eventStmt->get_result()->fetch_assoc();
+            $eventStmt->close();
+
+            if (!$event) {
+                $conn->rollback();
+                http_response_code(404);
+                echo json_encode(['success'=>false,'error' => 'Event not found.']);
+                break;
+            }
+
+            if (strcasecmp($event['status'], 'Active') !== 0) {
+                $conn->rollback();
+                http_response_code(400);
+                echo json_encode(['error' => 'Registration for this event is not active.']);
+                break;
+            }
+
+            //if student is already registered
             $checkSql = "SELECT attendance_no FROM attendance WHERE event_id = ? AND student_id = ?";
             $checkStmt = $conn->prepare($checkSql);
             $checkStmt->bind_param("ii", $eventID, $studentId);
             $checkStmt->execute();
-
-            if ($checkStmt->get_result()->num_rows > 0) {
-                echo json_encode(['error' => 'You have already registered for this event.']);
-            } else {
-              
-                $insertSql = "INSERT INTO attendance (event_id, attendance_no, student_id, isabsent) 
-                            VALUES (
-                                ?, 
-                                (SELECT COALESCE(MAX(a.attendance_no), 0) + 1 FROM attendance a WHERE a.event_id = ?), 
-                                ?, 
-                                'Yes'
-                            )";
-                
-                $insertStmt = $conn->prepare($insertSql);
-                $insertStmt->bind_param("iii", $eventID, $eventID, $studentId);
-
-                if ($insertStmt->execute()) {
-                    echo json_encode(['success' => true]);
-                } else {
-                    echo json_encode(['error' => 'Failed to register for the event.']);
-                }
-                $insertStmt->close();
-            }
+            $alreadyRegistered = $checkStmt->get_result()->num_rows > 0;
             $checkStmt->close();
+
+            if ($alreadyRegistered) {
+                $conn->rollback();
+                http_response_code(400);
+                echo json_encode(['success'=>false,'error' => 'You have already registered for this event.']);
+                break;
+            }
+            //TO calculate total registered and maximum
+            $countSql = "SELECT COUNT(*) AS total_registered, COALESCE(MAX(attendance_no), 0) AS max_att_no 
+                         FROM attendance 
+                         WHERE event_id = ?";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->bind_param("i", $eventID);
+            $countStmt->execute();
+            $attData = $countStmt->get_result()->fetch_assoc();
+            $countStmt->close();
+
+            $currentCount = intval($attData['total_registered']);
+            $maxLimit = intval($event['max_participation']);
+
+            if ($currentCount >= $maxLimit) {
+                $conn->rollback();
+                http_response_code(400);
+                echo json_encode(['success'=>false,'error' => 'Registration full. Maximum participants reached.']);
+                break;
+            }
+
+            //attendance number and insert
+            $nextAttendanceNo = intval($attData['max_att_no']) + 1;
+
+            $insertSql = "INSERT INTO attendance (event_id, attendance_no, student_id, isabsent) 
+                          VALUES (?, ?, ?, 'yes')";
+            $insertStmt = $conn->prepare($insertSql);
+            $insertStmt->bind_param("iii", $eventID, $nextAttendanceNo, $studentId);
+
+            if ($insertStmt->execute()) {
+                $conn->commit();
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Successfully registered for event.',
+                    'attendance_no' => $nextAttendanceNo
+                ]);
+            } else {
+                $conn->rollback();
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to register for the event.']);
+            }
+            $insertStmt->close();
+
         } catch (Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
+            $conn->rollback();
+            http_response_code(500);
+            echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
         }
         break;
     case 'view_event':
        
                 try{
                     requireEventID($eventID);
-                    $sql ="SELECT * FROM event WHERE event_id = ?";
+                    $sql ="SELECT e.*, (SELECT COUNT(*) FROM attendance a WHERE a.event_id =e.event_id) AS registered 
+                            FROM event e
+                             WHERE e.event_id = ?";
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("i", $eventID);
 

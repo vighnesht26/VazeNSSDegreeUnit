@@ -40,6 +40,59 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
 
     try{
         switch($action){
+            case 'register_event':
+                $name = trim($data['e_name']);
+                $date   = trim($data['e_date']);
+                $type   = trim($data['e_type']);
+                $venue  = trim($data['e_venue']);
+                $status = trim($data['e_status'] ?? 'Tentative');
+                $time = trim($data['e_time']);
+                $venue = trim($data['e_venue']);
+                $organiser = trim($data['e_org']);
+                $collab = trim($data['e_collab']);
+
+                $type = trim($data['e_type']);
+                $appHrs = (int)trim($data['e_AH']);              
+                $maxPart = (int)trim($data['e_MP']);
+                $rtime = trim($data['e_rtime']);
+                $rvenue = trim($data['e_rvenue']);
+                $desc = trim($data['e_desc']);
+                try{
+                    $sql =$conn-> prepare("SELECT event_id FROM event where name = ? AND date = ? ");
+                    $sql->bind_param("ss", $name, $date);
+                    $sql->execute();
+                    $res = $sql->get_result();
+                    if($res->num_rows > 0){
+                        echo json_encode(['success'=>false, 'error' => "EVENT Already Exists"]);
+                        exit();
+                    }
+                    else{
+
+                    if(isset($_SESSION['admin_id'])){
+                        $admin_id = $_SESSION['admin_id'];
+                        $sql =$conn->prepare( "INSERT INTO event(name, date, time, venue, organised_by, collaboration, event_type,approx_hrs, max_participation, status, reporting_time, reporting_venue, description, created_by_admin) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        $sql->bind_param("sssssssiissssi",$name,$date, $time, $venue, $organiser,$collab, $type , $appHrs, $maxPart,$status, $rtime, $rvenue, $desc, $admin_id);
+                        echo json_encode(['success'=>true,'location' => '../Dashboard/dashboardadmin.html']);
+                    }
+                    elseif(isset($_SESSION['std_id'])){
+                        $leader_id = $_SESSION['std_id'];
+                        $sql =$conn->prepare( "INSERT INTO event(name, date, time, venue, organised_by, collaboration, event_type,approx_hrs, max_participation, status, reporting_time, reporting_venue, description, created_by_leader) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        $sql->bind_param("sssssssiissssi",$name,$date, $time, $venue, $organiser,$collab, $type , $appHrs, $maxPart,$status, $rtime, $rvenue, $desc,$leader_id);
+                        echo json_encode(['sucess'=>true,'location' => '../Dashboard/dashboardleader.html']);
+                    }
+
+                    if($sql->execute()){
+                        http_response_code(200);
+                        echo json_encode(['success' => true,'msg'=> 'Event Registered Successfully']);
+                        
+                    }
+                    $sql->close();
+                    }
+                 }catch(Exception $e){
+                http_response_code(500);
+                echo json_encode(['success'=>false,'error' => "Internal Error". $e->getMessage()]);
+                }
+                break;
             case 'view_event':
                 try{
                     requireEventID($eventID);

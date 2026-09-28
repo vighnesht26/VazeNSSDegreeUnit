@@ -159,12 +159,21 @@ function checkmx(){
 
 //Submit
 async function submitEventData(event , form){
-  
-  try{event.preventDefault();
-    const formdata = new FormData(form);
-    const response = await fetch('registerevent.php',{method : 'POST', body :formdata});
-    const result = await response.json();
+  event.preventDefault();
+  try{
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
 
+    data.action = 'register_event';
+
+    const response = await fetch('../api/event_api.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
     if(result.success){
       alert("✔️ Event Registered Successfully");
       window.location.href = result.location;

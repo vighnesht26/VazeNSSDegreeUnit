@@ -1,6 +1,6 @@
 <?php
 
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+
 
 
 session_start();
@@ -8,7 +8,7 @@ session_start();
 require '../config/connect.php';
 require '../vendor/autoload.php';
 require './cloudinary_uploader.php';
-
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpWord\TemplateProcessor;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -253,8 +253,10 @@ try{
                 $columnIndex = 3; //column C
                 foreach($events as $event){
                     $sheet->setCellValue([$columnIndex ,1],$event['name']);
+                    $sheet->getStyle([$columnIndex,1])->getAlignment()->setTextRotation(90);
                     $columnIndex++;
                 }
+
                 $totalColNum = $columnIndex;
                 //$totalColLetter = Coordinate::stringFromColumnIndex($columnIndex);
                 $sheet->setCellValue([$totalColNum ,1],'Total Hours');

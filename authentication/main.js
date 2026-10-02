@@ -494,7 +494,9 @@ function validateDate(inputDate){
 
 //-------------------LOGIN
 async function checklogin(event, form) {
+    
     event.preventDefault();
+    
     try{
         const formData = new FormData(form);
         const response = await fetch('login.php',{method:'POST',body:formData});
@@ -505,6 +507,7 @@ async function checklogin(event, form) {
        
         if(message.success){
              window.location.href= message.location;
+            
         }else{
             alert(message.error);
             

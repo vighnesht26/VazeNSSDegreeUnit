@@ -1,17 +1,23 @@
- currentUserRole = '';
-  volunteerSearchTimeout = null;
- isVolunteersLoaded = false;
- isLeadersLoaded = false;
-  currentExportSection = '';
+currentUserRole = '';
+volunteerSearchTimeout = null;
+isVolunteersLoaded = false;
+isLeadersLoaded = false;
+currentExportSection = '';
 isProgramsLoaded = false;
 activeAcademicYear = "";
 let currentRegStatus = 'closed';
-document.addEventListener("DOMContentLoaded", () => {
-    fetchAdminProfile();
+document.addEventListener("DOMContentLoaded", async () => {
+  try{
+    await fetchAdminProfile();
+  }catch(err){
+    console.error("Profile fetch failed", err);
+  }
+    getEvents();
     displayeventcard();
     pendingActions();
-    loadEventsOverview()
-    loadStudentStats()
+    loadEventsOverview();
+    loadStudentStats();
+    
     //AddEvent
 const addEventButton = document.getElementById('addEventBtn');
 
@@ -195,10 +201,10 @@ async function loadVolunteers(searchTerm = '') {
             </h2>
             <div class="flex gap-2">
               <button type="button" onclick="openVolunteerHoursModal()" class="bg-blue-900 hover:bg-blue-950 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition cursor-pointer">
-                Export Volunteer Hours Data
+                Download Volunteer Hours Data
               </button>
               <button type="button" onclick="openVolExp()" class="bg-blue-900 hover:bg-blue-950 text-white font-semibold text-sm px-4 py-2 rounded-xl shadow transition cursor-pointer">
-                Export Volunteer List
+                Download Volunteer List
               </button>
               ${promoteBtnHTML}
             </div>

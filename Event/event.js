@@ -504,130 +504,132 @@ async function viewEvent(button){
       const disabledClasses = isActive ? '' : 'opacity-50 cursor-not-allowed pointer-events-none !bg-gray-400 !text-gray-700';
 
       let eventHTML = `
-      <div class="w-full max-w-4xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col font-sans">
+      <div class="w-[95%] sm:w-full max-w-4xl mx-auto my-auto max-h-[90vh] bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col font-sans">
     
-    
-    <div class="px-6 py-5 bg-linear-to-b   from-slate-900 to-slate-800 text-white flex items-center justify-between border-b border-slate-700">
-      <div>
-        <h2 class="text-2xl font-bold tracking-tight">${event.name}</h2>
         
-      </div>
-      <span class="text-2xl font-bold text-emerald-300">Total Registered : <strong>${event.registered}</strong></span>
-      <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
-        event.status === 'Scheduled' 
-          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
-          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-      }">
-        ${event.status}
-      </span>
-    </div>
-
-    
-    <div class="p-6 space-y-6">
-      
-      <!-- Primary Schedule & Location Banner -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 border border-slate-100 rounded-xl">
-        <div class="flex items-center space-x-3">
-          <div class="p-2.5 bg-blue-50 text-blue-600 rounded-lg">📅</div>
-          <div>
-            <p class="text-xs font-medium text-slate-500 uppercase">Date</p>
-            <p class="text-sm font-semibold text-slate-800">${event.date}</p>
+        <div class="px-4 py-4 sm:px-6 sm:py-5 bg-linear-to-b from-slate-900 to-slate-800 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700 shrink-0">
+          <div class="min-w-0">
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight truncate">${event.name}</h2>
+          </div>
+          <div class="flex items-center justify-between sm:justify-end gap-3 flex-wrap">
+            <span class="text-sm sm:text-base font-semibold text-emerald-300">
+              Registered: <strong>${event.registered}</strong>
+            </span>
+            <span class="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
+              event.status === 'Scheduled'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+            }">
+              ${event.status}
+            </span>
           </div>
         </div>
-        <div class="flex items-center space-x-3">
-          <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-lg">⏰</div>
+
+        <!-- Scrollable Modal Body -->
+        <div class="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto">
+          
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 p-3.5 sm:p-4 bg-slate-50 border border-slate-100 rounded-xl">
+            <div class="flex items-center space-x-3">
+              <div class="p-2 sm:p-2.5 bg-blue-50 text-blue-600 rounded-lg text-sm sm:text-base shrink-0">📅</div>
+              <div class="min-w-0">
+                <p class="text-[11px] sm:text-xs font-medium text-slate-500 uppercase">Date</p>
+                <p class="text-xs sm:text-sm font-semibold text-slate-800 truncate">${event.date}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+              <div class="p-2 sm:p-2.5 bg-indigo-50 text-indigo-600 rounded-lg text-sm sm:text-base shrink-0">⏰</div>
+              <div class="min-w-0">
+                <p class="text-[11px] sm:text-xs font-medium text-slate-500 uppercase">Event Time</p>
+                <p class="text-xs sm:text-sm font-semibold text-slate-800 truncate">${event.time}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-3 sm:col-span-2 md:col-span-1">
+              <div class="p-2 sm:p-2.5 bg-rose-50 text-rose-600 rounded-lg text-sm sm:text-base shrink-0">📍</div>
+              <div class="min-w-0">
+                <p class="text-[11px] sm:text-xs font-medium text-slate-500 uppercase">Venue</p>
+                <p class="text-xs sm:text-sm font-semibold text-slate-800 truncate" title="${event.venue}">${event.venue}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
           <div>
-            <p class="text-xs font-medium text-slate-500 uppercase">Event Time</p>
-            <p class="text-sm font-semibold text-slate-800">${event.time}</p>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Event Description</label>
+            <div class="w-full min-h-20 max-h-40 p-3 sm:p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700 leading-relaxed overflow-y-auto whitespace-pre-wrap">
+              ${event.description || '<span class="text-slate-400 italic">No description provided for this event.</span>'}
+            </div>
+          </div>
+
+         
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 sm:gap-3">
+            <div class="p-2.5 sm:p-3 bg-slate-50 border border-slate-100 rounded-xl min-w-0">
+              <p class="text-[11px] text-slate-500 font-medium">Reporting Time</p>
+              <p class="text-xs sm:text-sm font-semibold text-slate-800 mt-0.5 truncate">${event.reporting_time}</p>
+            </div>
+
+            <div class="p-2.5 sm:p-3 bg-slate-50 border border-slate-100 rounded-xl min-w-0">
+              <p class="text-[11px] text-slate-500 font-medium">Reporting Spot</p>
+              <p class="text-xs sm:text-sm font-semibold text-slate-800 mt-0.5 truncate" title="${event.reporting_venue}">${event.reporting_venue}</p>
+            </div>
+
+            <div class="p-2.5 sm:p-3 bg-slate-50 border border-slate-100 rounded-xl min-w-0">
+              <p class="text-[11px] text-slate-500 font-medium">Event Type</p>
+              <p class="text-xs sm:text-sm font-semibold text-slate-800 mt-0.5 truncate">${event.event_type}</p>
+            </div>
+
+            <div class="p-2.5 sm:p-3 bg-slate-50 border border-slate-100 rounded-xl min-w-0">
+              <p class="text-[11px] text-slate-500 font-medium">Est. Hours</p>
+              <p class="text-xs sm:text-sm font-semibold text-slate-800 mt-0.5 truncate">${event.approx_hrs} hrs</p>
+            </div>
+
+            <div class="p-2.5 sm:p-3 bg-slate-50 border border-slate-100 rounded-xl col-span-2 sm:col-span-1 min-w-0">
+              <p class="text-[11px] text-slate-500 font-medium">Max Participation</p>
+              <p class="text-xs sm:text-sm font-semibold text-slate-800 mt-0.5 truncate">${event.max_participation}</p>
+            </div>
           </div>
         </div>
-        <div class="flex items-center space-x-3">
-          <div class="p-2.5 bg-rose-50 text-rose-600 rounded-lg">📍</div>
-          <div>
-            <p class="text-xs font-medium text-slate-500 uppercase">Venue</p>
-            <p class="text-sm font-semibold text-slate-800 truncate" title="${event.venue}">${event.venue}</p>
+
+       
+        <div class="px-4 py-3 sm:px-6 sm:py-4 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-between gap-2.5 sm:gap-3 shrink-0">
+          
+          <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2">
+            <button ${disabledAttr} 
+              class="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
+              data-id="${event.event_id}" 
+              data-status="${event.status}" 
+              onclick="startEventReg(this)">
+              Start Registration
+            </button>
+
+            <button ${disabledAttr} 
+              class="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
+              data-id="${event.event_id}" 
+              data-status="${event.status}" 
+              onclick="stopEventReg(this)">
+              Stop Registration
+            </button>
+
+            <button ${disabledAttr} 
+              class="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
+              data-id="${event.event_id}" 
+              onclick="open_attendance(this)">
+              Attendance
+            </button>
           </div>
+
+          
+          <button type="button" 
+            onclick="closeEventModal()" 
+            class="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold shadow-sm transition">
+            Close
+          </button>
         </div>
       </div>
-
-      <!-- Description  -->
-      <div>
-        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Event Description</label>
-        <div class="w-full min-h-22.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 leading-relaxed overflow-y-auto whitespace-pre-wrap">
-          ${event.description || '<span class="text-slate-400 italic">No description provided for this event.</span>'}
-        </div>
-      </div>
-
+      `;
       
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-        
-        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-          <p class="text-xs text-slate-500 font-medium">Reporting Time</p>
-          <p class="text-sm font-semibold text-slate-800 mt-0.5">${event.reporting_time}</p>
-        </div>
-
-        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-          <p class="text-xs text-slate-500 font-medium">Reporting Spot</p>
-          <p class="text-sm font-semibold text-slate-800 mt-0.5 truncate" title="${event.reporting_venue}">${event.reporting_venue}</p>
-        </div>
-
-        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-          <p class="text-xs text-slate-500 font-medium">Event Type</p>
-          <p class="text-sm font-semibold text-slate-800 mt-0.5">${event.event_type}</p>
-        </div>
-
-        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-          <p class="text-xs text-slate-500 font-medium">Est. Hours</p>
-          <p class="text-sm font-semibold text-slate-800 mt-0.5">${event.approx_hrs} hrs</p>
-        </div>
-
-        <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
-          <p class="text-xs text-slate-500 font-medium">Max Participation</p>
-          <p class="text-sm font-semibold text-slate-800 mt-0.5">${event.max_participation}</p>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Modal Footer / Actions -->
-    <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
-      
-      <!-- Management Controls -->
-      <div class="flex flex-wrap items-center gap-2.5">
-        <button ${disabledAttr} 
-          class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
-          data-id="${event.event_id}" 
-          data-status="${event.status}" 
-          onclick="startEventReg(this)">
-          Start Registration
-        </button>
-
-        <button ${disabledAttr} 
-          class="px-4 py-2 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
-          data-id="${event.event_id}" 
-          data-status="${event.status}" 
-          onclick="stopEventReg(this)">
-          Stop Registration
-        </button>
-
-        <button ${disabledAttr} 
-          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-lg text-xs font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed ${disabledClasses}" 
-          data-id="${event.event_id}" 
-          onclick="open_attendance(this)">
-          Attendance
-        </button>
-      </div>
-
-      <!-- Close Button -->
-      <button type="button" 
-        onclick="closeEventModal()" 
-        class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold shadow-sm transition">
-        Close
-      </button>
-
-    </div>
-  </div>
-      `
       container.innerHTML = eventHTML;
       container.classList.remove("hidden");
       container.classList.add("flex");

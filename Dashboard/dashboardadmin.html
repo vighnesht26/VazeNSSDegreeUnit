@@ -16,8 +16,11 @@
 </head>
 <body class="flex flex-col h-screen">
   <!-- NSS Heading -->
-   <header class="top-header sticky top-0  flex items-center justify-between w-full h-24 md:px-6 text-white">
-  
+   <div class="top-header pl-5 text-[10px] md:text-xs text-gray-200 tracking-wide font-medium leading-tight w-full">
+      The KET's V. G. Vaze College of Arts, Science and Commerce (Empowered Autonomous)
+    </div>
+   <header class="top-header sticky top-0  flex items-center justify-between w-full h-20 md:px-6 text-white">
+      
   <!-- Main Heading-->
   <div class="flex items-center md:gap-3">
     <!-- Logo -->
@@ -35,7 +38,8 @@
         <button id="open_sidebar" onclick="toggleSidebar(this)" class="md:hidden fixed text-xs mt-20 ml-3 p-1 w-15 font-bold h-6 c_btn_outline">
          Sidebar</button>
   </div>
-  <button type="button" id="addEventBtn" class="c_btn hidden w-15 h-8 md:w-30  md:flex items-center gap-1.5 mt-15 text-xs">
+  
+  <button type="button" id="addEventBtn" class="py-2 px-3 bg-orange-600 hover:bg-orange-700 active:bg-orange-800 text-white mt-13 font-semibold rounded-lg text-xs shadow-sm transition">
     <span>+</span> Add Event
   </button>
  
@@ -275,7 +279,17 @@
         </div>
 
       </div>
-
+      <div id="hrs_container" class=" hidden max-w-7xl mx-auto px-6 py-4 flex-wrap items-center justify-between gap-4">
+  <div class="flex items-center gap-3 bg-white border border-slate-200 px-5 py-3 rounded-2xl shadow-sm">
+    <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl text-lg font-bold">⏱️</div>
+    <div>
+      <div class="flex items-baseline gap-1.5">
+        <h4 class="text-base font-bold text-slate-700">Total Hours:</h4>
+        <span id="total_hrs" class="text-2xl font-extrabold text-blue-600">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
     </div>
 
     <!-- Completed events -->
@@ -378,7 +392,8 @@
                          <option value="UL">University Level</option>
                           <option value="ABP-1">Area Based Project-1</option>
                            <option value="ABP-2">Area based Project-2</option>
-                            <option value="DL">District Level</option>
+                            <option value="ABP-3">Area based Project-3</option>
+                              <option value="DL">District Level</option>
                             </select>
         </div>
       </div>
@@ -596,7 +611,7 @@
         onclick="executeExport()" 
         class="px-5 py-2 text-sm bg-blue-950 hover:bg-blue-900 text-white font-semibold rounded-xl shadow transition"
       >
-        Download CSV
+        Download 
       </button>
     </div>
 

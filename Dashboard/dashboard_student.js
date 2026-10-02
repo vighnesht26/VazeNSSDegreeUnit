@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     get_hrs();
 });
 
-async function fetchStudentProfile() {
+async function fetchStudentProfile(){
   
     try {
        
@@ -71,12 +71,48 @@ async function fetchStudentProfile() {
 }
 
 async function get_hrs(){
-  const container = document.getElementById('total_hrs');
-  const response = await fetch('../api/volunteer_api.php?action=get_total_hrs');
-  
-  const result = await response.json();
+  const hrs = document.getElementById('total_hrs');
+  const container = document.getElementById('hrs_container');
 
-  container.textContent = result.total_hrs;
+  let user = null;
+  try{
+    const storedUser = localStorage.getItem("user");
+    user = storedUser ? JSON.parse(storedUser) : null;
+  }catch(e) {
+    console.error("Failed to parse user from localStorage:", e);
+  }
+
+  const isEligible = user?.role === "Leader" || user?.role === "Volunteer";
+
+  
+  if(container) {
+    if(!isEligible) {
+      container.classList.add("hidden");
+      container.classList.remove("flex");
+      return; 
+    } else {
+      container.classList.remove("hidden");
+      container.classList.add("flex");
+    }
+  }
+
+ 
+  if(!hrs) return;
+
+  
+  try {
+    const response = await fetch('../api/volunteer_api.php?action=get_total_hrs');
+    
+    if (!response.ok){
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    hrs.textContent = result?.total_hrs ?? 0;
+  } catch (error) {
+    console.error("Failed to fetch total hours:", error);
+    hrs.textContent = "--";
+  }
 }
 
 //active events load
@@ -206,8 +242,8 @@ async function getEvents(){
                             <div class="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-xs text-slate-600">
                                 <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Date</span>${ev.date}</p>
                                 <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Reporting</span>${ev.reporting_time}</p>
-                                <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Capacity</span>${ev.max_participation ?? 'N/A'} max</p>
-                                <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Credit</span>${ev.approx_hrs ?? 0} hrs</p>
+                                <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Maximum</span>${ev.max_participation ?? 'N/A'} volunteers</p>
+                                <p><span class="font-medium text-slate-400 block uppercase text-[10px]">Est. Hours</span>${ev.approx_hrs ?? 0} hrs</p>
                             </div>
                         </div>
 
@@ -572,7 +608,9 @@ async function logout(){
 
     if (data.success) {
       localStorage.removeItem('user');
-      window.location.href = data.location;
+      sessionStorage.clear();
+      window.location.replace('../authentication/index.html');
+
     }
   } catch (error) {
     console.error('Logout Error:', error);
@@ -601,7 +639,7 @@ async function openViewEvent(button){
       let eventHTML = `
       <div  class="w-full max-w-xl mx-auto bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden font-sans">
   
-  <!-- Header Bar -->
+  
   <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
     <div>
       <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">${event.status}</span>
@@ -614,7 +652,7 @@ async function openViewEvent(button){
 
   <div class="p-6 space-y-5">
     
-    <!-- Reporting Notice Callout -->
+   
     <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl flex flex-wrap sm:flex-nowrap gap-4 justify-between text-xs text-amber-950">
       <div>
         <p class="font-bold text-amber-800">⏰ Reporting Time</p>
@@ -626,7 +664,7 @@ async function openViewEvent(button){
       </div>
     </div>
 
-    <!-- Description Block -->
+    <!-- Description-->
     <div>
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Description</h3>
       <p class="text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-xl p-3 leading-relaxed">

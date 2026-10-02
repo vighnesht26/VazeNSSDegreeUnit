@@ -1,6 +1,12 @@
 <?php
+
 session_start();
 require '../config/connect.php';
+require '../vendor/autoload.php';
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 $isAdmin  = isset($_SESSION['admin_id']);
 $isLeader = isset($_SESSION['std_id'], $_SESSION['role']) && $_SESSION['role'] === 'Leader';
@@ -79,8 +85,8 @@ switch ($action) {
 
     case 'export_std_list':
         $getAcademicYear = $_GET['academic_year'];
-        $classFilter     = isset($_GET['class']);
-        $programFilter   = isset($_GET['program']);
+        $classFilter   = !empty($_GET['class']) ? trim($_GET['class']) : null;
+        $programFilter = !empty($_GET['program']) ? trim($_GET['program']) : null;
 
         
         if (!empty($getAcademicYear) && preg_match('/^(\d{4})-(\d{2})$/', trim($getAcademicYear), $matches)) {
@@ -95,36 +101,36 @@ switch ($action) {
             $AcademicYear = "{$startYear}-{$endYear}";
         }
 
-        $filename = "NSS_Volunteer_list_" .  $AcademicYear;
-        if(!empty($programFilter)){
-            $filename .= "_{$programFilter}";}
-        if(!empty($classFilter)){
-            $filename .= "_{$classFilter}";}
-        $filename .= ".csv";
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheetname = "Volunteer_" .  $AcademicYear;
+        $sheet->setTitle($sheetname);
+        if(!empty($programFilter)  && !empty($classFilter)){
+               $sheet->setTitle($sheetname . "_{$classFilter}_{$programFilter}");
+            }
+        else if(!empty($programFilter)){
+            $sheet->setTitle($sheetname . "_{$programFilter}");}
+        else if(!empty($classFilter)){
+           $sheet->setTitle($sheetname . "_{$classFilter}");}
+        
 
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
-
-        $output = fopen('php://output', 'w');
-        fputs($output, "\xEF\xBB\xBF"); 
-
-        fputcsv($output, [
-            'SR No.',
-            'Student ID',
-            'Full Name',
-            'Gender',
-            'Blood Group',
-            'Caste',
-            'Date of Birth',
-            'Mobile Number',
-            'Email Address',
-            'Class',
-            'Program',
-            'Division',
-            'Roll No.',
-            'Total NSS Hours'
-        ]);
+       
+        
+        $sheet->setCellValue('A1','SR No.');
+        $sheet->setCellValue('B1','Student ID');
+        $sheet->setCellValue('C1','Full Name');
+        $sheet->setCellValue('D1','Gender');
+        $sheet->setCellValue('E1','Blood Group');
+        $sheet->setCellValue('F1','Caste');
+        $sheet->setCellValue('G1','Date of Birth');
+        $sheet->setCellValue('H1','Mobile Number');
+        $sheet->setCellValue('I1','Email Address');
+        $sheet->setCellValue('J1','Class');
+        $sheet->setCellValue('K1','Program');
+        $sheet->setCellValue('L1','Division');
+        $sheet->setCellValue('M1','Roll No.');
+        $sheet->setCellValue('N1','Total NSS Hours');
+       
 
         $sql = "SELECT s.std_id, s.first_name, s.mother_name, s.father_name, s.surname, s.gender, s.email, s.mobile, 
                        s.blood_grp, s.caste, s.dob,
@@ -157,32 +163,56 @@ switch ($action) {
             $result = $stmt->get_result();
 
             $sr = 1;
+            
+            $rowIndex=2; 
             while ($row = $result->fetch_assoc()) {
                 $fullName = mb_strtoupper(trim(($row['surname'] ?? '') . ' ' . ($row['first_name'] ?? '') . ' ' . ($row['father_name'] ?? '') . ' ' . ($row['mother_name'] ?? '')));
-
-                fputcsv($output, [
-                    $sr++,
-                    $row['std_id'] ?? '',
-                    $fullName,
-                    $row['gender'] ?? '',
-                    $row['blood_grp'] ?? 'N/A',
-                    $row['caste'] ?? 'N/A',
-                    $row['dob'] ?? 'N/A',
-                    $row['mobile'] ?? '',
-                    $row['email'] ?? '',
-                    $row['class'] ?? '',
-                    $row['program'] ?? '',
-                    $row['division'] ?? '',
-                    $row['roll_no'] ?? '',
-                    $row['total_hrs'] ?? 0
-                ]);
+                $colIndex=1;
+               
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$sr++);
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['std_id'] ?? '');
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$fullName);
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['gender']);
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['blood_grp']);
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['caste'] ?? 'N/A');
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['dob'] ?? 'N/A');
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['mobile'] ?? '');
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['email'] ?? '');
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['class'] ?? '');
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['program'] ?? '');
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['division'] ?? '');
+                    $sheet->setCellValue([$colIndex++ ,$rowIndex],$row['roll_no'] ?? '');
+                    $sheet->setCellValue([$colIndex ,$rowIndex],$row['total_hrs'] ?? 0);
+                    $rowIndex++;
+                }
+                
             }
             $stmt->close();
-        }
+            
+            foreach(range(1,14) as $cell){
+                $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($cell))->setAutoSize(true);
+                }
 
-        fclose($output);
+            
+            if(!empty($programFilter)  && !empty($classFilter)){
+                $filename = "Volunteer_{$AcademicYear}_{$classFilter}_{$programFilter}.xlsx";
+            }
+            else if(!empty($programFilter)){
+                $filename = "Volunteer_{$AcademicYear}_{$programFilter}.xlsx";}
+            else if(!empty($classFilter)){
+                $filename = "Volunteer_{$AcademicYear}_{$classFilter}.xlsx";}
+            else{
+                $filename = "Volunteer_{$AcademicYear}.xlsx";
+            }
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"{$filename}\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
         $conn->close();
         exit();
+        break;
 
     case 'export_c_event_list':
         $getAcademicYear = $_GET['academic_year'] ?? $data['academic_year'] ?? '';

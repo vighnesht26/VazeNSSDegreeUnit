@@ -725,27 +725,43 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                 $targetEventId = isset($data['event_id']) ? intval($data['event_id']) : 0;
                 $questionText  = trim($data['question'] ?? '');
                 $qType         = trim($data['q_type'] ?? 'text');
-                $option_a  = !empty($data['option_a']) ? trim($data['option_a']) : null;
-                $option_b  = !empty($data['option_b']) ? trim($data['option_b']) : null;
-                $option_c  = !empty($data['option_c']) ? trim($data['option_c']) : null;
-                $option_d  = !empty($data['option_d']) ? trim($data['option_d']) : null;
-
+                $q_options = $data['options'] ?? [];
+                
                 if (empty($questionText)) {
                     http_response_code(400);
                     echo json_encode(['success' => false, 'error' => 'Question cannot be empty.']);
                     exit();
                 }
+                $conn->begin_transaction();
+                try{
+                $stmt = $conn->prepare("INSERT INTO feedback(question, q_type, event_id) VALUES (?, ?, ?)");
+                $stmt->bind_param("ssi", $questionText, $qType, $targetEventId);
+                $stmt->execute();
+                $new_q_id = $conn->insert_id;
+                $stmt->close();
 
-                $stmt = $conn->prepare("INSERT INTO feedback (question, q_type,option_a,option_b,option_c,option_d, event_id) VALUES (?, ?, ?,?,?,?,?)");
-                $stmt->bind_param("ssssssi", $questionText, $qType,$option_a,$option_b,$option_c,$option_d, $targetEventId);
+                if($qType=='multiple_choice' && !empty($q_options)){
+                    $opt_stmt = $conn->prepare("INSERT INTO question_options(q_id, option_label, option_text) VALUES (?, ?, ?)");
+                    $labels = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-                if ($stmt->execute()) {
-                    echo json_encode(['success' => true, 'message' => 'Question added successfully.']);
-                } else {
+                    foreach($q_options as $index => $optText){
+                        $cleanText = trim($optText);
+                        if($cleanText !== ''){
+                            $label = $labels[$index];
+                            $opt_stmt->bind_param('iss', $new_q_id,$label,$cleanText);
+                            $opt_stmt->execute();
+                        }
+                    }
+                    $opt_stmt->close();
+                }
+                $conn->commit();
+                echo json_encode(['success' => true, 'message' => 'Question added successfully.']);
+
+                }catch(Exception $e){
+                    $conn->rollback();
                     http_response_code(500);
                     echo json_encode(['success' => false, 'error' => $stmt->error]);
                 }
-                $stmt->close();
                 exit();
 
             case 'get_event_responses':

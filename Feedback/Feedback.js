@@ -99,22 +99,22 @@ function renderFieldByType(q) {
           class="c_in w-full max-w-none resize-none"></textarea>
       `;
     case 'multiple_choice':
-      const options = [
-        {  text: q.option_a },
-        { text: q.option_b },
-        {  text: q.option_c },
-        { text: q.option_d }
-      ].filter(opt => opt.text && opt.text.trim() !== ''); // ignores empty options
-
+      const options = Array.isArray(q.options) ? q.options : [];
       return `
-        <div class="space-y-2 pt-1">
-          ${options.map(opt => `
-            <label class="flex items-center gap-2.5 cursor-pointer text-sm text-slate-700 hover:text-slate-900">
-              <input type="radio" name="q_${q.q_id}" value="${opt.text.replace(/"/g, '&quot;')}" required class="w-4 h-4 text-red-600 focus:ring-red-500">
-              <span>${opt.text}</span>
-            </label>
-          `).join('')}
-        </div>
+       <div class="space-y-2 pt-1">
+      ${options.map(opt => `
+        <label class="flex items-center gap-2.5 cursor-pointer text-sm text-slate-700 hover:text-slate-900">
+          <input 
+            type="radio" 
+            name="q_${q.q_id}" 
+            value="${(opt.text || opt.option_text || '').replace(/"/g, '&quot;')}" 
+            required 
+            class="w-4 h-4 text-red-600 focus:ring-red-500"
+          >
+          <span>${opt.label ? `<strong>${opt.label}.</strong> ` : ''}${opt.text || opt.option_text}</span>
+        </label>
+      `).join('')}
+    </div>
       `;
     case 'text':
     default:

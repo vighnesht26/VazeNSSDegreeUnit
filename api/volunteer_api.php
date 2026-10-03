@@ -290,11 +290,48 @@ switch ($action) {
             $chk_stmt->close();
 
             //questions belonging to this event
-            $q_stmt = $conn->prepare("SELECT q_id, question, q_type,option_a,option_b,option_c,option_d, event_id FROM feedback WHERE event_id = ? OR event_id IS NULL ORDER BY q_id ASC");
+            $q_stmt = $conn->prepare("SELECT q_id, question, q_type,event_id FROM feedback WHERE event_id = ? OR event_id IS NULL ORDER BY q_id ASC");
             $q_stmt->bind_param("i", $eventID);
             $q_stmt->execute();
             $questions = $q_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
             $q_stmt->close();
+
+            //all q_ids who have q_type as mcq
+            $mcq_ids = [];
+            foreach ($questions as $index => $q){
+                $questions[$index]['options'] = [];
+                if ($q['q_type'] === 'multiple_choice'){
+                    $mcq_ids[] = (int)$q['q_id'];
+                }
+            }
+            //if options 
+            if(!empty($mcq_ids)){
+                $placeholders = implode(',', array_fill(0, count($mcq_ids), '?'));
+                $types = str_repeat('i', count($mcq_ids));
+
+                $opt_sql = $conn->prepare("SELECT option_id, q_id, option_label, option_text FROM question_options WHERE q_id IN ($placeholders) ORDER BY option_id ASC");
+                $opt_sql->bind_param($types, ...$mcq_ids);
+                $opt_sql->execute();
+                $options = $opt_sql->get_result()->fetch_all(MYSQLI_ASSOC);
+                $opt_sql->close();
+
+                $options_maping = [];
+                foreach($options as $opt){
+                    $options_maping[$opt['q_id']][]=[
+                        'option_id' => $opt['option_id'],
+                        'label' => $opt['option_label'],
+                        'text' => $opt['option_text']
+                    ];
+                };
+                foreach ($questions as $index => $q) {
+                    $qid = $q['q_id'];
+                    if ($q['q_type'] === 'multiple_choice' && isset($options_maping[$qid])) {
+                        $questions[$index]['options'] = $options_maping[$qid];
+                    }
+                }
+
+
+            };
 
             echo json_encode([
                 'success' => true,
@@ -303,6 +340,7 @@ switch ($action) {
                 'questions' => $questions
             ]);
             exit();
+            break;
 
         case 'submit_feedback':
             requireEventID($eventID);

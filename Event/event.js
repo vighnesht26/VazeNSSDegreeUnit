@@ -942,56 +942,96 @@ async function more(button) {
   modal.classList.add('flex');
 
   try {
-    const response = await fetch(`../api/event_api.php?action=get_event_feedback_summary&id=${eventId}`);
-    const result = await response.json();
+    const [summaryRes, questionsRes] = await Promise.all([
+      fetch(`../api/event_api.php?action=get_event_feedback_summary&id=${eventId}`).then(res => res.json()),
+      fetch(`../api/event_api.php?action=get_event_responses&id=${eventId}`).then(res => res.json())
+    ]);
 
-    if (!result.success) {
-      container.innerHTML = `<p class="p-4 text-xs text-red-500 text-center">${result.error || 'Failed to load details.'}</p>`;
+    if (!summaryRes.success) {
+      container.innerHTML = `<p class="p-4 text-xs text-red-500 text-center">${summaryRes.error || 'Failed to load details.'}</p>`;
       return;
     }
 
-    const { feedback_status, total_responses, total_attendees } = result.data;
+    const { feedback_status, total_responses, total_attendees } = summaryRes.data;
     const isCompleted = parseInt(total_responses) > 0;
+    const questions = (questionsRes.success && questionsRes.data && questionsRes.data.questions) ? questionsRes.data.questions : [];
+    const isActive = feedback_status === 'Active';
 
     container.innerHTML = `
-      <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-xl max-w-md w-full space-y-4">
+      <div class="border border-slate-200 rounded-2xl p-5 bg-white shadow-xl max-w-lg w-full space-y-4">
+        <!-- Start/Stop Button -->
         <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
-          <h3 class="font-header text-lg font-bold text-slate-800">Event Feedback Options</h3>
-          <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${getStatusColor(feedback_status)}">
-            ${feedback_status}
-          </span>
+          <div class="flex items-center gap-2">
+            <h3 class="font-header text-base sm:text-lg font-bold text-slate-800">Feedback Dashboard</h3>
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${getStatusColor(feedback_status)}">
+              ${feedback_status}
+            </span>
+          </div>
+
+          <!-- Status-->
+          <button type="button" 
+            onclick="toggleFeedbackState(${eventId}, '${feedback_status}')" 
+            class="px-2.5 py-1 text-xs font-semibold rounded-lg border transition ${
+              isActive 
+                ? 'border-amber-400 text-amber-700 bg-amber-50 hover:bg-amber-100 active:scale-95' 
+                : 'border-emerald-500 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 active:scale-95'
+            }">
+            ${isActive ? '⏸ Stop Feedback' : '▶ Start Feedback'}
+          </button>
         </div>
 
-        <div class="text-xs text-slate-600 space-y-1">
-          <p><strong>Total Attendees:</strong> ${total_attendees}</p>
-          <p><strong>Submissions Received:</strong> ${total_responses}</p>
+        <!-- Info -->
+        <div class="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
+          <div>
+            <p class="text-slate-500">Total Attendees</p>
+            <p class="text-base font-bold text-slate-800">${total_attendees}</p>
+          </div>
+          <div>
+            <p class="text-slate-500">Submissions Received</p>
+            <p class="text-base font-bold text-slate-800">${total_responses}</p>
+          </div>
         </div>
 
-        <div class="flex flex-col gap-2 pt-2">
-          <!-- Button 1: Add Questions -->
-          <button type="button" class="c_btn w-full" onclick="openAddQuestionModal(${eventId})">
-            ➕ Add Feedback Questions
-          </button>
+        <!-- Feedback Questions-->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">
+              Feedback Questions (${questions.length})
+            </span>
+            <button type="button" onclick="openAddQuestionModal(${eventId})" class="text-xs font-semibold text-blue-600 hover:text-blue-800">
+              ➕ Add Question
+            </button>
+          </div>
 
-          <!-- Button 2: Toggle Feedback Active/Closed -->
-          <button type="button" class="c_btn_outline w-full" onclick="toggleFeedbackState(${eventId}, '${feedback_status}')">
-            ${feedback_status === 'Active' ? '⏸ Close Feedback Submissions' : '▶ Set Feedback Active'}
-          </button>
+          <div class="max-h-36 overflow-y-auto space-y-1.5 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+            ${
+              questions.length === 0
+                ? `<p class="text-xs text-slate-400 italic text-center py-3">No questions configured yet.</p>`
+                : questions.map((q, idx) => `
+                    <div class="text-xs text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs flex items-start gap-2">
+                      <span class="font-bold text-red-600 shrink-0">${idx + 1}.</span>
+                      <span class="leading-relaxed wrap-break-word">${q.question}</span>
+                    </div>
+                  `).join('')
+            }
+          </div>
+        </div>
 
-          <!-- Button 3: Show Responses (Enabled only if responses exist) -->
+        <!-- Responses -->
+        <div class="pt-2">
           ${
             isCompleted
-              ? `<button type="button" class="c_btn_blue w-full" onclick="openViewResponsesModal(${eventId})">
-                   📋 View Volunteer Responses (${total_responses})
+              ? `<button type="button" class="c_btn_blue w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold" onclick="openViewResponsesModal(${eventId})">
+                   📋 View Full Screen Responses (${total_responses})
                  </button>`
-              : `<button type="button" disabled class="c_DisBtn w-full">
-                   No Responses Yet
+              : `<button type="button" disabled class="c_DisBtn w-full py-2.5 text-xs">
+                   No Responses Received Yet
                  </button>`
           }
         </div>
 
-        <div class="pt-3 border-t border-slate-100 flex justify-end">
-          <button type="button" onclick="closeMoreModal()" class="c_btn_light">Close</button>
+        <div class="pt-2 border-t border-slate-100 flex justify-end">
+          <button type="button" onclick="closeMoreModal()" class="c_btn_light text-xs font-semibold px-4 py-2">Close</button>
         </div>
       </div>
     `;
@@ -1003,6 +1043,7 @@ async function more(button) {
 
 function closeMoreModal() {
   const modal = document.getElementById('more_modal');
+  if (!modal) return;
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
@@ -1011,18 +1052,37 @@ function closeMoreModal() {
 function renderOptionFields(){
   const qType = document.getElementById('q_type').value;
   const mcqContainer = document.getElementById('mcq_options_field');
-  const optInputs = mcqContainer.querySelectorAll('input');
+  const inputsList = document.getElementById('mcq_inputs_list');
 
   if (qType === 'multiple_choice') {
     mcqContainer.classList.remove('hidden');
-    optInputs.forEach(input => input.required = true);
+    // If empty,2 default option inputs
+    if (inputsList.children.length === 0) {
+      inputsList.innerHTML = '';
+      addOptionInput('A');
+      addOptionInput('B');
+    }
   } else {
     mcqContainer.classList.add('hidden');
-    optInputs.forEach(input => {
-      input.required = false;
-      input.value = '';
-    });
+    inputsList.innerHTML = '';
   }
+}
+
+// Add a Dynamic Choice Input Field
+function addOptionInput(defaultLabel = '') {
+  const container = document.getElementById('mcq_inputs_list');
+  const count = container.children.length;
+  const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+  const label = defaultLabel || (labels[count] || (count + 1));
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'flex items-center gap-2 option-row';
+  wrapper.innerHTML = `
+    <span class="w-6 text-center text-xs font-bold text-slate-500">${label}.</span>
+    <input type="text" class="mcq-option-val flex-1 border border-slate-300 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-blue-900" placeholder="Choice text..." required>
+    ${count >= 2 ? '<button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700 text-sm font-bold px-1">&times;</button>' : '<span class="w-5"></span>'}
+  `;
+  container.appendChild(wrapper);
 }
 //  Add Feedback Question 
 function openAddQuestionModal(eventId) {
@@ -1032,9 +1092,8 @@ function openAddQuestionModal(eventId) {
   document.getElementById('q_event_id').value = eventId;
   document.getElementById('q_text').value = '';
   document.getElementById('q_type').value = 'text';
+  document.getElementById('mcq_inputs_list').innerHTML = '';
   renderOptionFields();
-  
-  
 
   modal.classList.remove('hidden');
   modal.classList.add('flex');
@@ -1042,6 +1101,7 @@ function openAddQuestionModal(eventId) {
 
 function closeAddQuestionModal() {
   const modal = document.getElementById('add_question_modal');
+  if (!modal) return;
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }
@@ -1062,28 +1122,19 @@ async function handleAddQuestion(e) {
     event_id: eventId,
     question: question,
     q_type: q_type,
-    option_a: null,
-    option_b: null,
-    option_c: null,
-    option_d: null
+    options: []
+   
   };
-
   // Collecting options if MCQ
   if (q_type === 'multiple_choice') {
-    const optA = document.getElementById('opt_a').value.trim();
-    const optB = document.getElementById('opt_b').value.trim();
-    const optC = document.getElementById('opt_c').value.trim();
-    const optD = document.getElementById('opt_d').value.trim();
+    const optInputs = document.querySelectorAll('#mcq_options_field input');
+    const options = Array.from(optInputs).map(input => input.value.trim()).filter(val => val !== '');
 
-    if (!optA || !optB || !optC || !optD) {
-      alert("Please fill in all 4 options.");
+    if (options.length < 2) {
+      alert("Please provide at least 2 options for multiple choice questions.");
       return;
     }
-
-    data.option_a = optA;
-    data.option_b = optB;
-    data.option_c = optC;
-    data.option_d = optD;
+    data.options = options;
   }
 
   try {
@@ -1139,7 +1190,7 @@ async function openViewResponsesModal(eventId) {
   closeMoreModal();
   const modal = document.getElementById('view_responses_modal');
   const tableContainer = document.getElementById('responses_table_container');
-  tableContainer.innerHTML = `<div class="p-8 text-center text-slate-400">Loading submitted responses...</div>`;
+  tableContainer.innerHTML = `<div class="p-16 text-center text-slate-400 text-sm">Loading submitted responses...</div>`;
 
   modal.classList.remove('hidden');
   modal.classList.add('flex');
@@ -1149,39 +1200,42 @@ async function openViewResponsesModal(eventId) {
     const result = await response.json();
 
     if (!result.success) {
-      tableContainer.innerHTML = `<p class="p-4 text-red-500 text-center text-sm">${result.error}</p>`;
+      tableContainer.innerHTML = `<p class="p-6 text-red-500 text-center text-sm">${result.error}</p>`;
       return;
     }
 
     const { questions, students } = result.data;
 
     if (!students || students.length === 0) {
-      tableContainer.innerHTML = `<p class="p-6 text-center text-slate-400 italic">No completed responses found.</p>`;
+      tableContainer.innerHTML = `<p class="p-16 text-center text-slate-400 italic text-sm">No completed responses found.</p>`;
       return;
     }
 
-    
     let html = `
-      <div class="overflow-x-auto max-h-[65vh]">
+      <div class="w-full h-full overflow-auto bg-white rounded-xl border border-slate-200 shadow-sm">
         <table class="w-full text-left text-xs border-collapse">
-          <thead class="bg-slate-800 text-white font-header sticky top-0">
+          <thead class="bg-slate-800 text-white font-header sticky top-0 z-20">
             <tr>
-              <th class="p-3 border border-slate-700">Student Name</th>
-              <th class="p-3 border border-slate-700">Roll No</th>
-              ${questions.map(q => `<th class="p-3 border border-slate-700 min-w-[160px]">${q.question}</th>`).join('')}
+              <th class="p-3.5 border-r border-slate-700 min-w-40 sticky left-0 bg-slate-800 z-30">Student Name</th>
+              <th class="p-3.5 border-r border-slate-700 min-w-25 text-center">Roll No</th>
+              ${questions.map(q => `<th class="p-3.5 border-r border-slate-700 min-w-55 max-w-85 whitespace-normal leading-snug">${q.question}</th>`).join('')}
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
+          <tbody class="divide-y divide-slate-100 text-slate-700">
     `;
 
     students.forEach(st => {
       html += `
         <tr class="hover:bg-slate-50 transition">
-          <td class="p-3 font-semibold text-slate-900 border border-slate-200">${st.first_name} ${st.surname}</td>
-          <td class="p-3 border border-slate-200">${st.roll_no || '--'}</td>
+          <td class="p-3.5 font-semibold text-slate-900 border-r border-slate-200 sticky left-0 bg-white hover:bg-slate-50 z-10 whitespace-nowrap">
+            ${st.first_name} ${st.surname}
+          </td>
+          <td class="p-3.5 border-r border-slate-200 text-center font-mono text-slate-600 whitespace-nowrap">
+            ${st.roll_no || '--'}
+          </td>
           ${questions.map(q => {
             const answer = st.answers[q.q_id] || '<span class="italic text-slate-300">N/A</span>';
-            return `<td class="p-3 border border-slate-200">${answer}</td>`;
+            return `<td class="p-3.5 border-r border-slate-200 whitespace-normal wrap-break-word">${answer}</td>`;
           }).join('')}
         </tr>
       `;
@@ -1197,6 +1251,7 @@ async function openViewResponsesModal(eventId) {
 
 function closeViewResponsesModal() {
   const modal = document.getElementById('view_responses_modal');
+  if (!modal) return;
   modal.classList.add('hidden');
   modal.classList.remove('flex');
 }

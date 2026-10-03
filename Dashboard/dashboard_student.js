@@ -1,5 +1,8 @@
-document.addEventListener("DOMContentLoaded", () => {
-    fetchStudentProfile();
+document.addEventListener("DOMContentLoaded", async () => {
+    try{fetchStudentProfile();
+    }catch(err){
+      console.error("Error while fetching user data",err);
+    }
     getEvents();
     AcademicUpdateStatus();
     get_hrs();

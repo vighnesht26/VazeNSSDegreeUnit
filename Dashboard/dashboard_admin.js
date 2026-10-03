@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }catch(err){
     console.error("Profile fetch failed", err);
   }
+    get_hrs();
     getEvents();
     displayeventcard();
     pendingActions();

@@ -818,7 +818,7 @@ async function loadCompletedEvents(){
             </p>
             <div class="flex justify-between"> 
             <button type="button"  class=" px-4 py-2 rounded-xl text-xs bg-emerald-500 font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2  ${hideAdd}"  data-id="${ev.event_id}" data-name="${ev.name}" data-date="${ev.date}" onclick="openReportModal(this)">Add Report</button>
-            <button type="button"  class="c_btn_blue ${hideView}"  data-id="${ev.event_id}" onclick="viewReport(this)">Report</button>
+            <button type="button"  class="c_btn_blue ${hideView}"  data-id="${ev.event_id}" onclick="viewReportOpen(this)">Reports</button>
             <button type="button"  class="px-1 py-2 rounded-xl text-xs bg-emerald-500 font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2 ${DispHrsBtn}"  data-id="${ev.event_id}" data-hrs="${ev.alloted_hrs}" onclick="allocate_hrs_modal(this)">Allocate Hours</button>
             <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="open_attendance(this)">Attendance</button>
             <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="more(this)">More</button>

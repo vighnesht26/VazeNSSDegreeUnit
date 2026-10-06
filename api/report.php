@@ -40,7 +40,8 @@ try{
                 $eventID = filter_input(INPUT_POST, 'event_id', FILTER_VALIDATE_INT);
                 $desc = trim($_POST['desc_report']);
                 $conclusion = trim($_POST['con_report']);
-                $expense = $_POST['expense'];
+                
+                
                 
                 if (!$eventID || empty($desc) || empty($conclusion)) {
                     throw new Exception('Event ID, description, and conclusion are required.');
@@ -85,7 +86,7 @@ try{
                     rename($_FILES['report_flyer']['tmp_name'], $flyerPath);
                     $temp->setImageValue('flyer', array(
                         'path' => $flyerPath,
-                        'width' => 400,
+                        'width' => 500,
                         'height' => 250,
                         'ratio' => true
                     ));
@@ -100,8 +101,8 @@ try{
                     rename($_FILES['report_geotagged']['tmp_name'], $geotaggedPath);
                     $temp->setImageValue('geotagged', array(
                         'path' => $geotaggedPath,
-                        'width' => 400,
-                        'height' => 250,
+                        'width' => 800,
+                        'height' => 500,
                         'ratio' => true
                     ));
                 }
@@ -121,21 +122,20 @@ try{
                 $tempFile = tempnam(sys_get_temp_dir(), 'report_'). '.docx';
                 $temp->saveAs($tempFile);
                 
-                $fileName  = 'reports/'. $event['date'] . '_' . $event['name'] . '.docx';
+                $cleanEventName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $expEvent['name']);
+    
+                $fileName  = 'reports/'. $event['date'] . '_' . $cleanEventName . '.docx';
                 $reportUrl = uploadToCloudinary($tempFile, $fileName, 'raw');
 
                 if(file_exists($tempFile)){
                     unlink($tempFile);
                 }
-
-                
-
                 
                 $conn->begin_transaction();
 
-                $sql1 = "INSERT INTO report (male_count, female_count, description, conclusion, expense, report_url, for_event) VALUES(?,?,?,?,?,?,?)";
+                $sql1 = "INSERT INTO report (male_count, female_count, description, conclusion, report_url, for_event) VALUES(?,?,?,?,?,?)";
                 $stmt1 = $conn->prepare($sql1);
-                $stmt1->bind_param("iissisi", $event['male_count'],$event['female_count'], $desc, $conclusion,$expense, $reportUrl, $eventID);
+                $stmt1->bind_param("iisssi", $event['male_count'],$event['female_count'], $desc, $conclusion,$reportUrl, $eventID);
                 $stmt1->execute();
 
                 $sql2 = "UPDATE event SET report_status = 'Completed' WHERE event_id =?";
@@ -307,6 +307,97 @@ try{
                         $writer->save('php://output');
                         exit();
                         break;
+            case 'expense_pdf':
+                    header('Content-Type: application/json');
+                    if($_FILES['expense'] && $_FILES['expense']['error'] == UPLOAD_ERR_OK){
+                        $expenseFile = $_FILES['expense'];
+
+                    }
+                    else{
+                        echo json_encode(['error' => 'Error while uploading expense pdf, Try after some time!']);
+                        exit();
+                    }
+                    $finfo = new finfo(FILEINFO_MIME_TYPE);
+                    $mimeType = $finfo->file($expenseFile['tmp_name']);
+                    if($mimeType !== 'application/pdf'){
+                        echo json_encode(['error' => 'Only pdf is allowed!!']);
+                        exit();
+                    }
+                    $eventID = filter_input(INPUT_POST, 'event_id', FILTER_VALIDATE_INT);
+
+                    $sql = $conn->prepare("SELECT name, date FROM event WHERE event_id = ?");
+                    $sql->bind_param('i', $eventID);
+                    $sql->execute();
+                    $expEvent = $sql->get_result()->fetch_assoc();
+                    
+                    $tempPath = $expenseFile['tmp_name'] . '.pdf';
+                    rename($expenseFile['tmp_name'], $tempPath);
+                    $cleanEventName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $expEvent['name']);
+                    $filename = 'expense_' . $expEvent['date'] . '_' . $cleanEventName . '.pdf';
+                    
+                    $expenseUrl = uploadToCloudinary($tempPath, $filename,'raw');
+                    
+                    if (is_array($expenseUrl) && isset($expenseUrl['error'])) {
+                        echo json_encode(['error'=> $expenseUrl['error']]);
+                        exit();
+                    } 
+                    try {
+                        // if report row already exists for event
+                        $checkStmt = $conn->prepare("SELECT report_id FROM report WHERE for_event = ?");
+                        $checkStmt->bind_param('i', $eventID);
+                        $checkStmt->execute();
+                        $hasReport = $checkStmt->get_result()->fetch_assoc();
+                        $checkStmt->close();
+
+                        if (!$hasReport) {
+                            http_response_code(400);
+                            echo json_encode(['success' => false, 'error' => 'Please generate the event report first before uploading expenses.']);
+                            exit();
+                        }
+
+                        if ($hasReport) {
+                            // Update existing report row
+                            $updateSql = $conn->prepare("UPDATE report SET expense_url = ? WHERE for_event = ?");
+                            $updateSql->bind_param('si', $expenseUrl, $eventID);
+                            $updateSql->execute();
+                            $updateSql->close();
+                        } 
+
+                        echo json_encode(['success' => true, 'message' => 'Expense PDF uploaded and attached successfully.']);
+                        exit();
+                    } catch (Exception $e) {
+                        echo json_encode(['success' => false, 'error' => 'Failed to save expense PDF: ' . $e->getMessage()]);
+                        exit();
+                    }
+                    break;
+            case 'get_report_details':
+                    header('Content-Type: application/json');
+                    $eventID = filter_input(INPUT_GET, 'event_id', FILTER_VALIDATE_INT);
+                    if (!$eventID) {
+                        http_response_code(400);
+                        echo json_encode(['success' => false, 'error' => 'Invalid Event ID.']);
+                        exit();
+                    }
+
+                    $stmt = $conn->prepare("SELECT report_url, expense_url FROM report WHERE for_event = ? ");
+                    $stmt->bind_param("i", $eventID);
+                    $stmt->execute();
+                    $row = $stmt->get_result()->fetch_assoc();
+                    $stmt->close();
+
+                    if ($row) {
+                        echo json_encode([
+                            'success'     => true,
+                            'report_url'  => $row['report_url'],
+                            'expense_url' => $row['expense_url']
+                        ]);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(['success' => false, 'error' => 'Report not found for this event.']);
+                    }
+                    exit();
+                    break;
+                
             default:
                     http_response_code(400);
                     header('Content-Type: application/json');

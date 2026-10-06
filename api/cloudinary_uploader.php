@@ -1,4 +1,6 @@
 <?php
+
+use Cloudinary\Api\Exception\ApiError;
 header('Content-Type: application/json');
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/cloudinary_config.php';
@@ -20,16 +22,20 @@ Configuration::instance([
 
 
 function uploadToCloudinary($filePath, $publicId, $resourceType = 'image') {
-    $uploadApi = new UploadApi();
+    try{
+        $uploadApi = new UploadApi();
 
-    $response = $uploadApi->upload($filePath, [
-        'public_id'     => $publicId,
-        'resource_type' => $resourceType,
-        'overwrite'     => true,
-        'use_filename'  => false
-    ]);
+        $response = $uploadApi->upload($filePath, [
+            'public_id'     => $publicId,
+            'resource_type' => $resourceType,
+            'overwrite'     => true,
+            'use_filename'  => false
+        ]);
 
-    return $response['secure_url'];
+        return $response['secure_url'];
+    }catch(ApiError $e){
+        return ['error' => 'API ERROR: ' . $e->getMessage()];
+    }
 }
 
 ?>

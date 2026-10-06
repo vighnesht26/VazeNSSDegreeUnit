@@ -672,6 +672,27 @@
         Download
       </button>
     </div>
+</div>
+</div>
+</div>
+
+
+    <!-- View Report & Expense (Reports button in event.js completed events) -->
+  <div id="view_report_modal" class="fixed hidden inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4 border border-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="font-header text-lg font-bold text-slate-800">Event Report</h3>
+        <button type="button" onclick="closeViewReportModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">&times;</button>
+      </div>
+
+      <!-- download and upload buttons -->
+      <div id="view_report_modal_content" class="space-y-4"></div>
+
+      <div class="pt-2 border-t border-slate-100 flex justify-end">
+        <button type="button" onclick="closeViewReportModal()" class="c_btn_light text-xs font-semibold px-4 py-2">Close</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

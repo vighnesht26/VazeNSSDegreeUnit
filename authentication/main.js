@@ -6,6 +6,8 @@ function validatepass(inputpass){
     }
     else if(inputpass.id === 's_newpass'){
         var show_set = document.getElementById("s_setpass");
+    }else if(inputpass.id === 'f_newpass'){
+        var show_set = document.getElementById("f_setpass");
     }
     const val =inputpass.value;
     
@@ -71,6 +73,17 @@ function toggleshow(btn){
             btn.textContent="SHOW";
         }
         
+    }else if(btn.id === 'f_passbtn'){
+        const forgotpassfield =document.getElementById('f_newpass');
+        if(forgotpassfield.type === "password"){
+            forgotpassfield.type = "text";
+            btn.textContent="HIDE";
+        }
+        else{
+            forgotpassfield.type = "password";
+            btn.textContent="SHOW";
+        }
+        
     }
 }
 
@@ -87,6 +100,11 @@ function checkpass(cnfpass){
         var cpass = document.getElementById("s_cnfpass");
         var msg = document.getElementById("s_errorpasswd");
         var err = document.getElementById('s_setpass');
+    }else if(cnfpass.id === 'f_cnfpass'){
+        var npass = document.getElementById("f_newpass");
+        var cpass = document.getElementById("f_cnfpass");
+        var msg = document.getElementById("f_errorpasswd");
+        var err = document.getElementById('f_setpass');
     }
     let password = npass.value;
     let confirmpass = cpass.value;
@@ -352,6 +370,8 @@ function validatemobile(inputmobile){
     }
     else if(inputmobile.id === 'a_mobile'){
        var errormsg = document.getElementById('errormobile'); 
+    }else if(inputmobile.id === 'f_mobile'){
+       var errormsg = document.getElementById('f_errormobile'); 
     }
     const range = /^[6-9]\d{9}$/;
 
@@ -548,5 +568,48 @@ async function checkRegistrationStatus(){
     console.error("Failed to check registration status:", err);
   }
 }
-       
-    
+   
+//Fogot Password
+function openForgotModal(){
+  const modal = document.getElementById('forgot_modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeForgotModal(){
+  const modal = document.getElementById('forgot_modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+async function handlePasswordReset(e){
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+  const btn = document.getElementById('btn_reset_submit');
+
+  btn.disabled = true;
+  btn.textContent = "Verifying...";
+
+  try {
+    const res = await fetch('forgot_password.php',{
+      method: 'POST',
+      body: formData});
+
+    const result = await res.json();
+
+    if (result.success) {
+      alert("✔️ " + result.message);
+      closeForgotModal();
+      form.reset();
+    } else {
+      alert("❌ " + (result.error || "Reset failed."));
+    }
+  } catch (err) {
+    console.error("Password reset error:", err);
+    alert("Network error. Please try again.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Reset Password";
+  }
+}

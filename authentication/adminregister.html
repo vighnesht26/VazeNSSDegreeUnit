@@ -24,7 +24,7 @@
     <input required id="a_email" oninput="validateEmail(this)" autocomplete="email" class="c_in" type="email" name="a_email" placeholder="Enter Email"><br>
     <p id="erroremail" class="text-red-700 text-xs mt-1  hidden"></p>
     <label class="font-bold" for="a_mobile">Mobile No. :</label><br>
-    <input required id="a_mobile" oninput="validatemobile(this); "  autocomplete="tel" class="c_in" name="a_mobile" placeholder="Enter Mobile No.">
+    <input required id="a_mobile" maxlength="10" oninput="validatemobile(this); "  autocomplete="tel" class="c_in" name="a_mobile" placeholder="Enter Mobile No.">
     <p id="errormobile" class="text-red-700 text-xs mt-1 hidden"></p>
     <label  class="font-bold" for="newpass">Password :</label><br>
     <input required  oninput="validatepass(this)"  class="c_in" type="password" placeholder="Enter password" id="newpass">

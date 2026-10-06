@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }catch(err){
     console.error("Profile fetch failed", err);
   }
+    openSidebar()
     get_hrs();
     getEvents();
     displayeventcard();
@@ -88,10 +89,11 @@ function switchpage(pageid){
           getPendingStd();
         }
          if(pageid === 'settings' && currentUserRole !== 'leader'){
-          loadRegistrationStatus()
+          loadSettings();
+          
         }
         if(pageid === 'faq' && currentUserRole == 'leader'){
-          loadUnansweredQuestions()
+          loadUnansweredQuestions();
         }
 
         
@@ -818,21 +820,7 @@ async function pendingActions(){
 
 
 //Registrations
-async function loadRegistrationStatus() {
-  const btn = document.getElementById("toggleRegBtn");
-  if (!btn) return;
 
-  try {
-    const res = await fetch("../api/settings.php?action=get_registration_status");
-    const data = await res.json();
-    if (data.success) {
-      currentRegStatus = data.status;
-      updateToggleButtonUI();
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
 
 function updateToggleButtonUI() {
   const btn = document.getElementById("toggleRegBtn");
@@ -875,4 +863,65 @@ async function toggleRegistration() {
 
 function openAdminRegistration(){
   window.location.href = "../authentication/index.html";
+}
+
+function openSidebar(){
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.add('flex');
+  sidebar.classList.remove('hidden');
+}
+
+async function loadSettings() {
+  const container = document.getElementById('settings');
+  if (!container) return;
+
+  try {
+    const response = await fetch('../api/settings.php?action=get_registration_status');
+    const result = await response.json();
+
+    if (result.success) {
+      currentRegStatus = result.status; // 'open' or 'closed'
+
+      const isRegOpen = (currentRegStatus === 'open');
+      const btnText = isRegOpen ? 'Close Registration' : 'Open Registration';
+      const btnClass = isRegOpen 
+        ? 'bg-rose-600 hover:bg-rose-700' 
+        : 'bg-emerald-600 hover:bg-emerald-700';
+
+      container.innerHTML = `
+        <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200">
+          <div>
+            <h4 class="font-bold text-slate-800">Student Registrations</h4>
+            <p class="text-xs text-slate-500">Allow or Stop registrations.</p>
+          </div>
+          <button 
+            id="toggleRegBtn" 
+            type="button" 
+            onclick="toggleRegistration()" 
+            class="px-4 py-2 rounded-xl text-sm font-semibold text-white shadow transition cursor-pointer ${btnClass}"
+          >
+            ${btnText}
+          </button>
+        </div>
+        <div class="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 mt-4">
+          <div>
+            <h4 class="font-bold text-slate-800">Admin/NSS Team Registration</h4>
+          </div>
+          <button 
+            id="RegBtn" 
+            type="button" 
+            onclick="openAdminRegistration()" 
+            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition cursor-pointer"
+          >
+            Register
+          </button>
+        </div>
+      `;
+    } else {
+      console.error('Settings error:', result.error);
+      container.innerHTML = `<p class="text-red-500 text-sm font-medium">Failed to load settings: ${result.error || 'Access denied'}</p>`;
+    }
+  } catch (err) {
+    console.error('Network error loading settings:', err);
+  }
 }

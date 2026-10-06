@@ -2,6 +2,7 @@
 header('Content-Type: application/json'); 
 session_start();
 require '../config/connect.php';
+require './mailsender.php';
 
 if (!isset($_SESSION['clg_id'])) {
     http_response_code(401);
@@ -18,6 +19,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     
     $clg = $_SESSION['clg_id'];
     $role= $_POST['role'];
+
+    $fullname = "$fname $lname";
 
     $msg = ['success'=>false, 'message'=>'', 'error'=>' ' ];
 //Validations
@@ -39,13 +42,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $msg['error'] = "Please enter a valid email format.";
     }
 
-     $username = generateAdminUsername($conn,$fname,$mobile); 
+     
     }
             
         
         
     
-    
+    $username = generateAdminUsername($conn,$fname,$mobile); 
    
     $hashpass = password_hash($pass , PASSWORD_DEFAULT);
      
@@ -58,6 +61,7 @@ try{
         $msg['message'] = "Registered Successfully Your Username is {$username}";
     }
    $stmt->close();
+    sendAdminUsernameEmail($email, $fullname, $username);
 }
 catch(Exception $e){
     if($e->getCode() === 1062){
@@ -76,11 +80,11 @@ catch(Exception $e){
         $msg['error'] = "A server error occurred. Please try again later.";
     }
     
+   
 }
      echo json_encode($msg);
      $conn->close();
         exit();
-
 
 function generateAdminUsername(mysqli $conn, string $name, string $mobile): string {
     $cleanName = strtolower(preg_replace('/[^a-zA-Z]/', '', $name));
@@ -113,4 +117,6 @@ function generateAdminUsername(mysqli $conn, string $name, string $mobile): stri
     $stmt->close();
     return $username;
 }
+
+
 ?>

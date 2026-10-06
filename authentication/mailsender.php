@@ -131,4 +131,49 @@ function sendRejectedEmail(string $recipientEmail, string $recipientName){
     }
 }
 
+function sendAdminUsernameEmail(string $recipientEmail, string $recipientName, string $username): bool {
+    $mail = new PHPMailer(true);
+
+    try {
+      
+        $smtpHost = getenv('SMTP_HOST') ?: (defined('SMTP_HOST') ? SMTP_HOST : 'smtp.gmail.com');
+        $smtpUser = getenv('SMTP_USER') ?: (defined('SMTP_USER') ? SMTP_USER : 'proffteam30@gmail.com');
+        $smtpPass = getenv('SMTP_PASS') ?: (defined('SMTP_PASS') ? SMTP_PASS : null);
+        $smtpPort = (int)(getenv('SMTP_PORT') ?: (defined('SMTP_PORT') ? SMTP_PORT : 587));
+
+        
+        $mail->isSMTP();
+        $mail->Host       = $smtpHost;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $smtpUser;
+        $mail->Password   = $smtpPass;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = $smtpPort;
+        $mail->CharSet    = 'UTF-8';
+        
+        $mail->setFrom($smtpUser, 'Vaze NSS Degree Unit');
+        $mail->addAddress($recipientEmail, $recipientName);
+
+        
+        $mail->isHTML(true);
+        $mail->Subject = 'NSS Admin Registration -  Username';
+        $mail->Body    = '
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h2 style="color: #0f172a; text-align: center;">National Service Scheme</h2>
+            <p>Dear <strong>' . htmlspecialchars($recipientName) . '</strong>,</p>
+            <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 6px; text-align: center; margin: 20px 0;">
+                <span style="font-size: 12px; color: #64748b; font-weight: bold; display: block; text-transform: uppercase;">Your Admin Username</span>
+                <span style="font-size: 20px; color: #0284c7; font-weight: bold;">' . htmlspecialchars($username) . '</span>
+            </div>
+            
+        </div>';
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        error_log("PHPMailer Error: {$mail->ErrorInfo}");
+        return false;
+    }
+}
+
 ?>

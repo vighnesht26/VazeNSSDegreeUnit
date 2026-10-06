@@ -3,6 +3,8 @@ session_start();
 header('Content-Type: application/json');
 require '../config/connect.php';
 
+
+
 $action = $_GET['action'] ?? '';
 $input  = file_get_contents("php://input");
 $data   = json_decode($input, true);
@@ -30,7 +32,12 @@ switch ($action) {
         exit();
 
     case 'toggle_registration':
-       
+       $isAdmin = isset($_SESSION['admin_id']);
+
+        if(!$isAdmin){
+            echo json_encode(['success'=>false,'error'=>'Unautharised access']);
+            return;
+        }
 
         $newStatus = strtolower(trim($data['status'] ?? ''));
         if (!in_array($newStatus, ['open', 'closed'])) {

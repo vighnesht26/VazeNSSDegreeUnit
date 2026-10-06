@@ -236,11 +236,11 @@ async function submitstudentform(event, form){
                 const message = await response.json();
 
                 if(message.success){
-                    // alert(message.message);
+                    alert(message.message);
                     window.location.href = './index.html';
                 }
                 else if(!message.success){
-                    alert('❌Error'+ message.error);
+                    alert('❌Error '+ message.error);
                 }
 
             }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 29, 2026 at 12:35 AM
+-- Generation Time: Oct 05, 2026 at 09:25 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,8 @@ CREATE TABLE `academic_details` (
 INSERT INTO `academic_details` (`student_id`, `academic_year`, `nss_year`, `class`, `program`, `division`, `roll_no`, `total_hrs`, `updated_at`) VALUES
 (27, '2026-27', 'TY', 'TY', 'BSC', 'A', '002', 2.5, NULL),
 (28, '2026-27', 'SY', 'SY', 'BSC', 'A', '026', 5.0, NULL),
-(29, '2026-27', 'TY', 'TY', 'BSCIT', 'A', '060', 0.0, NULL);
+(29, '2026-27', 'TY', 'TY', 'BSCIT', 'A', '060', 0.0, NULL),
+(35, '2026-27', 'SY', 'SY', 'BSC', 'B', '122', 0.0, '2026-10-05 18:59:17');
 
 -- --------------------------------------------------------
 
@@ -74,7 +75,9 @@ CREATE TABLE `admin` (
 
 INSERT INTO `admin` (`admin_id`, `username`, `email`, `first_name`, `last_name`, `mobile`, `password`, `role`, `clg_id`, `created_at`, `updated_at`) VALUES
 (2, 'vighneshvtawade', 'vighneshvtawade1605@gmail.com', 'Vighnesh', 'Tawade', '8928676618', '$2y$10$RYKNYTO6MrzB3OOc5Rc47.Aw8IkY/XWzb7SPg8.vHUtcCjCmxKBGm', 'programme officer', 1, '2026-07-18 23:17:22', '2026-07-18 23:17:22'),
-(70, 'manish456', 'vighneshtawade16@gmail.com', 'Manish', 'Surve', '8956321456', '$2y$10$/7wuiIrWH9OoCURF0D0LhOJ738jEMzyl1uwFaxUpjo3Kjb/nGUWJi', 'nss team', 1, '2026-09-28 19:11:33', '2026-09-28 19:11:33');
+(70, 'manish456', 'vighneshtawade16@gmail.com', 'Manish', 'Surve', '8956321456', '$2y$10$/7wuiIrWH9OoCURF0D0LhOJ738jEMzyl1uwFaxUpjo3Kjb/nGUWJi', 'nss team', 1, '2026-09-28 19:11:33', '2026-09-28 19:11:33'),
+(71, 'manish245', 'manish123@gmail.com', 'Manish', 'Surve', '8965321245', '$2y$10$Jg7apY4iPKCnFWTmx9xzOOG.Ryre9b4nzCPY4Wo/k26PK7MV56BeW', 'nss team', 1, '2026-10-04 16:13:33', '2026-10-04 16:13:33'),
+(73, 'siddhart645', 'proffteam30@gmail.com', 'Siddhart', 'Jathar', '8956231645', '$2y$10$97IHyiCVKKxb06T7KSm/j.bsHRwmSkG51P0vv4rbrorgq0ZdQAhJS', 'nss team', 1, '2026-10-05 19:06:59', '2026-10-05 19:06:59');
 
 -- --------------------------------------------------------
 
@@ -106,7 +109,9 @@ INSERT INTO `attendance` (`event_id`, `attendance_no`, `reporting_mark`, `isabse
 (6, 2, NULL, 'yes', 29, NULL, NULL),
 (7, 1, '2026-09-06 14:08:38', 'no', 28, NULL, 2),
 (8, 1, NULL, 'yes', 28, 29, NULL),
-(8, 2, '2026-09-28 22:10:04', 'no', 27, 29, NULL);
+(8, 2, '2026-09-28 22:10:04', 'no', 27, 29, NULL),
+(12, 1, '2026-09-29 04:48:56', 'no', 28, NULL, 2),
+(12, 2, NULL, 'yes', 29, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -171,7 +176,8 @@ INSERT INTO `event` (`event_id`, `name`, `date`, `time`, `venue`, `organised_by`
 (8, 'Tree Plantation', '2026-10-14', '08:00:00', 'Gravyard Road', 'NSS Degree Unit', '', 'ABP-1', 2.0, 2, 'Completed', '08:00:00', 'college foyer', '', 'Completed', 'Pending', 'Active', 0.0, '2026-09-27 18:25:56', '2026-09-28 20:26:08', NULL, 29),
 (9, 'Tree Plantation', '2026-11-20', '08:00:00', 'Gravyard Road', 'NSS Degree Unit', 'NA', 'ABP-1', 2.0, 20, 'Scheduled', '07:30:00', 'college foyer', '', 'Pending', 'Pending', 'Pending', 0.0, '2026-09-27 18:28:52', '2026-09-27 18:28:52', NULL, 29),
 (10, 'Blood Donation', '2026-12-24', '08:00:00', 'Gravyard Road', 'NSS Degree Unit', 'NA', 'ABP-1', 2.0, 20, 'Scheduled', '07:30:00', 'college foyer', '', 'Pending', 'Pending', 'Pending', 0.0, '2026-09-27 18:29:25', '2026-09-27 18:29:25', NULL, 29),
-(12, 'Tree Plantation', '2026-10-29', '08:00:00', 'Gravyard Road', 'NSS Degree Unit', 'NA', 'ABP-1', 2.0, 30, 'Scheduled', '07:30:00', 'college foyer', '', 'Pending', 'Pending', 'Pending', 0.0, '2026-09-28 19:17:29', '2026-09-28 19:17:29', 70, NULL);
+(12, 'Tree Plantation', '2026-10-29', '08:00:00', 'Gravyard Road', 'NSS Degree Unit', 'NA', 'ABP-1', 2.0, 30, 'Scheduled', '07:30:00', 'college foyer', '', 'Pending', 'Pending', 'Pending', 0.0, '2026-09-28 19:17:29', '2026-09-28 19:17:29', 70, NULL),
+(13, 'Tree Plantation', '2026-10-21', '08:00:00', 'Gravyard Road', 'NSS Degree Unit', 'NONE', 'ABP-3', 2.0, 20, 'Scheduled', '07:30:00', 'college foyer', 'ewf', 'Pending', 'Pending', 'Pending', 0.0, '2026-10-02 20:24:01', '2026-10-05 19:10:27', NULL, 29);
 
 -- --------------------------------------------------------
 
@@ -204,10 +210,6 @@ CREATE TABLE `feedback` (
   `q_id` int(11) NOT NULL,
   `question` text NOT NULL,
   `q_type` enum('rating','textarea','text','multiple_choice') NOT NULL,
-  `option_a` varchar(100) DEFAULT NULL,
-  `option_b` varchar(100) DEFAULT NULL,
-  `option_c` varchar(100) DEFAULT NULL,
-  `option_d` varchar(100) DEFAULT NULL,
   `event_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -215,13 +217,35 @@ CREATE TABLE `feedback` (
 -- Dumping data for table `feedback`
 --
 
-INSERT INTO `feedback` (`q_id`, `question`, `q_type`, `option_a`, `option_b`, `option_c`, `option_d`, `event_id`) VALUES
-(1, 'how', 'text', NULL, NULL, NULL, NULL, 3),
-(2, 'Rate the event', 'rating', NULL, NULL, NULL, NULL, 3),
-(3, 'How was the event?', 'rating', NULL, NULL, NULL, NULL, 5),
-(5, 'What was event about?', 'multiple_choice', 'Environment', 'Health', 'Social service', 'Personal development', 5),
-(6, 'ascd', 'text', NULL, NULL, NULL, NULL, 5),
-(7, 'efdce', 'text', NULL, NULL, NULL, NULL, 8);
+INSERT INTO `feedback` (`q_id`, `question`, `q_type`, `event_id`) VALUES
+(1, 'how', 'text', 3),
+(2, 'Rate the event', 'rating', 3),
+(3, 'How was the event?', 'rating', 5),
+(5, 'What was event about?', 'multiple_choice', 5),
+(6, 'ascd', 'text', 5),
+(7, 'efdce', 'text', 8),
+(8, 'Theme of event', 'multiple_choice', 5);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `question_options`
+--
+
+CREATE TABLE `question_options` (
+  `option_id` int(11) NOT NULL,
+  `q_id` int(11) NOT NULL,
+  `option_label` varchar(10) DEFAULT NULL,
+  `option_text` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `question_options`
+--
+
+INSERT INTO `question_options` (`option_id`, `q_id`, `option_label`, `option_text`) VALUES
+(1, 8, 'A', 'Health'),
+(2, 8, 'B', 'Environment');
 
 -- --------------------------------------------------------
 
@@ -267,11 +291,12 @@ CREATE TABLE `response` (
 --
 
 INSERT INTO `response` (`r_id`, `answer`, `q_id`, `ans_by`) VALUES
-(3, 'Grear', 1, 28),
-(4, '5', 2, 28),
-(5, '5', 3, 28),
-(6, 'Environment', 5, 28),
-(7, 'eqf', 7, 27);
+(8, '5', 3, 28),
+(9, '', 5, 28),
+(10, 'hha', 6, 28),
+(11, 'Health', 8, 28),
+(12, 'good', 1, 28),
+(13, '4', 2, 28);
 
 -- --------------------------------------------------------
 
@@ -324,7 +349,8 @@ CREATE TABLE `student` (
 INSERT INTO `student` (`std_id`, `username`, `first_name`, `father_name`, `mother_name`, `surname`, `email`, `gender`, `mobile`, `blood_grp`, `caste`, `dob`, `role`, `password`, `approved_by`, `created_at`, `assigned_by`) VALUES
 (27, 'akshay3264_1', 'Akshay', 'Santosh', 'Sonali', 'Pawar', 'akshay123@gmail.com', 'Male', '9865323264', 'A+', 'GENERAL', '2006-06-15', 'Volunteer', '$2y$10$k2fgY1mZxMi69aoSlcZ4oOGmQ41VHCxRESQ/1XyniVe9DNgCnP3qO', 29, '2026-08-06 19:16:31', NULL),
 (28, 'santosh1132_1', 'Santosh', 'Sunil', 'Sunita', 'Shinde', 'san123@gmail.com', 'Male', '9892741132', 'O+', 'GENERAL', '2007-04-16', 'Volunteer', '$2y$10$ma7NTw7dfjFsCXLf7Kv.Auy16YF37APWqJRDgz9RL9oMH6m5IWAYu', 29, '2026-08-06 21:16:20', NULL),
-(29, 'dhananjay1236_1', 'Dhananjay', 'Prakash', 'Pramila', 'Shelar', 'Dhanajay26@gmail.com', 'Male', '7896541236', 'A+', 'GENERAL', '2006-09-26', 'Leader', '$2y$10$Dr0xHAJcweADqb0aKgsXo.LTlJ8OTHMxuHTJoWgAL7ic9bzJhmSlq', 29, '2026-08-10 19:31:57', 2);
+(29, 'dhananjay1236_1', 'Dhananjay', 'Prakash', 'Pramila', 'Shelar', 'Dhanajay26@gmail.com', 'Male', '7896541236', 'A+', 'GENERAL', '2006-09-26', 'Leader', '$2y$10$Dr0xHAJcweADqb0aKgsXo.LTlJ8OTHMxuHTJoWgAL7ic9bzJhmSlq', 29, '2026-08-10 19:31:57', 2),
+(35, 'vighnesh6618', 'Vighnesh', 'eqfq', 'ewf', 'Tawade', 'vighneshvawade16@gmail.com', 'Male', '8928676618', 'A-', 'GENERAL', '2010-07-05', 'Volunteer', '$2y$10$dBP5.nUI/JmcEwkseBXVheWDkM23HAbG7mNu.yX1xVzelWOumTFS2', 29, '2026-10-05 18:59:17', NULL);
 
 --
 -- Indexes for dumped tables
@@ -384,6 +410,13 @@ ALTER TABLE `feedback`
   ADD KEY `event_id` (`event_id`);
 
 --
+-- Indexes for table `question_options`
+--
+ALTER TABLE `question_options`
+  ADD PRIMARY KEY (`option_id`),
+  ADD KEY `fk_options_question` (`q_id`);
+
+--
 -- Indexes for table `report`
 --
 ALTER TABLE `report`
@@ -424,7 +457,7 @@ ALTER TABLE `student`
 -- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
 
 --
 -- AUTO_INCREMENT for table `college`
@@ -436,7 +469,7 @@ ALTER TABLE `college`
 -- AUTO_INCREMENT for table `event`
 --
 ALTER TABLE `event`
-  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `event_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `faq`
@@ -448,7 +481,13 @@ ALTER TABLE `faq`
 -- AUTO_INCREMENT for table `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `q_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `q_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `question_options`
+--
+ALTER TABLE `question_options`
+  MODIFY `option_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `report`
@@ -460,13 +499,13 @@ ALTER TABLE `report`
 -- AUTO_INCREMENT for table `response`
 --
 ALTER TABLE `response`
-  MODIFY `r_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `r_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `student`
 --
 ALTER TABLE `student`
-  MODIFY `std_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `std_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- Constraints for dumped tables
@@ -510,6 +549,12 @@ ALTER TABLE `faq`
 --
 ALTER TABLE `feedback`
   ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`event_id`);
+
+--
+-- Constraints for table `question_options`
+--
+ALTER TABLE `question_options`
+  ADD CONSTRAINT `fk_options_question` FOREIGN KEY (`q_id`) REFERENCES `feedback` (`q_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `report`

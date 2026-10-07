@@ -22,6 +22,7 @@ async function submitStudentQuestion(){
 
 async function loadPublicFAQs(){
   const container = document.getElementById('faq_display_list');
+  if(!container) return;
   const response = await fetch("../api/faq.php?action=get_faqs");
   const res = await response.json();
 

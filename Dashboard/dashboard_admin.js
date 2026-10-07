@@ -178,7 +178,7 @@ async function fetchAdminProfile() {
 
 
 
-//Volunteers list
+//Volunteers list from get_vol-leader-list
 async function loadVolunteers(searchTerm = '') {
   const container = document.getElementById("volunteers"); 
 
@@ -246,10 +246,12 @@ async function loadVolunteers(searchTerm = '') {
                   value="${item.id}" 
                   class="volunteer-checkbox w-4 h-4 text-blue-950 rounded border-slate-300 focus:ring-blue-500 cursor-pointer" 
                 />
+                
                 <span class="text-sm font-semibold text-slate-700">Name: <span class="font-bold text-blue-950">${item.first_name} ${item.surname}</span></span>
               </label>
               <p class="text-sm font-semibold text-slate-700">Mobile: <span class="font-bold text-blue-950">${item.mobile || ''}</span></p>
               <p class="text-sm font-semibold text-slate-700">NSS Year: <span class="font-bold text-blue-950">${item.nss_year|| ''}</span></p>
+              <span class="text-sm font-semibold text-slate-700">Username: <span class="font-bold text-blue-950">${item.username}</span></span>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-semibold text-slate-700">
@@ -285,6 +287,7 @@ function retainFocus() {
     input.setSelectionRange(input.value.length, input.value.length);
   }
 }
+
 //Export Student List
 async function openVolExp(){
   currentExportSection = 'volunteers';
@@ -295,9 +298,8 @@ async function openVolExp(){
   showExportModal();
   // window.location.href = '../api/export_list.php?action=export_std_list';
 }
-// To dyanmic years 
 
-
+// To dyanmic years from export-lst
 async function showExportModal() {
   const modal = document.getElementById("exportModal");
   const yearDropdown = document.getElementById("modalAcademicYear");
@@ -396,12 +398,14 @@ function openProfile(){
   
   const modal = document.getElementById('profile_modal');
   const prof = document.getElementById('profile_fields');
+  if(!prof){return;}
+
    
   const user = JSON.parse(localStorage.getItem('data'));
 
   const role = (user.role || '').toLowerCase().trim();
 
-  AcademicButtonForRole(role);
+
   if(prof){
    prof.innerHTML = `
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">

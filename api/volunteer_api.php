@@ -7,7 +7,10 @@ require '../config/function.php';
 
 $isStudent = isset($_SESSION['std_id']);
 $studentId = $_SESSION['std_id'];
-
+$isAdmin = $_SESSION['admin_id'];
+if($isAdmin){
+    exit();
+}
 if (!$isStudent || !$studentId) {
     http_response_code(403);
     echo json_encode(['success' => false, 'error' => 'Unauthorized access.']);

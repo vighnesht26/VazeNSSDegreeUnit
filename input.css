@@ -21,13 +21,26 @@ body {
 }
 
 
-/* 2. HEADER & NAVIGATION                                                     */
+/* 2. HEADER & NAVIGATION   */
 
-.top-header {
+.college-header{
   background-color: #0c1833;
   color: #ffffff;
   border-bottom: 2px solid #1a2e5c;
   box-shadow: 0 4px 12px rgba(12, 24, 51, 0.15);
+  @apply pl-5 text-[5px] md:text-xs text-gray-200 tracking-wide font-medium leading-tight w-full;
+}
+
+.top-header{
+  background-color: #0c1833;
+  color: #ffffff;
+  border-bottom: 2px solid #1a2e5c;
+  box-shadow: 0 4px 12px rgba(12, 24, 51, 0.15);
+  @apply sticky top-0  flex items-center justify-between w-full h-20 md:px-6 text-white;
+}
+
+.header-logo{
+  @apply object-contain w-12 h-12 md:w-20 md:h-20 transition-transform hover:scale-105 duration-200;
 }
 
 .side-nav {
@@ -128,6 +141,10 @@ body {
 
 .c_DisBtn{
     @apply  px-4 py-2 rounded-xl text-xs md:text-sm font-bold border border-gray-800 opacity-50 cursor-not-allowed bg-gray-300 text-gray-600 shadow-none pointer-events-none;
+}
+
+.e_btn{
+  @apply px-2 py-1 rounded focus:outline-none focus:ring-2 font-bold font-header border text-xs shadow-md transition-all duration-200 cursor-pointer active:scale-95 focus:ring-offset-2 flex items-center justify-center;
 }
 
 /* 4. DASHBOARD LAYOUT & CARDS                                */

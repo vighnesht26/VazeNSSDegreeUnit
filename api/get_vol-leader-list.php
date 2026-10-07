@@ -1,4 +1,5 @@
 <?php
+// called from dashboard_admin.js
 session_start(); 
 header('Content-Type: application/json');
 require '../config/connect.php';
@@ -33,6 +34,7 @@ if (!$isAdmin && !$isLeader) {
 
         $sql = "SELECT 
                     s.std_id AS id, 
+                    s.username,
                     s.first_name,
                     s.surname, 
                     s.mobile, 

@@ -404,6 +404,8 @@ async function openUpdateModal(){
    closeProfileModal()
 const modal = document.getElementById('profile_update_modal');
   const prof = document.getElementById('update_fields');
+  if(!modal) return;
+  if( !prof) return;
   
     try{
   const response = await fetch('../api/volunteer_api.php?action=get_academic_details');
@@ -533,6 +535,7 @@ async function submitAcademicUpdate(e){
 async function AcademicUpdateStatus(){
   const updateBtn = document.getElementById('academic_update_btn');
   if (!updateBtn) return;
+ 
 
   try {
     

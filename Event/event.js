@@ -74,7 +74,8 @@ const rtPicker = flatpickr('#RT', {
   noCalendar: true,
   dateFormat: "h:i K",
   minTime: "05:00",
-  disableMobile: true
+  disableMobile: true,
+  defaultDate:"7:30",
 }); 
 flatpickr('#e_time',{
   enableTime : true,
@@ -84,6 +85,7 @@ flatpickr('#e_time',{
   maxTime:"17:00",
   disableMobile:true,
   
+  defaultDate:"8:00",
   allowInput: false,
   onChange: function(selectedDates, dateStr, instance) {
     const err = document.getElementById("errortime");
@@ -788,7 +790,7 @@ async function loadCompletedEvents(){
             Completed Events :- <span class="text-red-600">${events.length}</span>
           </h2>
 
-          <button type="button" class="c_btn_blue" onclick="openEveExp()">Download CSV</button>
+          <button type="button" class="c_btn_blue" onclick="openEveExp()">Download Event List</button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto  p-2">
       `;
@@ -817,11 +819,11 @@ async function loadCompletedEvents(){
             <p class="${DispHrs} text-sm font-semibold text-slate-700">Hours Alloted:<span class="font-bold  text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full ">${ev.alloted_hrs}</span>
             </p>
             <div class="flex justify-between"> 
-            <button type="button"  class=" px-4 py-2 rounded-xl text-xs bg-emerald-500 font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2  ${hideAdd}"  data-id="${ev.event_id}" data-name="${ev.name}" data-date="${ev.date}" onclick="openReportModal(this)">Add Report</button>
-            <button type="button"  class="c_btn_blue ${hideView}"  data-id="${ev.event_id}" onclick="viewReportOpen(this)">Reports</button>
-            <button type="button"  class="px-1 py-2 rounded-xl text-xs bg-emerald-500 font-bold shadow-md transition-all duration-200 cursor-pointer active:scale-95 flex items-center justify-center gap-2 ${DispHrsBtn}"  data-id="${ev.event_id}" data-hrs="${ev.alloted_hrs}" onclick="allocate_hrs_modal(this)">Allocate Hours</button>
-            <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="open_attendance(this)">Attendance</button>
-            <button type="button" class="c_btn" data-id="${ev.event_id}" onclick="more(this)">More</button>
+            <button type="button"  class="e_btn bg-emerald-500  border-emerald-800/40 focus:ring-emerald-500  hover:border-emerald-800 hover:bg-emerald-600  ${hideAdd}"  data-id="${ev.event_id}" data-name="${ev.name}" data-date="${ev.date}" onclick="openReportModal(this)">AddReport</button>
+            <button type="button"  class="e_btn bg-indigo-700/30  border-indigo-800 focus:ring-indigo-500/50  hover:border-indigo-900 hover:bg-indigo-800/70 text-indigo-900 ${hideView}"  data-id="${ev.event_id}" onclick="viewReportOpen(this)">Reports</button>
+            <button type="button"  class="e_btn bg-emerald-500  border-emerald-800/40 focus:ring-emerald-500  hover:border-emerald-800 hover:bg-emerald-600 ${DispHrsBtn}"  data-id="${ev.event_id}" data-hrs="${ev.alloted_hrs}" onclick="allocate_hrs_modal(this)">Allocate Hrs</button>
+            <button type="button" class="e_btn bg-cyan-700/30  border-cyan-800 focus:ring-cyan-500/50  hover:border-cyan-900 hover:bg-cyan-800/70" data-id="${ev.event_id}" onclick="open_attendance(this)">Attendance</button>
+            <button type="button" class="e_btn bg-red-700/30  border-red-800 focus:ring-red-500/50  hover:border-red-900 hover:bg-red-800/70" data-id="${ev.event_id}" onclick="more(this)">More</button>
             </div>
           </div>`;
       });
@@ -976,7 +978,7 @@ async function more(button) {
                 ? 'border-amber-400 text-amber-700 bg-amber-50 hover:bg-amber-100 active:scale-95' 
                 : 'border-emerald-500 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 active:scale-95'
             }">
-            ${isActive ? '⏸ Stop Feedback' : '▶ Start Feedback'}
+            ${isActive ? 'Stop Feedback' : 'Start Feedback'}
           </button>
         </div>
 
@@ -999,14 +1001,14 @@ async function more(button) {
               Feedback Questions (${questions.length})
             </span>
             <button type="button" onclick="openAddQuestionModal(${eventId})" class="text-xs font-semibold text-blue-600 hover:text-blue-800">
-              ➕ Add Question
+              Add Question
             </button>
           </div>
 
           <div class="max-h-36 overflow-y-auto space-y-1.5 p-2 bg-slate-50 border border-slate-200 rounded-xl">
             ${
               questions.length === 0
-                ? `<p class="text-xs text-slate-400 italic text-center py-3">No questions configured yet.</p>`
+                ? `<p class="text-xs text-slate-400 italic text-center py-3">No questions.</p>`
                 : questions.map((q, idx) => `
                     <div class="text-xs text-slate-700 bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs flex items-start gap-2">
                       <span class="font-bold text-red-600 shrink-0">${idx + 1}.</span>
@@ -1022,10 +1024,10 @@ async function more(button) {
           ${
             isCompleted
               ? `<button type="button" class="c_btn_blue w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold" onclick="openViewResponsesModal(${eventId})">
-                   📋 View Full Screen Responses (${total_responses})
+                   📋 View Responses (${total_responses})
                  </button>`
               : `<button type="button" disabled class="c_DisBtn w-full py-2.5 text-xs">
-                   No Responses Received Yet
+                   No Responses Yet
                  </button>`
           }
         </div>
@@ -1217,7 +1219,7 @@ async function openViewResponsesModal(eventId) {
           <thead class="bg-slate-800 text-white font-header sticky top-0 z-20">
             <tr>
               <th class="p-3.5 border-r border-slate-700 min-w-40 sticky left-0 bg-slate-800 z-30">Student Name</th>
-              <th class="p-3.5 border-r border-slate-700 min-w-25 text-center">Roll No</th>
+              <th class="p-3.5 border-r border-slate-700 min-w-25 text-center">Class</th>
               ${questions.map(q => `<th class="p-3.5 border-r border-slate-700 min-w-55 max-w-85 whitespace-normal leading-snug">${q.question}</th>`).join('')}
             </tr>
           </thead>
@@ -1231,7 +1233,7 @@ async function openViewResponsesModal(eventId) {
             ${st.first_name} ${st.surname}
           </td>
           <td class="p-3.5 border-r border-slate-200 text-center font-mono text-slate-600 whitespace-nowrap">
-            ${st.roll_no || '--'}
+            ${st.class} ${st.program}
           </td>
           ${questions.map(q => {
             const answer = st.answers[q.q_id] || '<span class="italic text-slate-300">N/A</span>';

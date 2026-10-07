@@ -12,15 +12,15 @@
 <body class="bg-gray-200 font-sans min-h-screen">
 
   <!-- NSS Heading -->
-   <div class="top-header  pl-5 text-blue-400 text-[10px] md:text-xs tracking-wide font-medium leading-tight w-full">
+   <div class="college-header">
       The KET's V. G. Vaze College of Arts, Science and Commerce (Empowered Autonomous)
     </div>
-   <header class="top-header sticky top-0  flex items-center justify-between w-full h-20 md:px-6 text-white">
+   <header class="top-header">
       
   <!-- Main Heading-->
   <div class="flex items-center gap-3">
     <!-- Logo -->
-    <img src="../NSS-Logo.png" alt="NSS Logo" class="object-contain w-12 h-12 md:w-20 md:h-20 transition-transform hover:scale-105 duration-200">
+    <img src="../NSS-Logo.png" alt="NSS Logo" class="header-logo">
     
     <!-- NSS Header-->
     <div class="flex flex-col justify-center">
@@ -34,32 +34,32 @@
 
 </header>
  
-    <main class="md:max-w-4xl mx-auto flex justify-center">
+    <main class="md:max-w-4xl mx-auto md:flex md:justify-center ">
         
         <form method="POST" action="./registerevent.php" onsubmit="submitEventData(event , this)">
            
             <div class="border-2 flex gap-3 md:pl-10 w-full md:w-190 mt-5  flex-wrap rounded-3xl border-navy">
                 <div class="flex-col  pl-4">
                     <label for="Name" class="c_label ">Event Name* :</label>
-                    <input required id="Name" name="e_name" type="text" maxlength="100" class="c_in "><br>
+                    <input required id="Name" placeholder=" " name="e_name" type="text" maxlength="100" class="c_in not-placeholder-shown:border-blue-800!"><br>
                     <label for="Date" class="c_label ">Date* :</label>
-                    <input required id="Date"  name="e_date" type="date" class="c_in "><br>
+                    <input required id="Date"  name="e_date"  type="date" class="c_in "><br>
                     <p id="errordate"  class="hidden text-red-700 text-sm"></p>
                     <label for="Time" class="c_label " >Time* :</label>
-                    <input required id="e_time" placeholder="Select time"  name="e_time" type="text" class="c_in"><br>
+                    <input required id="e_time" placeholder=" "  name="e_time" type="text" class="c_in not-placeholder-shown:border-blue-800!"><br>
                     <p id="errortime"  class="hidden text-red-700 text-sm"></p>
                     <label for="Venue" class="c_label ">Venue* : </label>
-                    <input required id="Venue" maxlength="50" name="e_venue" type="text" class="c_in "><br>
+                    <input required id="Venue" maxlength="50" name="e_venue" type="text" placeholder="" class="c_in not-placeholder-shown:border-blue-800!"><br>
                     <label for="Org" class="c_label ">Organiser* : </label>
-                    <input required id="Org" maxlength="25" name="e_org" type="text" class="c_in "><br>
+                    <input required id="Org" value="NSS Degree Unit" maxlength="25" name="e_org" type="text" class="c_in not-placeholder-shown:border-blue-800!"><br>
                     <label for="Coll" class="c_label ">Collaboration :</label>
-                    <input required id="Coll" maxlength="25" name="e_collab" type="text" class="c_in  "><br>
+                    <input  id="Coll" maxlength="25" placeholder="Optional" name="e_collab" type="text" class="c_in  not-placeholder-shown:border-blue-800!"><br>
                     
                 </div>
                 
                 <div class=" pl-4">
                     <label for="Type" class="c_label ">Event Type* :</label>
-                    <select required name="e_type" id="Type"  class=" mt-2 ml-10 p-2 border-2 border-blue-600 rounded-2xl">
+                    <select required name="e_type" id="Type"  class=" mt-2 ml-10 p-2 border-2  rounded-2xl">
                          <option selected disabled hidden value="">Not Selected</option>
                         <option value="CL">College Level</option>
                          <option value="UL">University Level</option>
@@ -69,13 +69,13 @@
                              <option value="DL">District Level</option>
                     </select><br>
                     <label for="Ah" class="c_label ">Approx Hour* :</label>
-                    <input required name="e_AH" id="Ah" type="number" oninput="checkApHr()" min="1" max="12"  class="c_in "><br>
+                    <input required name="e_AH" id="Ah" placeholder="This hours will not allocates to event" type="number" oninput="checkApHr()" min="1" max="12"  class="c_in not-placeholder-shown:border-blue-800!"><br>
                     <p id="errorh"  class="hidden text-red-700 text-sm"></p>
-                    <label  for="MP" class="c_label ">Max Participation :</label>
-                    <input required id="MP" name="e_MP" type="number" oninput="checkmx()" min="1" max="300" class="c_in "><br>
+                    <label  for="MP" class="c_label ">Max Participation* :</label>
+                    <input required id="MP" name="e_MP" placeholder="You can change it later" type="number" oninput="checkmx()" min="1" max="300" class="c_in not-placeholder-shown:border-blue-800!"><br>
                     <p id="errormx"  class="hidden text-red-700 text-sm"></p>
                     <label  for="Status" class="c_label ">Status* :</label>
-                    <select required id="Status" name="e_status" type="text" onchange="updateStatusColor(this)" class="mt-2 ml-20 p-2 border-2 border-blue-600 rounded-2xl">
+                    <select required id="Status" name="e_status" type="text" onchange="updateStatusColor(this)" class="mt-2 ml-20 p-2 border-2 rounded-2xl">
                         <option selected disabled hidden>Not Selected</option>
                         <option value="Tentative" class="font-semibold text-orange-200">Tentative</option>
                         <option value="Scheduled" class="font-semibold text-yellow-700">Scheduled</option>
@@ -85,14 +85,14 @@
                     </select><br>
 
                     <label for="RT" class="c_label ">Reporting Time:</label>
-                    <input required id="RT" name="e_rtime"  type="time" class="c_in mt-2"><br>
+                    <input required id="RT" placeholder="First select AM/PM" name="e_rtime"  type="time" class="c_in mt-2 not-placeholder-shown:border-blue-800!"><br>
                     <p id="errorRtime"  class="hidden text-red-700 text-sm"></p>
                     <label for="RV"  class="c_label ">Reporting Venue:</label>
-                    <input required id="RV" name="e_rvenue" type="text" class="c_in mt-2">
+                    <input required id="RV" name="e_rvenue" type="text" placeholder=" " class="c_in mt-2 not-placeholder-shown:border-blue-800! ">
                 </div>
                 <div class=" flex w-150 flex-wrap justify-center ">
                      
-                    <textarea id="Desc" name="e_desc" placeholder="Description" rows="4" name="e_desc" type="text" class="p-2 border-2 border-blue-600 rounded-2xl  mt-2 ml-2 h-20 w-full md:w-150  resize-none"></textarea><br>
+                    <textarea id="Desc" name="e_desc" placeholder="Description: Importants of the event" rows="4" name="e_desc" type="text" class="p-2 border-2 border-blue-600 rounded-2xl  mt-2 ml-2 h-20 w-full md:w-150  resize-none"></textarea><br>
                     <button type="submit" name="e_submit"   class="c_btn pl-12 pr-12 mt-2 ">Submit</button>
                 </div>
                    

@@ -775,7 +775,7 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                 $q_stmt->close();
 
                 //  student submissions 
-                $sql = "SELECT  s.std_id,s.first_name,s.surname,ad.roll_no,r.q_id, r.answer
+                $sql = "SELECT  s.std_id,s.first_name,s.surname,ad.class,ad.program,r.q_id, r.answer
                     FROM response r
                     JOIN feedback f ON r.q_id = f.q_id
                     JOIN student s ON r.ans_by = s.std_id
@@ -798,7 +798,8 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                             'std_id'     => $sid,
                             'first_name' => $row['first_name'],
                             'surname'    => $row['surname'],
-                            'roll_no'    => $row['roll_no'],
+                            'class'    => $row['class'],
+                            'program' => $row['program'],
                             'answers'    => []
                         ];
                     }

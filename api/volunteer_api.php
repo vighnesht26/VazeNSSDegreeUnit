@@ -5,17 +5,16 @@ require '../config/connect.php';
 require '../config/function.php';
 
 
-$isStudent = isset($_SESSION['std_id']);
-$studentId = $_SESSION['std_id'];
-$isAdmin = $_SESSION['admin_id'];
-if($isAdmin){
-    exit();
-}
-if (!$isStudent || !$studentId) {
+$studentId = $_SESSION['std_id'] ?? null;
+$isAdmin   = !empty($_SESSION['admin_id']);
+
+if ($isAdmin || empty($studentId)) {
     http_response_code(403);
-    echo json_encode(['success' => false, 'error' => 'Unauthorized access.']);
+    echo json_encode(['success' => false, 'error' => 'Unauthorized: Student access only.']);
     exit();
 }
+
+$studentId = intval($studentId);
 
 $action = $_GET['action'] ?? '';
 $input = file_get_contents("php://input");

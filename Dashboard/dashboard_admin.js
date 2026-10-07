@@ -392,59 +392,8 @@ document.getElementById('edit_date').min = fdate;
  
 
 
-//profile
+//profile from dashboard student
 
-function openProfile(){
-  
-  const modal = document.getElementById('profile_modal');
-  const prof = document.getElementById('profile_fields');
-  if(!prof){return;}
-
-   
-  const user = JSON.parse(localStorage.getItem('data'));
-
-  const role = (user.role || '').toLowerCase().trim();
-
-
-  if(prof){
-   prof.innerHTML = `
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <div>
-                    <span class="text-xs text-slate-400 font-semibold uppercase block">Username</span>
-                    <span class="text-slate-800 font-medium">${user.username}</span>
-                </div>
-                <div>
-                    <span class="text-xs text-slate-400 font-semibold uppercase block">Name</span>
-                    <span class="text-slate-800 font-medium">${user.name}</span>
-                </div>
-                <div>
-                    <span class="text-xs text-slate-400 font-semibold uppercase block">Mobile</span>
-                    <span class="text-slate-800 font-medium">${user.mobile}</span>
-                </div>
-                <div>
-                    <span class="text-xs text-slate-400 font-semibold uppercase block">Email</span>
-                    <span class="text-slate-800 font-medium">${user.email}</span>
-                </div>
-                <div>
-                    <span class="text-xs text-slate-400 font-semibold uppercase block">Role</span>
-                    <span class="text-slate-800 font-medium">${user.role}</span>
-                </div>
-            </div>
-        `;
-  }
-  if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-}
-
-function closeProfileModal() {
-    const modal = document.getElementById('profile_modal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
-}
 
 // LEADER SECTIONS FUNCTIONS
 async function promoteSelectedLeaders(){

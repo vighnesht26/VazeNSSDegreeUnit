@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    try{fetchStudentProfile();
+    try{ await fetchStudentProfile();
     }catch(err){
       console.error("Error while fetching user data",err);
     }
+    get_hrs();
     getEvents();
     AcademicUpdateStatus();
-    get_hrs();
+    
 });
 
 async function fetchStudentProfile(){
@@ -358,8 +359,21 @@ function openProfile(){
   const modal = document.getElementById('profile_modal');
   const prof = document.getElementById('profile_fields');
    
-  const user = JSON.parse(localStorage.getItem('user'));
+ let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem('user'));
+  } catch (e) {
+    console.error("Failed to parse user from localStorage", e);
+  }
 
+  if (!user) {
+    alert("Session expired or user details not found. Please log in again.");
+    return;
+  }
+
+  const role = (user.role || '').toLowerCase().trim();
+
+ 
   if(prof){
    prof.innerHTML = `
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
@@ -582,18 +596,18 @@ async function AcademicUpdateStatus(){
     }
 
     showUpdateNotice()
-    btn.disabled = false;
+    updateBtn.disabled = false;
     
-    btn.textContent = "Academic Update";
-    btn.title = "Click to enroll for the upcoming academic year (" + acadData.target_year + ")";
-    btn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-400');
-    btn.classList.add('cursor-pointer');
+   updateBtn.textContent = "Academic Update";
+    updateBtn.title = "Click to enroll for the upcoming academic year (" + acadData.target_year + ")";
+    updateBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-400');
+    updateBtn.classList.add('cursor-pointer');
     
 
   } catch (error) {
     console.error("Failed to check academic updatation status:", error);
-    btn.disabled = true;
-    btn.classList.add('opacity-50', 'cursor-not-allowed');
+    updateBtn.disabled = true;
+    updateBtn.classList.add('opacity-50', 'cursor-not-allowed');
   }
 }
 

@@ -115,7 +115,10 @@ async function fetchAdminProfile() {
         if (data.success) {
           currentUserRole = data.role ? data.role.toLowerCase() : '';
         }
-
+        if(currentUserRole == 'leader'){
+          const sidebar = document.getElementById("sidebar");
+          sidebar.classList.replace('side-nav', 'side-nav-leader');
+        }
         const leadersNav = document.getElementById('nav_leaders');
         if (leadersNav) {
           leadersNav.style.display = (currentUserRole === 'leader') ? 'none' : 'flex';

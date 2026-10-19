@@ -569,7 +569,7 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                         LEFT JOIN student s ON a.student_id = s.std_id
                         WHERE e.status = 'Completed'
                         GROUP BY e.event_id, e.name,e.event_type,e.date, e.venue,e.status,e.report_status,e.alloted_hrs
-                        ORDER BY e.date ASC";
+                        ORDER BY e.date DESC";
 
 
                         $stmt = $conn->prepare($sql);

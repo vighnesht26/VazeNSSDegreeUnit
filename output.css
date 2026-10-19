@@ -2739,6 +2739,11 @@ body {
   border-right: 1px solid #1a2e5c;
   z-index: 40;
 }
+.side-nav-leader {
+  background-color: #011946;
+  border-right: 1px solid #1a2e5c;
+  z-index: 40;
+}
 .nav-title {
   margin-block: calc(var(--spacing) * 1.5);
   display: flex;

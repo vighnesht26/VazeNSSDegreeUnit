@@ -43,8 +43,13 @@ body {
   @apply object-contain w-12 h-12 md:w-20 md:h-20 transition-transform hover:scale-105 duration-200;
 }
 
-.side-nav {
+.side-nav{
   background-color: #0c1833;
+  border-right: 1px solid #1a2e5c;
+  z-index: 40;
+}
+.side-nav-leader{
+  background-color: #011946;
   border-right: 1px solid #1a2e5c;
   z-index: 40;
 }

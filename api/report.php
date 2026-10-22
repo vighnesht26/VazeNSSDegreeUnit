@@ -122,7 +122,7 @@ try{
                 $tempFile = tempnam(sys_get_temp_dir(), 'report_'). '.docx';
                 $temp->saveAs($tempFile);
                 
-                $cleanEventName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $expEvent['name']);
+                $cleanEventName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $event['name']);
     
                 $fileName  = 'reports/'. $event['date'] . '_' . $cleanEventName . '.docx';
                 $reportUrl = uploadToCloudinary($tempFile, $fileName, 'raw');

@@ -89,14 +89,14 @@ switch ($action) {
             echo json_encode(['error' => 'Missing event ID.']);
             break;
         }
-
+        $startTime = hrtime(true);
         $eventID = intval($data['event_id']);
+        $studentId = intval($studentId);
 
         $conn->begin_transaction();
+
         try {
-            //event status and max participation
-            $eventSql = "SELECT status, max_participation FROM event WHERE event_id = ? FOR UPDATE";
-            $eventStmt = $conn->prepare($eventSql);
+            $eventStmt = $conn->prepare("SELECT status, max_participation FROM event WHERE event_id = ? FOR UPDATE");
             $eventStmt->bind_param("i", $eventID);
             $eventStmt->execute();
             $event = $eventStmt->get_result()->fetch_assoc();
@@ -105,7 +105,7 @@ switch ($action) {
             if (!$event) {
                 $conn->rollback();
                 http_response_code(404);
-                echo json_encode(['success'=>false,'error' => 'Event not found.']);
+                echo json_encode(['success' => false, 'error' => 'Event not found.']);
                 break;
             }
 
@@ -115,62 +115,70 @@ switch ($action) {
                 echo json_encode(['error' => 'Registration for this event is not active.']);
                 break;
             }
-
-            //if student is already registered
-            $checkSql = "SELECT attendance_no FROM attendance WHERE event_id = ? AND student_id = ?";
-            $checkStmt = $conn->prepare($checkSql);
-            $checkStmt->bind_param("ii", $eventID, $studentId);
-            $checkStmt->execute();
-            $alreadyRegistered = $checkStmt->get_result()->num_rows > 0;
-            $checkStmt->close();
-
-            if ($alreadyRegistered) {
+            $validatesMs = round((hrtime(true) - $startTime) / 1e6, 2);
+            // 2. Fetch total count, max attendance_no, and student registration
+            $statsSql = "SELECT 
+                            COUNT(*) AS total_registered,
+                            COALESCE(MAX(attendance_no), 0) AS max_att_no,
+                            SUM(CASE WHEN student_id = ? THEN 1 ELSE 0 END) AS is_already_registered
+                        FROM attendance 
+                        WHERE event_id = ?";
+            $statsStmt = $conn->prepare($statsSql);
+            $statsStmt->bind_param("ii", $studentId, $eventID);
+            $statsStmt->execute();
+            $stats = $statsStmt->get_result()->fetch_assoc();
+            $statsStmt->close();
+            $query1Ms = round((hrtime(true) - $startTime) / 1e6, 2);
+            // Check if user already registered
+            if (intval($stats['is_already_registered']) > 0) {
                 $conn->rollback();
                 http_response_code(400);
-                echo json_encode(['success'=>false,'error' => 'You have already registered for this event.']);
+                echo json_encode(['success' => false, 'error' => 'You have already registered for this event.']);
                 break;
             }
-            //TO calculate total registered and maximum
-            $countSql = "SELECT COUNT(*) AS total_registered, COALESCE(MAX(attendance_no), 0) AS max_att_no 
-                         FROM attendance 
-                         WHERE event_id = ?";
-            $countStmt = $conn->prepare($countSql);
-            $countStmt->bind_param("i", $eventID);
-            $countStmt->execute();
-            $attData = $countStmt->get_result()->fetch_assoc();
-            $countStmt->close();
 
-            $currentCount = intval($attData['total_registered']);
-            $maxLimit = intval($event['max_participation']);
+            // Check capacity
+            $currentCount = intval($stats['total_registered']);
+            $maxLimit     = intval($event['max_participation']);
 
             if ($currentCount >= $maxLimit) {
                 $conn->rollback();
                 http_response_code(400);
-                echo json_encode(['success'=>false,'error' => 'Registration full. Maximum participants reached.']);
+                echo json_encode(['success' => false, 'error' => 'Registration full. Maximum participants reached.']);
                 break;
             }
+            $validate2Ms = round((hrtime(true) - $startTime) / 1e6, 2);
+            // 3. Increment attendance number
+            $nextAttendanceNo = intval($stats['max_att_no']) + 1;
 
-            //attendance number and insert
-            $nextAttendanceNo = intval($attData['max_att_no']) + 1;
-
+            // 4. Insert record
             $insertSql = "INSERT INTO attendance (event_id, attendance_no, student_id, isabsent) 
-                          VALUES (?, ?, ?, 'yes')";
+                        VALUES (?, ?, ?, 'yes')";
             $insertStmt = $conn->prepare($insertSql);
             $insertStmt->bind_param("iii", $eventID, $nextAttendanceNo, $studentId);
 
-            if ($insertStmt->execute()) {
+            try {
+                $insertStmt->execute();
+                $insertStmt->close();
+
                 $conn->commit();
+                $TotalMs = round((hrtime(true) - $startTime) / 1e6, 2);
                 echo json_encode([
-                    'success' => true,
-                    'message' => 'Successfully registered for event.',
-                    'attendance_no' => $nextAttendanceNo
+                    'success'       => true,
+                    'message'       => 'Successfully registered for event.',
+                    'attendance_no' => $nextAttendanceNo,
+                    'validate_time'  => "{$validatesMs} ms",
+                    'q_time'  => "{$query1Ms} ms",
+                    'v_time'  => "{$validate2Ms} ms",
+                    'Total_time'  => "{$TotalMs} ms"
                 ]);
-            } else {
+            } catch (mysqli_sql_exception $e) {
                 $conn->rollback();
-                http_response_code(500);
-                echo json_encode(['error' => 'Failed to register for the event.']);
+                http_response_code(400);
+                $durationMs = round((hrtime(true) - $startTime) / 1e6, 2);
+                echo json_encode(['success' => false, 'error' => 'Duplicate registration or slot collision.','execution_time'  => "{$durationMs} ms"]);
+                break;
             }
-            $insertStmt->close();
 
         } catch (Exception $e) {
             $conn->rollback();

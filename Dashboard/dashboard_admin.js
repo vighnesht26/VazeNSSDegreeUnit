@@ -276,12 +276,12 @@ async function loadVolunteers(searchTerm = '') {
     console.error("Network error fetching volunteers:", error);
   }
 }
-function onVolunteerSearch(value) {
-  clearTimeout(volunteerSearchTimeout);
-  volunteerSearchTimeout = setTimeout(() => {
-    loadVolunteers(value);
-  }, 300);
-}
+  function onVolunteerSearch(value) {
+    clearTimeout(volunteerSearchTimeout);
+    volunteerSearchTimeout = setTimeout(() => {
+      loadVolunteers(value);
+    }, 300);
+  }
 
 function retainFocus() {
   const input = document.getElementById("searchVolunteerInput");
@@ -430,6 +430,7 @@ async function promoteSelectedLeaders(){
       alert(result.msg);
       isVolunteersLoaded = false;
       loadVolunteers();
+      loadLeaders();
     }
     else{
       alert("Error:" + result.error);
@@ -443,7 +444,7 @@ async function promoteSelectedLeaders(){
 
 }
 
-async function loadLeaders() {
+async function loadLeaders(){
   const container = document.getElementById("leaders"); 
 
   try {
@@ -548,6 +549,7 @@ async function demoteSelectedLeader(){
       alert(result.msg);
       isLeadersLoaded = false;
       loadLeaders();
+      loadVolunteers();
     }
     else{
       alert("Error:" + result.error);

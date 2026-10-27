@@ -261,6 +261,7 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                     COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('UL') THEN 1 END) AS ul_count,
                     COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('ABP-1') THEN 1 END) AS abp1_count,
                     COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('ABP-2') THEN 1 END) AS abp2_count,
+                    COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('ABP-3') THEN 1 END) AS abp3_count,
                     COUNT(CASE WHEN UPPER(TRIM(event_type)) IN ('DL') THEN 1 END) AS dl_count
                 FROM event
                         WHERE date BETWEEN ? AND ? AND status = 'Completed'";
@@ -285,6 +286,7 @@ $startYear    = ($currentMonth >= 6) ? $currentYear : $currentYear - 1;
                         'ul'    => (int)($counts['ul_count'] ?? 0),
                         'abp1'  => (int)($counts['abp1_count'] ?? 0),
                         'abp2'  => (int)($counts['abp2_count'] ?? 0),
+                        'abp3'  => (int)($counts['abp2_count'] ?? 0),
                         'dl'    => (int)($counts['dl_count'] ?? 0)
                     ]
                 ]);

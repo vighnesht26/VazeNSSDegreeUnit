@@ -192,6 +192,7 @@ async function saveFinalAttendance(){
       isAttendanceCompleted = true;
       updateState();
       window.location.reload();
+      
     }
     else{
       alert("Error occured "+ result.error);

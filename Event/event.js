@@ -87,7 +87,7 @@ flatpickr('#e_time',{
   
   defaultDate:"8:00",
   allowInput: false,
-  onChange: function(selectedDates, dateStr, instance) {
+  onChange: function(selectedDates, dateStr, instance){
     const err = document.getElementById("errortime");
     if (!selectedDates.length) {
       err.classList.add("hidden");
@@ -292,12 +292,14 @@ async function loadEventsOverview(){
       const ulEl   = document.getElementById('cnt_ul');
       const abp1El = document.getElementById('cnt_abp1');
       const abp2El = document.getElementById('cnt_abp2');
+      const abp3El = document.getElementById('cnt_abp3');
       const dlEl   = document.getElementById('cnt_dl');
 
-      if (clEl)   clEl.textContent   = d.cl;
-      if (ulEl)   ulEl.textContent   = d.ul;
+      if (clEl)   clEl.textContent  = d.cl;
+      if (ulEl)   ulEl.textContent  = d.ul;
       if (abp1El) abp1El.textContent = d.abp1;
       if (abp2El) abp2El.textContent = d.abp2;
+      if (abp3El) abp3El.textContent = d.abp3;
       if (dlEl)   dlEl.textContent   = d.dl;
     }
   } catch (error) {
@@ -331,7 +333,7 @@ async function loadStudentStats(){
   }
 }
 
-async function loadUpcomingEvents() {
+async function loadUpcomingEvents(){
   const container = document.getElementById("u_event");
   
   try {

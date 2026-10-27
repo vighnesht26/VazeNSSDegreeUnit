@@ -67,7 +67,7 @@
 
       <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">Registered Contact Number</label>
-        <input type="text" id="f_mobile" oninput="validatemobile(this)" name="contact" pattern="[0-9]{10}" required placeholder="10-digit mobile" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-1 valid:border-blue-800">
+        <input type="text" id="f_mobile" oninput="validatemobile(this)" name="contact" pattern="[0-9]{10}" maxlength="10" required placeholder="10-digit mobile" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-1 valid:border-blue-800">
         <p id="f_errormobile" class="text-red-700 text-xs mt-1 hidden"></p>
       </div>
 
